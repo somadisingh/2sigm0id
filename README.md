@@ -1,4 +1,4 @@
-# Risk-profiler model bake-off
+# Adaptive Risk-profiler
 
 Picks which Baseten models to use for the interviewer and for the simulated users, using evidence instead of guesses.
 
