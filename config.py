@@ -93,6 +93,12 @@ STAGE2_USER_CANDIDATES = [
 STAGE2_USER_REASONING = ["off", "low"]   # decision: test both
 STAGE2_INTERVIEWER_REASONING = "low"
 
+# ---------------- Main experiment (locked by the Oct 26 bake-off) ----------------
+EXPERIMENT_INTERVIEWER = "glm-5.3"            # method D, and the answer mapper for method B
+EXPERIMENT_INTERVIEWER_REASONING = "low"
+EXPERIMENT_USER = "deepseek-v4-flash-0731"    # simulated users for every method
+EXPERIMENT_USER_REASONING = "off"
+
 # ---------------- Interview settings ----------------
 BUDGET = 10                 # the middle budget from the shared contract
 INTERVIEWER_MAX_TOKENS = 4000   # room for thinking + the JSON reply

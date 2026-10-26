@@ -26,6 +26,8 @@ from pathlib import Path
 import config as C
 import prompts as P
 from llm import LLM, extract_json, strip_think, validate_interviewer
+from capacity import capacity_from_facts
+import methods
 
 HERE = Path(__file__).resolve().parent
 RESULTS = HERE / "results"
@@ -63,6 +65,21 @@ def load_personas():
         if expected != gt["final_band"]:
             sys.exit(f"{p['id']}: final_band {gt['final_band']} doesn't match the "
                      f"lowest-of-three rule ({expected}).")
+        formula, _ = capacity_from_facts(p["finances"])
+        if abs(formula - gt["capacity"]) > 0.005:
+            sys.exit(f"{p['id']}: capacity {gt['capacity']} doesn't match the capacity formula "
+                     f"({formula}). Run `python capacity.py` and copy the formula value.")
+        bands = [P.band(gt[d]) for d in ("capacity", "willingness", "behavioral")]
+        is_mismatch = max(bands) - min(bands) >= 2   # the contract's flag rule
+        if is_mismatch != (gt["mismatch_type"] != "none"):
+            sys.exit(f"{p['id']}: bands {bands} {'are' if is_mismatch else 'are not'} 2+ apart, "
+                     f"so mismatch_type should {'name the mismatch' if is_mismatch else 'be none'} "
+                     f"(it is '{gt['mismatch_type']}').")
+        near = [d for d in ("capacity", "willingness", "behavioral")
+                if min(abs(gt[d] - e) for e in (0.2, 0.4, 0.6, 0.8)) < 0.03]
+        if near:
+            print(f"Warning: {p['id']} has {near} within 0.03 of a band edge; band results "
+                  "will be fragile for this persona.")
     return personas
 
 
@@ -126,10 +143,10 @@ def _call_log(r):
 
 
 def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat, probes,
-                  prompt=P.INTERVIEWER_PROMPT):
+                  prompt=P.INTERVIEWER_PROMPT, budget=None):
     # Same seed for every model -> every interviewer faces the same noise schedule.
     rng = random.Random(zlib.crc32(f"{persona['id']}|{repeat}".encode()))
-    budget = C.BUDGET
+    budget = budget or C.BUDGET
     i_msgs = [{"role": "system", "content": P.INTERVIEWER_PROMPTS[prompt]},
               {"role": "user", "content": P.START_MESSAGE.format(left=budget)}]
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
@@ -223,10 +240,18 @@ def run_jobs(llm, jobs, out_path):
 
     def work(j):
         try:
-            rec = run_interview(llm, j["interviewer"], j["i_setting"], j["user"], j["u_setting"],
-                                j["persona"], j["repeat"], j["probes"], j["prompt"])
+            if j.get("method") in ("A", "B", "C"):
+                rec = methods.run_form(llm, j["method"], j["budget"], j["persona"], j["repeat"],
+                                       j["user"], j["u_setting"], j["interviewer"], j["i_setting"],
+                                       draw_noise)
+            else:
+                rec = run_interview(llm, j["interviewer"], j["i_setting"], j["user"], j["u_setting"],
+                                    j["persona"], j["repeat"], j["probes"], j["prompt"],
+                                    j.get("budget"))
+                if j.get("method"):
+                    rec["method"] = j["method"]
         except Exception as e:  # noqa: BLE001 - keep the run going, log the failure
-            rec = {k: j[k] for k in ("interviewer", "user", "repeat")}
+            rec = {k: j.get(k) for k in ("interviewer", "user", "repeat", "method", "budget")}
             rec.update(interviewer_setting=j["i_setting"], user_setting=j["u_setting"],
                        persona_id=j["persona"]["id"], error=f"{type(e).__name__}: {e}")
         rec["job_key"] = j["job_key"]
@@ -244,9 +269,12 @@ def run_jobs(llm, jobs, out_path):
             finished += 1
             status = f"ERROR {rec['error'][:120]}" if rec.get("error") else (
                 f"{rec['questions_asked']} questions, {rec['seconds']}s")
-            print(f"[{finished}/{len(todo)}] {rec['interviewer']} | {rec['user']}"
+            who = (f"method {rec['method']}, {rec['budget']} questions" if rec.get("method")
+                   else rec["interviewer"])
+            print(f"[{finished}/{len(todo)}] {who} | {rec['user']}"
                   f"({rec['user_setting']}) | {rec['persona_id']}: {status}")
-    print("Done. Next: python score.py", out_path.relative_to(HERE))
+    shown = out_path.relative_to(HERE) if out_path.is_relative_to(HERE) else out_path
+    print("Done. Next: python score.py", shown)
 
 
 def job(stage, interviewer, i_setting, user, u_setting, persona, repeat, probes,
@@ -309,6 +337,29 @@ def prompts(args):
     run_jobs(llm, jobs, RESULTS / name)
 
 
+def experiment(args):
+    """The main experiment: methods A-D x budgets, same users, same noise schedule."""
+    llm = make_llm(args.mock)
+    personas = load_personas()
+    iv, user = C.EXPERIMENT_INTERVIEWER, C.EXPERIMENT_USER
+    if C.MODELS[iv]["family"] == C.MODELS[user]["family"]:
+        sys.exit(f"{iv} and {user} are from the same company. Change EXPERIMENT_USER in config.py.")
+    check_ids(llm, [iv, user])
+    jobs = []
+    for m in args.methods:
+        for b in args.budgets:
+            for p in personas:
+                for r in range(args.repeats):
+                    jobs.append(dict(
+                        stage="experiment", method=m, budget=b, interviewer=iv,
+                        i_setting=C.EXPERIMENT_INTERVIEWER_REASONING, user=user,
+                        u_setting=C.EXPERIMENT_USER_REASONING, persona=p, repeat=r, probes=False,
+                        prompt=P.INTERVIEWER_PROMPT,
+                        job_key=f"experiment|{m}|{b}|{iv}|{user}|{p['id']}|{r}"))
+    name = args.out or ("experiment_mock.jsonl" if args.mock else "experiment.jsonl")
+    run_jobs(llm, jobs, RESULTS / name)
+
+
 def list_models(args):
     llm = make_llm(False)
     ids = sorted(m.id for m in llm.client.models.list())
@@ -367,6 +418,13 @@ def main():
     pr.add_argument("--out", help="results file name, e.g. to rerun the same jobs fresh")
     pr.add_argument("--mock", action="store_true")
     pr.set_defaults(fn=prompts)
+    ex = sub.add_parser("experiment", help="main experiment: methods A-D at each budget")
+    ex.add_argument("--methods", nargs="*", default=["A", "B", "C", "D"], choices=["A", "B", "C", "D"])
+    ex.add_argument("--budgets", nargs="*", type=int, default=[5, 10, 15], choices=[5, 10, 15])
+    ex.add_argument("--repeats", type=int, default=3)
+    ex.add_argument("--out", help="results file name")
+    ex.add_argument("--mock", action="store_true")
+    ex.set_defaults(fn=experiment)
     args = ap.parse_args()
     RESULTS.mkdir(exist_ok=True)
     args.fn(args)

@@ -60,6 +60,39 @@ If a run stops partway, rerun the same command and it picks up where it left off
 
 **Expected cost:** both stages should come to roughly $5–15. That's an estimate; `score.py` prints the actual spend.
 
+## Main experiment (methods A–D)
+
+Runs all four methods on the same test users, with the same noise schedule and the same question budget:
+
+| Method | What it does |
+|---|---|
+| A, fixed form | The default short form from `question_bank.json`, in order. The person picks an option number. |
+| B, scripted interview | The same questions in their spoken wording. The person answers in their own words, and the interviewer model maps each answer to an option, or to none if the answer is too vague. |
+| C, adaptive form | Picks each next question from the whole bank, aiming at the dimension it's least sure about: few answers, answers that disagree, an estimate near a band edge, or the dimension that decides the final band. No calibration data exists for a classic test model, so this rule is ours. |
+| D, adaptive interviewer | Our system: GLM 5.3 with prompt v1. |
+
+```bash
+python run_bakeoff.py experiment                        # all methods, budgets 5/10/15, 3 repeats
+python run_bakeoff.py experiment --methods A D --budgets 10 --repeats 1   # a quick smoke test
+python score.py results/experiment.jsonl --by-persona
+```
+
+Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. Contradictions are injected only in the spoken methods (B and D), since a form has no follow-ups.
+
+**Estimated cost:** about $2 and 30 minutes with the 5 placeholder test users. With 100 test users it's about $60–75 and 5 hours; B's answer mapping adds roughly $15 to the earlier projection. These are estimates; `score.py` prints the actual spend.
+
+**score.py options:** `--by-persona` adds an error table per test user, and `--truth formula` re-scores older runs with capacity from `capacity.py`. Recovery shows how often the final estimate came back after a contradiction pulled it off course.
+
+## Question bank
+
+`question_bank.json` holds the 35 shared questions for methods A, B and C: 11 on capacity, 12 on willingness, 12 on behavior. `question_bank.md` is a readable copy. Run `python check_question_bank.py --write-md` after editing the JSON; it checks the format and regenerates the readable copy. The default short forms are placeholders until a pilot picks the most informative questions.
+
+## Capacity formula
+
+`capacity.py` turns a person's money facts into a capacity score: time horizon 30%, emergency savings 25%, income stability 20%, debt payments 15%, dependents 10%. It then applies three red-flag caps: needing the money within 3 years (at most 0.20), under 1 month of savings (at most 0.35), and debt payments of 40% or more of income (at most 0.35). It sets every test user's true capacity, and `run_bakeoff.py` refuses to run if a persona's capacity doesn't match it. Run `python capacity.py` to see each test user's breakdown. The weights are our judgment and are recorded in the shared contract.
+
+Re-scoring the Oct 26 runs with the formula cut P1's capacity error from +0.27 to +0.05, so that "mistake" was mostly our hand-set label.
+
 ## What the columns mean
 
 | Column | Meaning |
@@ -78,7 +111,10 @@ If a run stops partway, rerun the same command and it picks up where it left off
 ## Files
 
 - `config.py`: models, prices, rate limits, stage settings. Edit here to add or remove models.
-- `personas.json`: 5 hand-written test users that follow the shared-contract schema. These are placeholders until the MiroFish personas are ready.
+- `personas.json`: 5 hand-written test users that follow the shared-contract schema, with capacity from the formula and every true score at least 0.03 from a band edge. These are placeholders until the MiroFish personas are ready.
+- `capacity.py`: the capacity formula.
+- `question_bank.json` / `question_bank.md`: the 35 shared questions; `check_question_bank.py` checks them.
+- `methods.py`: methods A, B and C for the main experiment.
 - `prompts.py`: interviewer prompts (v1 in use; v2 and v3 kept for the record), persona prompt, noise notes, check questions. Contradiction notes name a wrong value for a fact the user already stated, so every injected contradiction can be caught.
 - `run_bakeoff.py`: runs the stages. `llm.py` handles API calls, rate limits and retries.
 - `score.py`: turns results into tables, a CSV and a Markdown summary.

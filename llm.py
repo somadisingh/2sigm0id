@@ -144,6 +144,10 @@ def _mock_reply(messages):
                 "flags": flags,
                 "question": None if done else "How would you feel if your savings dropped by a fifth?",
             }) + "\n```"
+    elif "multiple-choice question" in system:   # method B's answer mapper
+        text = json.dumps({"option": random.choice([1, 2, 3, None])})
+    elif "Reply with just the number of your answer" in last or "Please reply with just one number" in last:
+        text = random.choice(["2", "3", "I'd say 1", "4", "not sure"])
     elif "Reply with just a number" in last:
         text = str(random.choice([0, 1, 3, 4, 7, 12, 15, 20, 30]))
     elif "Reply with one word" in last:

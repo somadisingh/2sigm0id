@@ -18,10 +18,7 @@ DIMS = ("capacity", "willingness", "behavioral")
 BUDGETS = ("5", "10", "15")
 
 # How persona income descriptions map to CAP03's options (by option score).
-INCOME_SCORE = {
-    "unstable": 0.0, "partly commission-based": 0.33, "stable": 0.67,
-    "very stable": 1.0, "stable and high": 1.0,
-}
+from capacity import INCOME_SCORE  # noqa: E402
 
 
 def band(score):
