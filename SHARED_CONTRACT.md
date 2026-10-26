@@ -1,6 +1,6 @@
 # Shared Contract: Risk Profile, Test Users, Question Budgets
 
-Updated Oct 26 after the model bake-off · Somaditya Singh, Preyansh Agrawal, Siya Jain · Project name: Adaptive Risk-profiler
+Updated Oct 26 after the model bake-off · Somaditya Singh, Preyansh Agrawal, Siya Jain · Project name: 2sigmoid: Adaptive Risk Profiler
 
 Every Milestone 2 section uses these terms exactly as written. If we change one, we change it here first.
 
@@ -67,9 +67,3 @@ We compare four methods, each limited to the same number of questions:
 - Fixed forms split each budget across the dimensions: 2/2/1, 3/4/3 and 5/5/5 for capacity, willingness and behavioral.
 - We pick the form items using a small set of pilot users kept separate from the test set, and write the choice down before testing.
 - Every follow-up or clarification counts toward the budget. A question with two parts counts as two.
-
-## 4. To confirm together
-
-- Are the 5 bands and the lowest-of-three rule okay?
-- Agreed: budgets of 5, 10 and 15 questions, and 100 test users. Still to confirm: the capacity weights and red flags above.
-- Agreed: the project name is Adaptive Risk-profiler.
