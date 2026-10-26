@@ -1,0 +1,72 @@
+[
+  {
+    "id": "P1-steady-saver",
+    "seed": 101,
+    "ground_truth": {"capacity": 0.55, "willingness": 0.25, "behavioral": 0.30, "final_band": 2,
+                     "mismatch_type": "none"},
+    "demographics": {"age": 58, "occupation": "school administrator", "household": "married, two adult children"},
+    "finances": {"horizon_yrs": 7, "emergency_fund_months": 12, "income_stability": "very stable",
+                 "debt_to_income": 0.10, "dependents": 0, "investable_amount": 150000,
+                 "goal": "steady income in retirement"},
+    "experience": {"fin_literacy": "medium", "past_loss_reaction": "held"},
+    "style": {"verbosity": "medium", "vocabulary": "plain", "hedging": "low"},
+    "noise": {"flip_prob": 0.0, "vague_rate": 0.1, "contradiction_rate": 0.0,
+              "acquiescence": 0.1, "refuses_numbers": false}
+  },
+  {
+    "id": "P2-eager-no-cushion",
+    "seed": 102,
+    "ground_truth": {"capacity": 0.25, "willingness": 0.90, "behavioral": 0.75, "final_band": 2,
+                     "mismatch_type": "high appetite, low capacity"},
+    "demographics": {"age": 24, "occupation": "gig delivery driver", "household": "single, shares an apartment"},
+    "finances": {"horizon_yrs": 30, "emergency_fund_months": 0.5, "income_stability": "unstable",
+                 "debt_to_income": 0.35, "dependents": 0, "investable_amount": 3000,
+                 "goal": "grow money as fast as possible"},
+    "experience": {"fin_literacy": "low", "past_loss_reaction": "none"},
+    "style": {"verbosity": "short", "vocabulary": "casual", "hedging": "low"},
+    "noise": {"flip_prob": 0.0, "vague_rate": 0.2, "contradiction_rate": 0.0,
+              "acquiescence": 0.3, "refuses_numbers": false}
+  },
+  {
+    "id": "P3-talks-big-panics",
+    "seed": 103,
+    "ground_truth": {"capacity": 0.50, "willingness": 0.80, "behavioral": 0.20, "final_band": 2,
+                     "mismatch_type": "says aggressive, would panic-sell"},
+    "demographics": {"age": 38, "occupation": "sales manager", "household": "married, two young children"},
+    "finances": {"horizon_yrs": 15, "emergency_fund_months": 4, "income_stability": "partly commission-based",
+                 "debt_to_income": 0.25, "dependents": 3, "investable_amount": 60000,
+                 "goal": "kids' college and retirement"},
+    "experience": {"fin_literacy": "medium", "past_loss_reaction": "sold"},
+    "style": {"verbosity": "long", "vocabulary": "plain", "hedging": "low"},
+    "noise": {"flip_prob": 0.1, "vague_rate": 0.0, "contradiction_rate": 0.2,
+              "acquiescence": 0.0, "refuses_numbers": false}
+  },
+  {
+    "id": "P4-vague-middle",
+    "seed": 104,
+    "ground_truth": {"capacity": 0.50, "willingness": 0.50, "behavioral": 0.45, "final_band": 3,
+                     "mismatch_type": "none"},
+    "demographics": {"age": 45, "occupation": "nurse", "household": "single parent, one teenager"},
+    "finances": {"horizon_yrs": 12, "emergency_fund_months": 3, "income_stability": "stable",
+                 "debt_to_income": 0.20, "dependents": 1, "investable_amount": 40000,
+                 "goal": "a bigger home and retirement"},
+    "experience": {"fin_literacy": "low", "past_loss_reaction": "none"},
+    "style": {"verbosity": "medium", "vocabulary": "plain", "hedging": "high"},
+    "noise": {"flip_prob": 0.0, "vague_rate": 0.5, "contradiction_rate": 0.0,
+              "acquiescence": 0.2, "refuses_numbers": true}
+  },
+  {
+    "id": "P5-wealthy-contradictory",
+    "seed": 105,
+    "ground_truth": {"capacity": 0.90, "willingness": 0.60, "behavioral": 0.70, "final_band": 4,
+                     "mismatch_type": "none"},
+    "demographics": {"age": 50, "occupation": "owner of a small logistics business", "household": "married, no children"},
+    "finances": {"horizon_yrs": 20, "emergency_fund_months": 24, "income_stability": "stable and high",
+                 "debt_to_income": 0.05, "dependents": 0, "investable_amount": 500000,
+                 "goal": "grow wealth to leave a legacy"},
+    "experience": {"fin_literacy": "high", "past_loss_reaction": "held"},
+    "style": {"verbosity": "long", "vocabulary": "technical", "hedging": "medium"},
+    "noise": {"flip_prob": 0.3, "vague_rate": 0.0, "contradiction_rate": 0.3,
+              "acquiescence": 0.0, "refuses_numbers": false}
+  }
+]
