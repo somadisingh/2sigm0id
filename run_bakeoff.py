@@ -143,7 +143,9 @@ def _call_log(r):
 
 
 def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat, probes,
-                  prompt=P.INTERVIEWER_PROMPT, budget=None):
+                  prompt=P.INTERVIEWER_PROMPT, budget=None, full_budget=False):
+    # full_budget (main experiment): if the interviewer wants to stop early, log where and
+    # ask it to keep going, so every method uses the same number of questions.
     # Same seed for every model -> every interviewer faces the same noise schedule.
     rng = random.Random(zlib.crc32(f"{persona['id']}|{repeat}".encode()))
     budget = budget or C.BUDGET
@@ -152,14 +154,29 @@ def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat,
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
     turns, i_calls, u_calls = [], [], []
     last_valid, asked, invalid_turns, early_stop = None, 0, 0, False
+    would_stop_at, nudged_at = None, None
     said = set()  # persona facts the user has already stated clearly
     t_start = time.monotonic()
 
     while True:
         out, calls = interviewer_step(llm, interviewer, i_setting, i_msgs)
         i_calls += calls
-        if turns:  # flags raised right after the previous answer
+        # time the system spent reacting (LLM latency only; excludes rate-limit waits)
+        step = {"system_latency": round(sum(c["latency"] for c in calls), 3), "system_calls": len(calls)}
+        again = nudged_at == asked  # second reply to the same answer, after a keep-asking nudge
+        if turns and again:  # add the nudge's time, calls and any new flags to the same turn
+            t = turns[-1]
+            t["system_latency"] = round(t["system_latency"] + step["system_latency"], 3)
+            t["system_calls"] += step["system_calls"]
+            t["flags_after"] = t["flags_after"] + [f for f in (out["flags"] if out else [])
+                                                   if f not in t["flags_after"]]
+        elif turns:  # flags raised right after the previous answer
             turns[-1]["flags_after"] = out["flags"] if out else None
+            turns[-1].update(step)
+        elif again:
+            start_latency += step["system_latency"]
+        else:
+            start_latency = step["system_latency"]  # before the first question
         if out is None:
             invalid_turns += 1
             break  # can't continue without a question; score the last valid profile
@@ -168,8 +185,14 @@ def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat,
         if left == 0:
             break
         if out["question"] is None:
-            early_stop = True
-            break
+            if would_stop_at is None:
+                would_stop_at = asked
+            if not full_budget or again:  # stops anyway if it refuses a second time
+                early_stop = True
+                break
+            nudged_at = asked
+            i_msgs.append({"role": "user", "content": P.KEEP_ASKING.format(left=left)})
+            continue
 
         noise = draw_noise(rng, persona, asked)
         target = None
@@ -216,8 +239,10 @@ def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat,
         "final_profile": last_valid["profile"] if last_valid else None,
         "final_flags": last_valid["flags"] if last_valid else None,
         "questions_asked": asked, "early_stop": early_stop,
+        "would_stop_at": would_stop_at, "full_budget": full_budget,
         "aborted_invalid": invalid_turns > 0,
         "turns": turns, "interviewer_calls": i_calls, "user_calls": u_calls,
+        "start_latency": start_latency,
         "probes": probe_results, "seconds": round(time.monotonic() - t_start, 1),
     }
 
@@ -247,7 +272,7 @@ def run_jobs(llm, jobs, out_path):
             else:
                 rec = run_interview(llm, j["interviewer"], j["i_setting"], j["user"], j["u_setting"],
                                     j["persona"], j["repeat"], j["probes"], j["prompt"],
-                                    j.get("budget"))
+                                    j.get("budget"), j.get("full_budget", False))
                 if j.get("method"):
                     rec["method"] = j["method"]
         except Exception as e:  # noqa: BLE001 - keep the run going, log the failure
@@ -354,7 +379,7 @@ def experiment(args):
                         stage="experiment", method=m, budget=b, interviewer=iv,
                         i_setting=C.EXPERIMENT_INTERVIEWER_REASONING, user=user,
                         u_setting=C.EXPERIMENT_USER_REASONING, persona=p, repeat=r, probes=False,
-                        prompt=P.INTERVIEWER_PROMPT,
+                        prompt=P.INTERVIEWER_PROMPT, full_budget=True,
                         job_key=f"experiment|{m}|{b}|{iv}|{user}|{p['id']}|{r}"))
     name = args.out or ("experiment_mock.jsonl" if args.mock else "experiment.jsonl")
     run_jobs(llm, jobs, RESULTS / name)

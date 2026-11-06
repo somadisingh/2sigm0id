@@ -79,9 +79,25 @@ python score.py results/experiment.jsonl --by-persona
 
 Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. Contradictions are injected only in the spoken methods (B and D), since a form has no follow-ups.
 
+**Full budgets.** Every method uses its whole question budget, so the comparison stays fair. If D tries to stop early, the runner records the question number as `would_stop_at`, sends one "keep asking" message (`KEEP_ASKING` in `prompts.py`) and continues. The extra call counts toward D's cost and latency. If D refuses a second time, it stops and the run is marked `early_stop`. The "would stop" column shows how often D wanted to stop, at which question on average, and how many runs stopped anyway. The bake-off stages keep the old behavior: D may stop early there.
+
 **Estimated cost:** about $2 and 30 minutes with the 5 placeholder test users. With 100 test users it's about $60–75 and 5 hours; B's answer mapping adds roughly $15 to the earlier projection. These are estimates; `score.py` prints the actual spend.
 
 **score.py options:** `--by-persona` adds an error table per test user, and `--truth formula` re-scores older runs with capacity from `capacity.py`. Recovery shows how often the final estimate came back after a contradiction pulled it off course.
+
+**Cost per completed profile.** The experiment's COST AND SPEED table compares the methods on more than question count. "System" means the calls that build the profile: D's interviewer and B's answer mapper. A and C choose and score questions in code, so they make no system LLM calls. Simulated-user calls are listed separately, because a real user replaces them.
+
+| Column | Meaning |
+|---|---|
+| LLM calls | System LLM calls per profile, including JSON retries. |
+| tokens in / out / thinking | System tokens per profile. Thinking tokens are billed as output. |
+| system $ | System cost per completed profile. |
+| wait/turn s, p95 wait s | System LLM time after each answer: average and 95th percentile. This is how long a real user would wait. It leaves out rate-limit waits. |
+| system s | Total system LLM time per profile. D's includes the call before its first question. |
+| sim-user calls / $ | The simulated user's calls and cost per profile. |
+| wall s/run | Clock time per run, including the simulated user and rate-limit waits. |
+
+`score.py` also saves `<name>_cost_vs_error.png`: avg error against system $ and system seconds per profile, one point per method and budget. It needs `matplotlib`, which `requirements.txt` now installs.
 
 ## Question bank
 

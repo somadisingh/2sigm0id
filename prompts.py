@@ -93,6 +93,9 @@ INTERVIEWER_PROMPT = "v1"
 START_MESSAGE = "Start the interview. Questions left: {left}."
 ANSWER_MESSAGE = "Answer: {answer}\nQuestions left: {left}."
 FINAL_SUFFIX = " Give your final profile now, with question set to null."
+# Main experiment only: every method must use its full question budget.
+KEEP_ASKING = ("This study uses the full question budget. Questions left: {left}. "
+               "Ask your next question now. Only set question to null when no questions are left.")
 RETRY_MESSAGE = ("That was not a valid reply. Respond again with ONLY the JSON object "
                  "in the required format.")
 

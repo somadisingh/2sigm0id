@@ -165,9 +165,12 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
 
         score = item["options"][choice - 1]["score"] if choice else None
         answers.append({"id": item["id"], "dimension": item["dimension"], "score": score})
+        # forms pick and score in code (no LLM); B's only system call is the answer mapper
+        sys_latency = m_calls[-1]["latency"] if method == "B" else 0.0
         turns.append({"q": question, "item": item["id"], "a": answer, "option": choice,
                       "score": score, "noise": noise, "contradiction_target": target,
-                      "profile_before": None})
+                      "profile_before": None,
+                      "system_latency": sys_latency, "system_calls": 1 if method == "B" else 0})
 
     return {
         "method": method, "budget": budget,
@@ -180,5 +183,6 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         "questions_asked": len(turns), "early_stop": False, "aborted_invalid": False,
         "unanswered": sum(a["score"] is None for a in answers),
         "turns": turns, "interviewer_calls": m_calls, "user_calls": u_calls,
+        "start_latency": 0.0,
         "probes": [], "seconds": round(time.monotonic() - t0, 1),
     }

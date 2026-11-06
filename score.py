@@ -92,6 +92,20 @@ def summarize(recs):
                                 for c in r["interviewer_calls"])
                             + sum(cost(c["usage"], r["user"]) for c in r["user_calls"]) for r in ok])
 
+    # Per completed profile. "System" = calls that build the profile (D's interviewer, B's
+    # answer mapper); A and C make none. Simulated-user calls are counted separately.
+    s["sys_calls"] = mean([len(r["interviewer_calls"]) for r in scored])
+    for k in ("in", "out", "reasoning"):
+        s[f"sys_tokens_{k}"] = mean([sum(c["usage"][k] for c in r["interviewer_calls"]) for r in scored])
+    s["sys_cost"] = mean([sum(cost(c["usage"], c.get("model") or r.get("interviewer"))
+                              for c in r["interviewer_calls"]) for r in scored])
+    s["sys_secs"] = mean([sum(c["latency"] for c in r["interviewer_calls"]) for r in scored])
+    waits = sorted(t["system_latency"] for r in scored for t in r["turns"] if "system_latency" in t)
+    s["sys_secs_per_turn"] = mean(waits)
+    s["sys_secs_turn_p95"] = waits[int(0.95 * (len(waits) - 1))] if waits else None
+    s["user_calls"] = mean([len(r["user_calls"]) for r in scored])
+    s["user_cost"] = mean([sum(cost(c["usage"], r["user"]) for c in r["user_calls"]) for r in scored])
+
     mm = [r for r in ok if r["truth"]["mismatch_type"] != "none"]
     s["mismatch_caught"] = mean([
         has_flag(r.get("final_flags"), "mismatch")
@@ -125,6 +139,11 @@ def summarize(recs):
     s["contra_recovered"] = mean(recovered) if recovered else None
 
     s["questions"] = mean([r["questions_asked"] for r in ok])
+    # main experiment: D keeps asking to the full budget; this is where it would have stopped
+    full = [r for r in ok if r.get("full_budget")]
+    s["would_stop_share"] = mean([r["would_stop_at"] is not None for r in full]) if full else None
+    s["would_stop_at"] = mean([r["would_stop_at"] for r in full if r["would_stop_at"] is not None])
+    s["stopped_anyway"] = sum(r["early_stop"] for r in full) if full else None
     s["early_stop"] = mean([r["early_stop"] for r in ok]) if ok else None
     s["seconds"] = mean([r["seconds"] for r in ok])
 
@@ -155,6 +174,7 @@ def fmt(v, kind):
     if v is None:
         return "-"
     return {"pct": f"{v * 100:.0f}%", "err": f"{v:.3f}", "usd": f"${v:,.3f}" if v < 1 else f"${v:,.2f}",
+            "usd4": f"${v:.4f}",
             "num": f"{v:.1f}", "int": f"{v:.0f}", "hrs": f"{v:.1f} h"}[kind]
 
 
@@ -197,6 +217,43 @@ def persona_table(groups, order, label):
             ("willingness", None), ("behavior", None), ("bands given / true", None)]
     return ("PER TEST USER (average signed error: + means rated riskier than the truth)\n"
             + table(rows, cols))
+
+
+def cost_chart(summaries, path):
+    """Avg error vs. system cost and system time per completed profile, one point per method+budget."""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("(Skipped the cost chart: pip install matplotlib)")
+        return
+    colors = {"A": "#4C78A8", "B": "#F58518", "C": "#54A24B", "D": "#B279A2"}
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), sharey=True)
+    for ax, key, xlabel in ((axes[0], "sys_cost", "System $ per completed profile"),
+                            (axes[1], "sys_secs", "System LLM seconds per completed profile")):
+        for (m, b), s in sorted(summaries.items()):
+            if s["avg_error"] is None:
+                continue
+            x, y = s[key] or 0.0, s["avg_error"]
+            yerr = ([[y - s["ci_low"]], [s["ci_high"] - y]] if s["ci_low"] is not None else None)
+            ax.errorbar(x, y, yerr=yerr, fmt="o", color=colors.get(m, "gray"), capsize=3,
+                        label=f"{m} - {METHOD_NAMES.get(m, m)}")
+            # A and C both sit at zero cost: label A on the left and C on the right so they can't collide
+            left = m == "A"
+            ax.annotate(f"{m}{b}", (x, y), textcoords="offset points", fontsize=8,
+                        xytext=(-6, -3) if left else (6, -3), ha="right" if left else "left")
+        ax.set_xlabel(xlabel)
+        ax.grid(alpha=0.3)
+    axes[0].set_ylabel("Avg error (lower is better)")
+    handles, labels = axes[0].get_legend_handles_labels()
+    uniq = dict(zip(labels, handles))
+    axes[1].legend(uniq.values(), uniq.keys(), fontsize=8, loc="best")
+    fig.suptitle("Accuracy vs. cost per completed profile (labels: method + question budget)")
+    fig.tight_layout()
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    print(f"Saved {Path(path).name}")
 
 
 def main():
@@ -261,7 +318,16 @@ def main():
         q_cols = [("method and budget", None), ("runs", None), ("avg error", None), ("95% range", None),
                   ("capacity", None), ("willingness", None), ("behavior", None),
                   ("band exact", None), ("within 1", None), ("mismatch caught", None),
-                  ("contradiction caught", None), ("recovered", None), ("errors", None)]
+                  ("contradiction caught", None), ("recovered", None), ("would stop", None),
+                  ("errors", None)]
+
+        def would_stop(s):
+            if s["would_stop_share"] is None:
+                return "-"
+            at = f" at q{s['would_stop_at']:.1f}" if s["would_stop_at"] is not None else ""
+            anyway = f", {s['stopped_anyway']} stopped anyway" if s["stopped_anyway"] else ""
+            return fmt(s["would_stop_share"], "pct") + at + anyway
+
         q_rows = [[label(k), str(s["n"]), fmt(s["avg_error"], "err"), ci(s),
                    fmt(s["err_capacity"], "err"), fmt(s["err_willingness"], "err"),
                    fmt(s["err_behavioral"], "err"),
@@ -269,10 +335,18 @@ def main():
                    fmt(s["mismatch_caught"], "pct") if k[0] == "D" else "-",
                    f"{fmt(s['contradiction_caught'], 'pct')} of {s['contradiction_turns']}" if k[0] == "D" else "-",
                    f"{fmt(s['contra_recovered'], 'pct')} of {s['contra_targeted']}" if k[0] == "D" else "-",
+                   would_stop(s) if k[0] == "D" else "-",
                    str(s["errors"] + s["no_profile"])] for k, s in ((k, summaries[k]) for k in order)]
-        c_cols = [("method and budget", None), ("$/run", None), ("questions asked", None),
-                  ("secs/run", None)]
-        c_rows = [[label(k), fmt(s["total_cost"], "usd"), fmt(s["questions"], "num"), fmt(s["seconds"], "num")]
+        c_cols = [("method and budget", None), ("questions", None), ("LLM calls", None),
+                  ("tokens in", None), ("tokens out", None), ("thinking", None), ("system $", None),
+                  ("wait/turn s", None), ("p95 wait s", None), ("system s", None),
+                  ("sim-user calls", None), ("sim-user $", None), ("wall s/run", None)]
+        c_rows = [[label(k), fmt(s["questions"], "num"), fmt(s["sys_calls"], "num"),
+                   fmt(s["sys_tokens_in"], "int"), fmt(s["sys_tokens_out"], "int"),
+                   fmt(s["sys_tokens_reasoning"], "int"), fmt(s["sys_cost"], "usd4"),
+                   fmt(s["sys_secs_per_turn"], "num"), fmt(s["sys_secs_turn_p95"], "num"),
+                   fmt(s["sys_secs"], "num"), fmt(s["user_calls"], "num"),
+                   fmt(s["user_cost"], "usd4"), fmt(s["seconds"], "num")]
                   for k, s in ((k, summaries[k]) for k in order)]
     else:
         q_cols = [("simulated user", None), ("interviews", None), ("avg error", None), ("95% range", None),
@@ -318,6 +392,8 @@ def main():
             w.writerow([k[0], k[1]] + [summaries[k][x] for x in keys])
     Path(f"{stem}_summary.md").write_text("```\n" + report + "\n```\n")
     print(f"\nSaved {stem.name}_summary.csv and {stem.name}_summary.md")
+    if stage == "experiment":
+        cost_chart(summaries, f"{stem}_cost_vs_error.png")
 
 
 if __name__ == "__main__":
