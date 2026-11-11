@@ -81,8 +81,8 @@ The AI model now does the language work, and code makes the decisions. Research 
 First results (Nov 11, on 290 labeled answers from the pilot users):
 
 - The tests found an error in the reading step. The model read "I held on" as the highest behavior score. We fixed the scale. This fix made the readings more accurate than retrieval did.
-- After the fix, retrieval still makes the willingness readings a little more accurate. It does not change the behavior readings.
-- Token probabilities cost 77% less per answer, but the behavior readings are a little less accurate.
+- After the fix, retrieval does not clearly make the readings more accurate.
+- Token probabilities cost 78% less per answer, but the readings are a little less accurate.
 - The judge model of the faithfulness test is not reliable yet. It gave a different result for 15% of the same readings when we ran it again. So we need people to label 50 readings by hand (task L1 in section 8).
 
 ## 4. What is done (up to Nov 11)
@@ -97,12 +97,14 @@ First results (Nov 11, on 290 labeled answers from the pilot users):
 | Every method uses its full question budget | `run_bakeoff.py` (on `main`) |
 | Siya's 100 test users and 10 pilot users, checked and merged | `mirofish/` (on `main`) |
 | Belief engine, methods C and D on the engine, tests, design note | `belief.py`, `methods.py`, `test_belief.py`, `BELIEF_ENGINE.md` (on branch `belief-engine`) |
+| Leak fix, and the belief engine fitted on the pilot users | `prompts.py`, `pilot/fitted.json`, `pilot/fit.md` (on branch `belief-engine`) |
 | Labeled answers from the 10 pilot users, retrieval (DR), token probabilities (DP), faithfulness test | `pilot.py`, `retrieval.py`, `check_extractor.py`, `pilot/` (on branch `belief-engine`). Results: `BELIEF_ENGINE.md`, section "Generative AI parts in method D". |
 
 Two findings so far:
 
 - **Willingness mixed with behavior.** One test user is told to *talk* bold but to *act* scared. That user answered the willingness questions with scared answers. So the AI test user mixes the two scores. Persona check 2 must test for this.
-- **Old leak.** The test-user instructions describe behavior with the words "20% in a month". Bank question BEH01 uses the same words. Somaditya will change the test-user wording.
+- **Old leak (fixed Nov 11).** The test-user instructions described behavior with the words "20% in a month". Bank question BEH01 uses the same words. Somaditya changed the test-user wording. All pilot answers were then made again.
+- **Past actions are weak evidence for our test users.** We fitted the belief engine on the pilot users. Past-action questions told us the least about the behavior score, not the most. The test users' past-loss story (held, sold or none) does not follow their behavior score closely. The engine now uses the fitted values (`pilot/fitted.json`, explained in `pilot/fit.md`).
 
 ## 5. What Somaditya does now
 
@@ -110,9 +112,9 @@ Two findings so far:
 
 1. Finish the three generative AI parts in section 3 and test each one on the pilot users.
 2. With Siya: add the backstories to the test-user instructions (section 7, task S1).
-3. Remove the "20% in a month" leak.
+3. Remove the "20% in a month" leak. (Done Nov 11.)
 4. Build persona checks 1 and 4.
-5. Fit the evidence strengths of the belief engine on the pilot users. Choose the fixed-form questions on the pilot users.
+5. Fit the evidence strengths of the belief engine on the pilot users. Choose the fixed-form questions on the pilot users. (Done Nov 11. The fitted evidence strengths are in use. The fixed-form questions chosen on the pilot users were worse for a left-out pilot user, so A and B keep the default questions.)
 6. Add injected corrections, after Siya's decision (task S2).
 7. Run a quick check of Muse Spark Open as a test-user model. Then rotate three test-user models across the three repeats.
 8. Merge the belief engine into `main`, after Preyansh's review (task P1).
