@@ -290,7 +290,7 @@ A judge model checks if the AI model reads answers correctly. We must know if we
 3. For each row, read the question, the answer and the reading.
 4. In your column, write "yes" if the answer supports the reading. Write "no" if it does not.
    - A number range is supported if the answer gives a value in the range, or words that clearly mean such a value.
-   - A score is supported if the answer says something about that topic, and the score is near (about 0.2 or less) the point on the scale that fits the answer. The reading text shows the points of the scale.
+   - A score is supported if the answer says something about that topic. The score must also be near the point on the scale that fits the answer (about 0.2 or less). The reading text shows the points of the scale.
 5. If you are not sure, write your best answer and add a note in the "notes" column.
 6. Do not open `pilot/label_readings_key.jsonl`. It contains the judge's answers.
 7. Do not talk about the labels with the other person before you both finish.
