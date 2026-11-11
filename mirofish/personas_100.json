@@ -1,0 +1,4744 @@
+[
+  {
+    "id": "S1-clean-moderate",
+    "seed": 201,
+    "ground_truth": {
+      "capacity": 0.653,
+      "willingness": 0.55,
+      "behavioral": 0.5,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 29,
+      "occupation": "QA engineer",
+      "household": "single, rents with a roommate"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.25,
+      "dependents": 0,
+      "investable_amount": 15000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Maya Lin",
+      "bio": "QA engineer, weekend runner, slowly learning how to invest for retirement.",
+      "backstory": "Maya Lin is a 29-year-old QA engineer at a mid-sized software company. She is single and shares a rented apartment with a roommate. Her salary is steady, and her car loan and student loan payments take about a quarter of her monthly income. She considers herself middle-of-the-road about risk: she accepts some ups and downs in exchange for growth but doesn't chase big swings. When her retirement account fell in 2022 she left it alone, though she admits she checked it more often than she would have liked. She is methodical and a little self-deprecating, runs on weekends, and is working her way from knowing almost nothing about investing to understanding retirement accounts.",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "software testing",
+        "personal finance basics",
+        "retirement accounts",
+        "running",
+        "career growth",
+        "paying down debt"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "S2-says-aggressive-panics",
+    "seed": 202,
+    "ground_truth": {
+      "capacity": 0.671,
+      "willingness": 0.9,
+      "behavioral": 0.25,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 24,
+      "occupation": "marketing coordinator",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.2,
+      "dependents": 0,
+      "investable_amount": 8000,
+      "goal": "grow wealth"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Jordan Reyes",
+      "bio": "Marketing coordinator who watches a lot of finance YouTube and wants to grow $8,000 over the long run. Big basketball fan.",
+      "backstory": "Jordan Reyes is a 24-year-old marketing coordinator at a tech company who lives alone. His salary covers his rent and a modest lifestyle; student loans take about a fifth of his income, and he has about three months of expenses saved. No one depends on him. He learns about investing from YouTube, Reddit and finance accounts online, gets excited about growth stocks, especially tech, and likes to say that market dips are buying opportunities. He talks a lot and uses slang like 'HODL', 'diamond hands' and 'alpha', not always correctly, and he compares investing to basketball. In 2022 he sold a cryptocurrency position after it dropped sharply and still regrets it, but he rarely brings it up unless asked. When his own money is actually falling, the confident talk fades and his first instinct is to get out before it gets worse.",
+      "mbti": "ENFP",
+      "interested_topics": [
+        "personal finance",
+        "stock investing",
+        "growth stocks",
+        "crypto",
+        "basketball",
+        "market news"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "S3-eager-cant-afford",
+    "seed": 203,
+    "ground_truth": {
+      "capacity": 0.285,
+      "willingness": 0.75,
+      "behavioral": 0.65,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 34,
+      "occupation": "rideshare and delivery driver",
+      "household": "married, two young children"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.45,
+      "dependents": 2,
+      "investable_amount": 3000,
+      "goal": "grow wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Luis Ortega",
+      "bio": "Full-time rideshare driver and dad of two, finally starting to invest the $3,000 he has saved.",
+      "backstory": "Luis Ortega is a 34-year-old full-time rideshare and delivery driver. He is married with two young children, and his income changes with how many orders he gets each week. Car and credit card payments take about half of what he earns, and his savings would cover about two weeks of family expenses. He has never invested, but he has decided to put the $3,000 he has saved into the market because he feels he has started too late, and he wants it to grow a lot over the next 15 years. He is eager for big returns and believes he could ride out a market drop, though he has never actually been through one. He doesn't know terms like 'volatility' and likes things explained simply, often comparing them to driving, like a market dip being a bumpy stretch of road. He loves cars and is always looking for side income.",
+      "mbti": "ISFP",
+      "interested_topics": [
+        "investing basics",
+        "cars",
+        "family life",
+        "side income",
+        "rideshare work"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "S4-able-but-cautious",
+    "seed": 204,
+    "ground_truth": {
+      "capacity": 0.833,
+      "willingness": 0.15,
+      "behavioral": 0.35,
+      "final_band": 1,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 52,
+      "occupation": "senior accountant",
+      "household": "married, two grown children"
+    },
+    "finances": {
+      "horizon_yrs": 13,
+      "emergency_fund_months": 9,
+      "income_stability": "very stable",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 250000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Eleanor Park",
+      "bio": "Senior accountant planning to retire at 65. Prefers safe, predictable money decisions over high returns.",
+      "backstory": "Eleanor Park is a 52-year-old senior accountant who plans to retire at around 65. She is married, her two children are grown, and her house is paid off, so she has no debt and no one depending on her. Her income is very stable and she keeps a large cash cushion. During the 2008 financial crisis she moved her investments to cash near the bottom of the market out of fear; she avoided further losses but missed the recovery, and that experience made her firmly risk-averse. She puts protecting her principal ahead of maximizing returns and is skeptical of stocks, crypto and anything leveraged. She speaks precisely and briefly, rarely shows emotion, and prefers words like 'comfortable', 'secure' and 'predictable' to exact dollar figures. She gardens and is planning travel with her husband in retirement.",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "retirement planning",
+        "low-risk investing",
+        "cash management",
+        "gardening",
+        "retirement travel"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "S5-vague-contradictory",
+    "seed": 205,
+    "ground_truth": {
+      "capacity": 0.352,
+      "willingness": 0.5,
+      "behavioral": 0.45,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 23,
+      "occupation": "master's student and TA",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 4,
+      "emergency_fund_months": 1,
+      "income_stability": "stable",
+      "debt_to_income": 0.3,
+      "dependents": 0,
+      "investable_amount": 5000,
+      "goal": "house down payment a few years after graduating"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Tyler Brooks",
+      "bio": "23-year-old master's student and TA living on a fixed stipend, trying to figure out money for the first time.",
+      "backstory": "Tyler Brooks is a 23-year-old master's student who works as a teaching assistant on a fixed stipend. He shares an apartment, makes student loan payments that take about 30% of his income, and has about a month of expenses saved. No one depends on him. He has $5,000 that he hopes to use for a house down payment a few years after he graduates, about four years from now. He knows very little about investing; his roommate told him he should buy an ETF, but he isn't sure what one is. He is unsure how he feels about risk and often answers with 'I guess', 'it depends' or 'kind of in the middle'. He plays video games and follows new music.",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "student finances",
+        "investing basics",
+        "student loans",
+        "video games",
+        "music"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "U006-b5-match-clean",
+    "seed": 306,
+    "ground_truth": {
+      "capacity": 0.989,
+      "willingness": 0.85,
+      "behavioral": 0.94,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 29,
+      "occupation": "dentist",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 24,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.03,
+      "dependents": 0,
+      "investable_amount": 97000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Ben Morales",
+      "bio": "29-year-old dentist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U007-b4-match-clean",
+    "seed": 307,
+    "ground_truth": {
+      "capacity": 0.702,
+      "willingness": 0.75,
+      "behavioral": 0.94,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 44,
+      "occupation": "civil engineer",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 4,
+      "income_stability": "very stable",
+      "debt_to_income": 0.03,
+      "dependents": 0,
+      "investable_amount": 78000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Isaac Vargas",
+      "bio": "44-year-old civil engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U008-b3-panic-heavy",
+    "seed": 308,
+    "ground_truth": {
+      "capacity": 0.632,
+      "willingness": 0.88,
+      "behavioral": 0.53,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 28,
+      "occupation": "pharmacist",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 4,
+      "income_stability": "very stable",
+      "debt_to_income": 0.07,
+      "dependents": 1,
+      "investable_amount": 21000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Mina Garcia",
+      "bio": "28-year-old pharmacist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U009-b2-match-moderate",
+    "seed": 309,
+    "ground_truth": {
+      "capacity": 0.292,
+      "willingness": 0.29,
+      "behavioral": 0.31,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 33,
+      "occupation": "event bartender",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 2,
+      "income_stability": "unstable",
+      "debt_to_income": 0.41,
+      "dependents": 0,
+      "investable_amount": 1000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Nadia Zhang",
+      "bio": "33-year-old event bartender.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U010-b3-panic-heavy",
+    "seed": 310,
+    "ground_truth": {
+      "capacity": 0.521,
+      "willingness": 0.95,
+      "behavioral": 0.53,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 34,
+      "occupation": "marketing coordinator",
+      "household": "single parent, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 4,
+      "income_stability": "stable",
+      "debt_to_income": 0.19,
+      "dependents": 1,
+      "investable_amount": 12000,
+      "goal": "kids' college"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Sean Gomez",
+      "bio": "34-year-old marketing coordinator.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U011-b2-match-clean",
+    "seed": 311,
+    "ground_truth": {
+      "capacity": 0.321,
+      "willingness": 0.24,
+      "behavioral": 0.53,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 32,
+      "occupation": "real estate agent",
+      "household": "married, one young child; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 8,
+      "emergency_fund_months": 3,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.34,
+      "dependents": 2,
+      "investable_amount": 10000,
+      "goal": "kids' college"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Ava Fischer",
+      "bio": "32-year-old real estate agent.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U012-b1-match-heavy",
+    "seed": 312,
+    "ground_truth": {
+      "capacity": 0.309,
+      "willingness": 0.08,
+      "behavioral": 0.13,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 38,
+      "occupation": "medical lab technician",
+      "household": "supports an elderly parent"
+    },
+    "finances": {
+      "horizon_yrs": 6,
+      "emergency_fund_months": 0.5,
+      "income_stability": "stable",
+      "debt_to_income": 0.41,
+      "dependents": 1,
+      "investable_amount": 21000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Elijah Okafor",
+      "bio": "38-year-old medical lab technician.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U013-b1-match-clean",
+    "seed": 313,
+    "ground_truth": {
+      "capacity": 0.155,
+      "willingness": 0.36,
+      "behavioral": 0.15,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 32,
+      "occupation": "musician who plays weddings",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 5,
+      "emergency_fund_months": 0.25,
+      "income_stability": "unstable",
+      "debt_to_income": 0.42,
+      "dependents": 1,
+      "investable_amount": 1000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Rachel Martin",
+      "bio": "32-year-old musician who plays weddings.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U014-b3-cantafford-heavy",
+    "seed": 314,
+    "ground_truth": {
+      "capacity": 0.534,
+      "willingness": 0.9,
+      "behavioral": 0.73,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 57,
+      "occupation": "elementary school teacher",
+      "household": "married, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.1,
+      "dependents": 1,
+      "investable_amount": 59000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Rosa Diaz",
+      "bio": "57-year-old elementary school teacher.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U015-b5-match-moderate",
+    "seed": 315,
+    "ground_truth": {
+      "capacity": 0.938,
+      "willingness": 0.87,
+      "behavioral": 0.9,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 38,
+      "occupation": "pharmacist",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 9,
+      "income_stability": "very stable",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 76000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Olivia Murphy",
+      "bio": "38-year-old pharmacist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U016-b3-cautious-moderate",
+    "seed": 316,
+    "ground_truth": {
+      "capacity": 0.921,
+      "willingness": 0.46,
+      "behavioral": 0.86,
+      "final_band": 3,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 46,
+      "occupation": "tenured professor",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 12,
+      "income_stability": "very stable",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 75000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Lara James",
+      "bio": "46-year-old tenured professor.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U017-b3-panic-clean",
+    "seed": 317,
+    "ground_truth": {
+      "capacity": 0.938,
+      "willingness": 0.88,
+      "behavioral": 0.54,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 48,
+      "occupation": "senior software engineer",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 9,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 225000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Paul Khan",
+      "bio": "48-year-old senior software engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U018-b5-match-heavy",
+    "seed": 318,
+    "ground_truth": {
+      "capacity": 0.968,
+      "willingness": 0.93,
+      "behavioral": 0.9,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 44,
+      "occupation": "senior software engineer",
+      "household": "supports an elderly parent"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.02,
+      "dependents": 1,
+      "investable_amount": 192000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Omar Castillo",
+      "bio": "44-year-old senior software engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U019-b5-match-moderate",
+    "seed": 319,
+    "ground_truth": {
+      "capacity": 1.0,
+      "willingness": 0.92,
+      "behavioral": 0.95,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 31,
+      "occupation": "senior software engineer",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 37000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Will Watson",
+      "bio": "31-year-old senior software engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U020-b3-cautious-heavy",
+    "seed": 320,
+    "ground_truth": {
+      "capacity": 0.97,
+      "willingness": 0.5,
+      "behavioral": 0.88,
+      "final_band": 3,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 38,
+      "occupation": "owner of a small manufacturing business",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 24,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.08,
+      "dependents": 0,
+      "investable_amount": 157000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Mei Hernandez",
+      "bio": "38-year-old owner of a small manufacturing business.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U021-b4-match-moderate",
+    "seed": 321,
+    "ground_truth": {
+      "capacity": 0.63,
+      "willingness": 0.64,
+      "behavioral": 0.85,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 46,
+      "occupation": "senior accountant",
+      "household": "supports an elderly parent"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 3,
+      "income_stability": "very stable",
+      "debt_to_income": 0.02,
+      "dependents": 1,
+      "investable_amount": 109000,
+      "goal": "kids' college"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Quinn Johnson",
+      "bio": "46-year-old senior accountant.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U022-b1-panic-moderate",
+    "seed": 322,
+    "ground_truth": {
+      "capacity": 0.326,
+      "willingness": 0.7,
+      "behavioral": 0.04,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 34,
+      "occupation": "pharmacy technician",
+      "household": "married, two young children"
+    },
+    "finances": {
+      "horizon_yrs": 6,
+      "emergency_fund_months": 0.5,
+      "income_stability": "stable",
+      "debt_to_income": 0.29,
+      "dependents": 2,
+      "investable_amount": 15000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Lucas Edwards",
+      "bio": "34-year-old pharmacy technician.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U023-b1-panic-clean",
+    "seed": 323,
+    "ground_truth": {
+      "capacity": 0.125,
+      "willingness": 0.68,
+      "behavioral": 0.15,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 36,
+      "occupation": "warehouse temp worker",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 1,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.52,
+      "dependents": 0,
+      "investable_amount": 3000,
+      "goal": "starting a small business"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Emily Anderson",
+      "bio": "36-year-old warehouse temp worker.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U024-b5-match-moderate",
+    "seed": 324,
+    "ground_truth": {
+      "capacity": 0.981,
+      "willingness": 0.9,
+      "behavioral": 0.85,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 37,
+      "occupation": "civil engineer",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 24,
+      "income_stability": "very stable",
+      "debt_to_income": 0.05,
+      "dependents": 0,
+      "investable_amount": 32000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Aaliyah Wright",
+      "bio": "37-year-old civil engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U025-b4-match-heavy",
+    "seed": 325,
+    "ground_truth": {
+      "capacity": 0.945,
+      "willingness": 0.74,
+      "behavioral": 0.66,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 27,
+      "occupation": "pharmacist",
+      "household": "supports an elderly parent"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 24,
+      "income_stability": "very stable",
+      "debt_to_income": 0.08,
+      "dependents": 1,
+      "investable_amount": 16000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.2,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Rahul Tanaka",
+      "bio": "27-year-old pharmacist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U026-b3-cantafford-heavy",
+    "seed": 326,
+    "ground_truth": {
+      "capacity": 0.455,
+      "willingness": 0.95,
+      "behavioral": 0.91,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 40,
+      "occupation": "hairstylist",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 2,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.14,
+      "dependents": 0,
+      "investable_amount": 15000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Andre Reed",
+      "bio": "40-year-old hairstylist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U027-b1-cantafford-moderate",
+    "seed": 327,
+    "ground_truth": {
+      "capacity": 0.126,
+      "willingness": 0.86,
+      "behavioral": 0.35,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 41,
+      "occupation": "freelance photographer",
+      "household": "married, one young child; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 1,
+      "emergency_fund_months": 0.25,
+      "income_stability": "unstable",
+      "debt_to_income": 0.25,
+      "dependents": 2,
+      "investable_amount": 3000,
+      "goal": "a new car"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Beatriz Young",
+      "bio": "41-year-old freelance photographer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U028-b2-cantafford-moderate",
+    "seed": 328,
+    "ground_truth": {
+      "capacity": 0.268,
+      "willingness": 0.9,
+      "behavioral": 0.74,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 25,
+      "occupation": "car salesperson",
+      "household": "married, two young children"
+    },
+    "finances": {
+      "horizon_yrs": 8,
+      "emergency_fund_months": 1,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.37,
+      "dependents": 2,
+      "investable_amount": 5000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Grace Cohen",
+      "bio": "25-year-old car salesperson.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U029-b3-match-moderate",
+    "seed": 329,
+    "ground_truth": {
+      "capacity": 0.71,
+      "willingness": 0.48,
+      "behavioral": 0.54,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 26,
+      "occupation": "pharmacist",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 4,
+      "income_stability": "very stable",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 24000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Arjun Gupta",
+      "bio": "26-year-old pharmacist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U030-b4-match-clean",
+    "seed": 330,
+    "ground_truth": {
+      "capacity": 0.953,
+      "willingness": 0.88,
+      "behavioral": 0.73,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 25,
+      "occupation": "city government clerk",
+      "household": "single parent, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 12,
+      "income_stability": "very stable",
+      "debt_to_income": 0.06,
+      "dependents": 1,
+      "investable_amount": 14000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Malik Ahmed",
+      "bio": "25-year-old city government clerk.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U031-b4-match-clean",
+    "seed": 331,
+    "ground_truth": {
+      "capacity": 0.672,
+      "willingness": 0.72,
+      "behavioral": 0.76,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 35,
+      "occupation": "office manager",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 8,
+      "income_stability": "stable",
+      "debt_to_income": 0.09,
+      "dependents": 1,
+      "investable_amount": 17000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Aaron Cruz",
+      "bio": "35-year-old office manager.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U032-b5-match-clean",
+    "seed": 332,
+    "ground_truth": {
+      "capacity": 0.996,
+      "willingness": 0.86,
+      "behavioral": 0.9,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 25,
+      "occupation": "civil engineer",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 12,
+      "income_stability": "very stable",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 12000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "casual",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Yusuf Ibrahim",
+      "bio": "25-year-old civil engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U033-b3-match-moderate",
+    "seed": 333,
+    "ground_truth": {
+      "capacity": 0.502,
+      "willingness": 0.73,
+      "behavioral": 0.5,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 53,
+      "occupation": "software developer",
+      "household": "single parent, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 2,
+      "income_stability": "stable",
+      "debt_to_income": 0.21,
+      "dependents": 1,
+      "investable_amount": 53000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.15,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Yuki Ortiz",
+      "bio": "53-year-old software developer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U034-b1-cautious-clean",
+    "seed": 334,
+    "ground_truth": {
+      "capacity": 0.917,
+      "willingness": 0.1,
+      "behavioral": 0.27,
+      "final_band": 1,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 30,
+      "occupation": "owner of a small manufacturing business",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 18,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.02,
+      "dependents": 0,
+      "investable_amount": 55000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Diego Hill",
+      "bio": "30-year-old owner of a small manufacturing business.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U035-b4-match-heavy",
+    "seed": 335,
+    "ground_truth": {
+      "capacity": 0.765,
+      "willingness": 0.72,
+      "behavioral": 0.69,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 54,
+      "occupation": "civil engineer",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 9,
+      "income_stability": "very stable",
+      "debt_to_income": 0.14,
+      "dependents": 0,
+      "investable_amount": 142000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Keisha Kim",
+      "bio": "54-year-old civil engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U036-b2-panic-moderate",
+    "seed": 336,
+    "ground_truth": {
+      "capacity": 0.479,
+      "willingness": 0.7,
+      "behavioral": 0.31,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 53,
+      "occupation": "personal trainer",
+      "household": "married, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 4,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.2,
+      "dependents": 1,
+      "investable_amount": 17000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Esther Shah",
+      "bio": "53-year-old personal trainer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U037-b5-match-heavy",
+    "seed": 337,
+    "ground_truth": {
+      "capacity": 0.996,
+      "willingness": 0.95,
+      "behavioral": 0.94,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 32,
+      "occupation": "postal service supervisor",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 35,
+      "emergency_fund_months": 18,
+      "income_stability": "very stable",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 26000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Javier Sanchez",
+      "bio": "32-year-old postal service supervisor.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U038-b3-cantafford-heavy",
+    "seed": 338,
+    "ground_truth": {
+      "capacity": 0.462,
+      "willingness": 0.91,
+      "behavioral": 0.73,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 59,
+      "occupation": "data analyst",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 8,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.28,
+      "dependents": 0,
+      "investable_amount": 42000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Jenna Smith",
+      "bio": "59-year-old data analyst.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U039-b2-match-heavy",
+    "seed": 339,
+    "ground_truth": {
+      "capacity": 0.252,
+      "willingness": 0.25,
+      "behavioral": 0.49,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 55,
+      "occupation": "musician who plays weddings",
+      "household": "married, one teenage child; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 8,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.21,
+      "dependents": 2,
+      "investable_amount": 3000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Kai Silva",
+      "bio": "55-year-old musician who plays weddings.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U040-b4-match-clean",
+    "seed": 340,
+    "ground_truth": {
+      "capacity": 0.751,
+      "willingness": 0.91,
+      "behavioral": 0.67,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 39,
+      "occupation": "city government clerk",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 6,
+      "income_stability": "very stable",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 75000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Wendell Roberts",
+      "bio": "39-year-old city government clerk.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U041-b5-match-moderate",
+    "seed": 341,
+    "ground_truth": {
+      "capacity": 0.906,
+      "willingness": 0.88,
+      "behavioral": 0.96,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 48,
+      "occupation": "city government clerk",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 18,
+      "income_stability": "very stable",
+      "debt_to_income": 0.05,
+      "dependents": 0,
+      "investable_amount": 69000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Ana Turner",
+      "bio": "48-year-old city government clerk.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U042-b1-panic-heavy",
+    "seed": 342,
+    "ground_truth": {
+      "capacity": 0.33,
+      "willingness": 0.52,
+      "behavioral": 0.08,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 53,
+      "occupation": "UX designer",
+      "household": "married, two teenage children; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 1,
+      "income_stability": "stable",
+      "debt_to_income": 0.43,
+      "dependents": 3,
+      "investable_amount": 42000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Jasmine Bailey",
+      "bio": "53-year-old UX designer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U043-b5-match-clean",
+    "seed": 343,
+    "ground_truth": {
+      "capacity": 0.891,
+      "willingness": 0.94,
+      "behavioral": 0.92,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 50,
+      "occupation": "dentist",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.09,
+      "dependents": 0,
+      "investable_amount": 174000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Anika Lopez",
+      "bio": "50-year-old dentist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U044-b5-match-heavy",
+    "seed": 344,
+    "ground_truth": {
+      "capacity": 0.966,
+      "willingness": 0.92,
+      "behavioral": 0.92,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 46,
+      "occupation": "public school principal",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 18,
+      "income_stability": "very stable",
+      "debt_to_income": 0.09,
+      "dependents": 0,
+      "investable_amount": 105000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.3,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Kofi Mitchell",
+      "bio": "46-year-old public school principal.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U045-b4-match-heavy",
+    "seed": 345,
+    "ground_truth": {
+      "capacity": 0.688,
+      "willingness": 0.64,
+      "behavioral": 0.67,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 50,
+      "occupation": "hospital administrator",
+      "household": "married, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 4,
+      "income_stability": "very stable",
+      "debt_to_income": 0.12,
+      "dependents": 1,
+      "investable_amount": 80000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Noah Russell",
+      "bio": "50-year-old hospital administrator.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U046-b2-panic-heavy",
+    "seed": 346,
+    "ground_truth": {
+      "capacity": 0.559,
+      "willingness": 0.85,
+      "behavioral": 0.24,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 42,
+      "occupation": "marketing coordinator",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 1,
+      "income_stability": "stable",
+      "debt_to_income": 0.19,
+      "dependents": 0,
+      "investable_amount": 13000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.2,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Hana Davis",
+      "bio": "42-year-old marketing coordinator.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U047-b3-cautious-moderate",
+    "seed": 347,
+    "ground_truth": {
+      "capacity": 0.917,
+      "willingness": 0.5,
+      "behavioral": 0.5,
+      "final_band": 3,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 52,
+      "occupation": "senior accountant",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 18,
+      "income_stability": "very stable",
+      "debt_to_income": 0.02,
+      "dependents": 0,
+      "investable_amount": 149000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Thomas Rodriguez",
+      "bio": "52-year-old senior accountant.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U048-b4-match-moderate",
+    "seed": 348,
+    "ground_truth": {
+      "capacity": 0.671,
+      "willingness": 0.66,
+      "behavioral": 0.86,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 33,
+      "occupation": "data analyst",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 4,
+      "income_stability": "stable",
+      "debt_to_income": 0.19,
+      "dependents": 1,
+      "investable_amount": 11000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Marcus Williams",
+      "bio": "33-year-old data analyst.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U049-b5-match-moderate",
+    "seed": 349,
+    "ground_truth": {
+      "capacity": 0.978,
+      "willingness": 0.91,
+      "behavioral": 0.91,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 32,
+      "occupation": "physician",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 35,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.06,
+      "dependents": 0,
+      "investable_amount": 56000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Camila Yamamoto",
+      "bio": "32-year-old physician.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U050-b1-cantafford-heavy",
+    "seed": 350,
+    "ground_truth": {
+      "capacity": 0.116,
+      "willingness": 0.9,
+      "behavioral": 0.48,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 50,
+      "occupation": "software sales rep",
+      "household": "married, three teenage children"
+    },
+    "finances": {
+      "horizon_yrs": 1,
+      "emergency_fund_months": 0.5,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.53,
+      "dependents": 3,
+      "investable_amount": 11000,
+      "goal": "starting a small business"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Imani Rossi",
+      "bio": "50-year-old software sales rep.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U051-b1-match-heavy",
+    "seed": 351,
+    "ground_truth": {
+      "capacity": 0.16,
+      "willingness": 0.04,
+      "behavioral": 0.13,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 26,
+      "occupation": "freelance photographer",
+      "household": "single parent, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 5,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.42,
+      "dependents": 1,
+      "investable_amount": 1000,
+      "goal": "a new car"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Adrian Harris",
+      "bio": "26-year-old freelance photographer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U052-b1-match-moderate",
+    "seed": 352,
+    "ground_truth": {
+      "capacity": 0.1,
+      "willingness": 0.28,
+      "behavioral": 0.06,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 50,
+      "occupation": "construction day laborer",
+      "household": "supports an elderly parent"
+    },
+    "finances": {
+      "horizon_yrs": 1,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.47,
+      "dependents": 1,
+      "investable_amount": 6000,
+      "goal": "home repairs"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Julia Rivera",
+      "bio": "50-year-old construction day laborer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U053-b5-match-heavy",
+    "seed": 353,
+    "ground_truth": {
+      "capacity": 0.978,
+      "willingness": 0.86,
+      "behavioral": 0.87,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 31,
+      "occupation": "senior software engineer",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 35,
+      "emergency_fund_months": 24,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.06,
+      "dependents": 0,
+      "investable_amount": 39000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Joel Scott",
+      "bio": "31-year-old senior software engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U054-b5-match-moderate",
+    "seed": 354,
+    "ground_truth": {
+      "capacity": 0.992,
+      "willingness": 0.85,
+      "behavioral": 0.88,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 32,
+      "occupation": "civil engineer",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 35,
+      "emergency_fund_months": 12,
+      "income_stability": "very stable",
+      "debt_to_income": 0.02,
+      "dependents": 0,
+      "investable_amount": 62000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Emeka Santos",
+      "bio": "32-year-old civil engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U055-b3-match-moderate",
+    "seed": 355,
+    "ground_truth": {
+      "capacity": 0.486,
+      "willingness": 0.54,
+      "behavioral": 0.46,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 61,
+      "occupation": "personal trainer",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 6,
+      "emergency_fund_months": 6,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.12,
+      "dependents": 0,
+      "investable_amount": 32000,
+      "goal": "a comfortable retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Elena Wang",
+      "bio": "61-year-old personal trainer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U056-b3-match-clean",
+    "seed": 356,
+    "ground_truth": {
+      "capacity": 0.506,
+      "willingness": 0.67,
+      "behavioral": 0.69,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 31,
+      "occupation": "UX designer",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 1,
+      "income_stability": "stable",
+      "debt_to_income": 0.13,
+      "dependents": 0,
+      "investable_amount": 11000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Alejandro Moore",
+      "bio": "31-year-old UX designer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U057-b4-match-heavy",
+    "seed": 357,
+    "ground_truth": {
+      "capacity": 0.992,
+      "willingness": 0.69,
+      "behavioral": 0.65,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 28,
+      "occupation": "postal service supervisor",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 35,
+      "emergency_fund_months": 18,
+      "income_stability": "very stable",
+      "debt_to_income": 0.02,
+      "dependents": 0,
+      "investable_amount": 25000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "casual",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.15,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Derek Flores",
+      "bio": "28-year-old postal service supervisor.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U058-b1-cantafford-moderate",
+    "seed": 358,
+    "ground_truth": {
+      "capacity": 0.105,
+      "willingness": 0.67,
+      "behavioral": 0.47,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 31,
+      "occupation": "rideshare driver",
+      "household": "married, two young children; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 5,
+      "emergency_fund_months": 0.25,
+      "income_stability": "unstable",
+      "debt_to_income": 0.44,
+      "dependents": 3,
+      "investable_amount": 2000,
+      "goal": "a new car"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Tariq Sullivan",
+      "bio": "31-year-old rideshare driver.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U059-b2-cantafford-clean",
+    "seed": 359,
+    "ground_truth": {
+      "capacity": 0.316,
+      "willingness": 0.95,
+      "behavioral": 0.49,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 55,
+      "occupation": "event bartender",
+      "household": "married, three teenage children"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 1,
+      "income_stability": "unstable",
+      "debt_to_income": 0.16,
+      "dependents": 3,
+      "investable_amount": 3000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Zoe Kaur",
+      "bio": "55-year-old event bartender.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U060-b2-match-heavy",
+    "seed": 360,
+    "ground_truth": {
+      "capacity": 0.239,
+      "willingness": 0.36,
+      "behavioral": 0.26,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 30,
+      "occupation": "medical lab technician",
+      "household": "married, two young children"
+    },
+    "finances": {
+      "horizon_yrs": 3,
+      "emergency_fund_months": 0.5,
+      "income_stability": "stable",
+      "debt_to_income": 0.43,
+      "dependents": 2,
+      "investable_amount": 11000,
+      "goal": "starting a small business"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.2,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Gabriel Taylor",
+      "bio": "30-year-old medical lab technician.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U061-b4-match-clean",
+    "seed": 361,
+    "ground_truth": {
+      "capacity": 0.684,
+      "willingness": 0.95,
+      "behavioral": 0.69,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 35,
+      "occupation": "registered nurse",
+      "household": "married, one young child; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 4,
+      "income_stability": "stable",
+      "debt_to_income": 0.09,
+      "dependents": 2,
+      "investable_amount": 29000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Erin Brooks",
+      "bio": "35-year-old registered nurse.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U062-b5-match-moderate",
+    "seed": 362,
+    "ground_truth": {
+      "capacity": 0.963,
+      "willingness": 0.9,
+      "behavioral": 0.85,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 46,
+      "occupation": "senior accountant",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 18,
+      "income_stability": "very stable",
+      "debt_to_income": 0.1,
+      "dependents": 0,
+      "investable_amount": 115000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Amara Torres",
+      "bio": "46-year-old senior accountant.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U063-b1-match-clean",
+    "seed": 363,
+    "ground_truth": {
+      "capacity": 0.352,
+      "willingness": 0.32,
+      "behavioral": 0.15,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 57,
+      "occupation": "real estate agent",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 6,
+      "emergency_fund_months": 1,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.2,
+      "dependents": 0,
+      "investable_amount": 14000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Megan Patel",
+      "bio": "57-year-old real estate agent.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U064-b2-match-moderate",
+    "seed": 364,
+    "ground_truth": {
+      "capacity": 0.242,
+      "willingness": 0.25,
+      "behavioral": 0.33,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 61,
+      "occupation": "rideshare driver",
+      "household": "married, grown children"
+    },
+    "finances": {
+      "horizon_yrs": 4,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.21,
+      "dependents": 0,
+      "investable_amount": 8000,
+      "goal": "retirement income"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Ryan Huang",
+      "bio": "61-year-old rideshare driver.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U065-b1-match-clean",
+    "seed": 365,
+    "ground_truth": {
+      "capacity": 0.35,
+      "willingness": 0.15,
+      "behavioral": 0.28,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 41,
+      "occupation": "hairstylist",
+      "household": "single parent, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 0.5,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.18,
+      "dependents": 1,
+      "investable_amount": 6000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Kenji Chen",
+      "bio": "41-year-old hairstylist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U066-b2-cautious-clean",
+    "seed": 366,
+    "ground_truth": {
+      "capacity": 0.966,
+      "willingness": 0.26,
+      "behavioral": 0.7,
+      "final_band": 2,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 41,
+      "occupation": "hospital administrator",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 12,
+      "income_stability": "very stable",
+      "debt_to_income": 0.09,
+      "dependents": 0,
+      "investable_amount": 93000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Rafael Jackson",
+      "bio": "41-year-old hospital administrator.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U067-b3-match-clean",
+    "seed": 367,
+    "ground_truth": {
+      "capacity": 0.715,
+      "willingness": 0.48,
+      "behavioral": 0.54,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 45,
+      "occupation": "software developer",
+      "household": "married, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 9,
+      "income_stability": "stable",
+      "debt_to_income": 0.15,
+      "dependents": 1,
+      "investable_amount": 23000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Hector Adams",
+      "bio": "45-year-old software developer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U068-b4-match-clean",
+    "seed": 368,
+    "ground_truth": {
+      "capacity": 0.695,
+      "willingness": 0.89,
+      "behavioral": 0.92,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 54,
+      "occupation": "senior accountant",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 6,
+      "income_stability": "very stable",
+      "debt_to_income": 0.16,
+      "dependents": 0,
+      "investable_amount": 110000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Lily Bello",
+      "bio": "54-year-old senior accountant.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U069-b4-match-heavy",
+    "seed": 369,
+    "ground_truth": {
+      "capacity": 0.974,
+      "willingness": 0.7,
+      "behavioral": 0.88,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 44,
+      "occupation": "senior software engineer",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.07,
+      "dependents": 0,
+      "investable_amount": 157000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Maria Phillips",
+      "bio": "44-year-old senior software engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U070-b4-match-heavy",
+    "seed": 370,
+    "ground_truth": {
+      "capacity": 0.716,
+      "willingness": 0.89,
+      "behavioral": 0.7,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 26,
+      "occupation": "civil engineer",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 3,
+      "income_stability": "very stable",
+      "debt_to_income": 0.19,
+      "dependents": 1,
+      "investable_amount": 25000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Fatima Price",
+      "bio": "26-year-old civil engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U071-b2-match-clean",
+    "seed": 371,
+    "ground_truth": {
+      "capacity": 0.474,
+      "willingness": 0.3,
+      "behavioral": 0.34,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 57,
+      "occupation": "bank teller",
+      "household": "married, one teenage child; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 4,
+      "income_stability": "stable",
+      "debt_to_income": 0.25,
+      "dependents": 2,
+      "investable_amount": 46000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Bianca Walker",
+      "bio": "57-year-old bank teller.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U072-b2-panic-clean",
+    "seed": 372,
+    "ground_truth": {
+      "capacity": 0.359,
+      "willingness": 0.95,
+      "behavioral": 0.33,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 43,
+      "occupation": "personal trainer",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 1,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.34,
+      "dependents": 0,
+      "investable_amount": 6000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Vera Kowalski",
+      "bio": "43-year-old personal trainer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U073-b3-panic-heavy",
+    "seed": 373,
+    "ground_truth": {
+      "capacity": 0.754,
+      "willingness": 0.85,
+      "behavioral": 0.46,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 47,
+      "occupation": "registered nurse",
+      "household": "married, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 6,
+      "income_stability": "stable",
+      "debt_to_income": 0.08,
+      "dependents": 1,
+      "investable_amount": 24000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Nora Perez",
+      "bio": "47-year-old registered nurse.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U074-b5-match-clean",
+    "seed": 374,
+    "ground_truth": {
+      "capacity": 0.975,
+      "willingness": 0.91,
+      "behavioral": 0.91,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 28,
+      "occupation": "pharmacist",
+      "household": "single parent, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 24,
+      "income_stability": "very stable",
+      "debt_to_income": 0.0,
+      "dependents": 1,
+      "investable_amount": 28000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Zach Mendoza",
+      "bio": "28-year-old pharmacist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U075-b3-cantafford-clean",
+    "seed": 375,
+    "ground_truth": {
+      "capacity": 0.52,
+      "willingness": 0.89,
+      "behavioral": 0.9,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 44,
+      "occupation": "medical lab technician",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 8,
+      "emergency_fund_months": 4,
+      "income_stability": "stable",
+      "debt_to_income": 0.18,
+      "dependents": 0,
+      "investable_amount": 16000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Kevin Singh",
+      "bio": "44-year-old medical lab technician.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U076-b5-match-clean",
+    "seed": 376,
+    "ground_truth": {
+      "capacity": 0.966,
+      "willingness": 0.88,
+      "behavioral": 0.94,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 35,
+      "occupation": "senior software engineer",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.09,
+      "dependents": 0,
+      "investable_amount": 103000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Miguel Evans",
+      "bio": "35-year-old senior software engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U077-b1-panic-moderate",
+    "seed": 377,
+    "ground_truth": {
+      "capacity": 0.166,
+      "willingness": 0.84,
+      "behavioral": 0.13,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 26,
+      "occupation": "personal trainer",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 1,
+      "emergency_fund_months": 0.5,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.46,
+      "dependents": 1,
+      "investable_amount": 4000,
+      "goal": "a new car"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.05,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Talia Campbell",
+      "bio": "26-year-old personal trainer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U078-b3-match-moderate",
+    "seed": 378,
+    "ground_truth": {
+      "capacity": 0.668,
+      "willingness": 0.49,
+      "behavioral": 0.68,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 50,
+      "occupation": "marketing coordinator",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 52000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Priya Alvarez",
+      "bio": "50-year-old marketing coordinator.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U079-b4-match-clean",
+    "seed": 379,
+    "ground_truth": {
+      "capacity": 0.745,
+      "willingness": 0.68,
+      "behavioral": 0.74,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 31,
+      "occupation": "postal service supervisor",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 8,
+      "income_stability": "very stable",
+      "debt_to_income": 0.07,
+      "dependents": 1,
+      "investable_amount": 27000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Uma Nguyen",
+      "bio": "31-year-old postal service supervisor.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U080-b3-match-heavy",
+    "seed": 380,
+    "ground_truth": {
+      "capacity": 0.459,
+      "willingness": 0.66,
+      "behavioral": 0.55,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 32,
+      "occupation": "bank teller",
+      "household": "supports an elderly parent"
+    },
+    "finances": {
+      "horizon_yrs": 8,
+      "emergency_fund_months": 1,
+      "income_stability": "stable",
+      "debt_to_income": 0.11,
+      "dependents": 1,
+      "investable_amount": 20000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Amir Wilson",
+      "bio": "32-year-old bank teller.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U081-b2-match-moderate",
+    "seed": 381,
+    "ground_truth": {
+      "capacity": 0.35,
+      "willingness": 0.3,
+      "behavioral": 0.56,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 58,
+      "occupation": "software developer",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 6,
+      "emergency_fund_months": 0.5,
+      "income_stability": "stable",
+      "debt_to_income": 0.15,
+      "dependents": 0,
+      "investable_amount": 29000,
+      "goal": "a comfortable retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.05,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Ravi Hall",
+      "bio": "58-year-old software developer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U082-b3-match-heavy",
+    "seed": 382,
+    "ground_truth": {
+      "capacity": 0.454,
+      "willingness": 0.48,
+      "behavioral": 0.56,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 26,
+      "occupation": "registered nurse",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 6,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.22,
+      "dependents": 0,
+      "investable_amount": 13000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Sofia Ramirez",
+      "bio": "26-year-old registered nurse.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U083-b2-cautious-moderate",
+    "seed": 383,
+    "ground_truth": {
+      "capacity": 0.75,
+      "willingness": 0.3,
+      "behavioral": 0.71,
+      "final_band": 2,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 38,
+      "occupation": "bank teller",
+      "household": "married, two young children"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 9,
+      "income_stability": "stable",
+      "debt_to_income": 0.19,
+      "dependents": 2,
+      "investable_amount": 13000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Alex Reyes",
+      "bio": "38-year-old bank teller.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U084-b2-cautious-clean",
+    "seed": 384,
+    "ground_truth": {
+      "capacity": 0.886,
+      "willingness": 0.32,
+      "behavioral": 0.66,
+      "final_band": 2,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 39,
+      "occupation": "corporate attorney",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 9,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.07,
+      "dependents": 1,
+      "investable_amount": 100000,
+      "goal": "retirement and kids' college"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Ines Green",
+      "bio": "39-year-old corporate attorney.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U085-b1-match-clean",
+    "seed": 385,
+    "ground_truth": {
+      "capacity": 0.276,
+      "willingness": 0.27,
+      "behavioral": 0.05,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 25,
+      "occupation": "warehouse temp worker",
+      "household": "single parent, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 1,
+      "income_stability": "unstable",
+      "debt_to_income": 0.44,
+      "dependents": 1,
+      "investable_amount": 1000,
+      "goal": "kids' college"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Jamal Washington",
+      "bio": "25-year-old warehouse temp worker.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U086-b4-match-heavy",
+    "seed": 386,
+    "ground_truth": {
+      "capacity": 0.699,
+      "willingness": 0.72,
+      "behavioral": 0.68,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 45,
+      "occupation": "UX designer",
+      "household": "married, two teenage children"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 6,
+      "income_stability": "stable",
+      "debt_to_income": 0.16,
+      "dependents": 2,
+      "investable_amount": 20000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Aisha Lee",
+      "bio": "45-year-old UX designer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U087-b2-panic-clean",
+    "seed": 387,
+    "ground_truth": {
+      "capacity": 0.518,
+      "willingness": 0.69,
+      "behavioral": 0.29,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 51,
+      "occupation": "travel agent",
+      "household": "married, one teenage child; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 4,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.15,
+      "dependents": 2,
+      "investable_amount": 10000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Zainab Thomas",
+      "bio": "51-year-old travel agent.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U088-b4-match-clean",
+    "seed": 388,
+    "ground_truth": {
+      "capacity": 0.699,
+      "willingness": 0.85,
+      "behavioral": 0.89,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 39,
+      "occupation": "postal service supervisor",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 6,
+      "income_stability": "very stable",
+      "debt_to_income": 0.15,
+      "dependents": 0,
+      "investable_amount": 55000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Sara White",
+      "bio": "39-year-old postal service supervisor.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U089-b5-match-moderate",
+    "seed": 389,
+    "ground_truth": {
+      "capacity": 0.921,
+      "willingness": 0.87,
+      "behavioral": 0.85,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 36,
+      "occupation": "dentist",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 131000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Leon Lewis",
+      "bio": "36-year-old dentist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U090-b1-match-moderate",
+    "seed": 390,
+    "ground_truth": {
+      "capacity": 0.35,
+      "willingness": 0.13,
+      "behavioral": 0.08,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 40,
+      "occupation": "hairstylist",
+      "household": "married, two young children; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 0.5,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.32,
+      "dependents": 3,
+      "investable_amount": 13000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Xavier Morales",
+      "bio": "40-year-old hairstylist.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U091-b1-cantafford-heavy",
+    "seed": 391,
+    "ground_truth": {
+      "capacity": 0.167,
+      "willingness": 0.89,
+      "behavioral": 0.35,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 61,
+      "occupation": "freelance graphic designer",
+      "household": "married, two teenage children"
+    },
+    "finances": {
+      "horizon_yrs": 5,
+      "emergency_fund_months": 2,
+      "income_stability": "unstable",
+      "debt_to_income": 0.43,
+      "dependents": 2,
+      "investable_amount": 3000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.15,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Chloe Vargas",
+      "bio": "61-year-old freelance graphic designer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U092-b5-match-clean",
+    "seed": 392,
+    "ground_truth": {
+      "capacity": 0.966,
+      "willingness": 0.89,
+      "behavioral": 0.9,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 38,
+      "occupation": "physician",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 18,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.09,
+      "dependents": 0,
+      "investable_amount": 58000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Daniela Garcia",
+      "bio": "38-year-old physician.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U093-b4-match-moderate",
+    "seed": 393,
+    "ground_truth": {
+      "capacity": 0.996,
+      "willingness": 0.7,
+      "behavioral": 0.89,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 39,
+      "occupation": "hospital administrator",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 35,
+      "emergency_fund_months": 18,
+      "income_stability": "very stable",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 32000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Oscar Zhang",
+      "bio": "39-year-old hospital administrator.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U094-b2-cantafford-moderate",
+    "seed": 394,
+    "ground_truth": {
+      "capacity": 0.301,
+      "willingness": 0.84,
+      "behavioral": 0.25,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 58,
+      "occupation": "car salesperson",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 6,
+      "emergency_fund_months": 2,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.39,
+      "dependents": 0,
+      "investable_amount": 17000,
+      "goal": "a comfortable retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Chris Gomez",
+      "bio": "58-year-old car salesperson.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U095-b5-match-heavy",
+    "seed": 395,
+    "ground_truth": {
+      "capacity": 0.91,
+      "willingness": 0.86,
+      "behavioral": 0.95,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 49,
+      "occupation": "senior software engineer",
+      "household": "married, grown children"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 18,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.04,
+      "dependents": 0,
+      "investable_amount": 104000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Sam Fischer",
+      "bio": "49-year-old senior software engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U096-b4-match-heavy",
+    "seed": 396,
+    "ground_truth": {
+      "capacity": 0.704,
+      "willingness": 0.7,
+      "behavioral": 0.85,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 27,
+      "occupation": "social worker",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 4,
+      "income_stability": "stable",
+      "debt_to_income": 0.17,
+      "dependents": 0,
+      "investable_amount": 14000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Brandon Okafor",
+      "bio": "27-year-old social worker.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U097-b1-cautious-clean",
+    "seed": 397,
+    "ground_truth": {
+      "capacity": 0.507,
+      "willingness": 0.13,
+      "behavioral": 0.11,
+      "final_band": 1,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 49,
+      "occupation": "data analyst",
+      "household": "married, two teenage children"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 2,
+      "income_stability": "stable",
+      "debt_to_income": 0.25,
+      "dependents": 2,
+      "investable_amount": 38000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Kavya Martin",
+      "bio": "49-year-old data analyst.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U098-b4-match-heavy",
+    "seed": 398,
+    "ground_truth": {
+      "capacity": 0.683,
+      "willingness": 0.95,
+      "behavioral": 0.73,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 50,
+      "occupation": "data analyst",
+      "household": "married, grown children"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.17,
+      "dependents": 0,
+      "investable_amount": 30000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Ximena Diaz",
+      "bio": "50-year-old data analyst.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U099-b5-match-moderate",
+    "seed": 399,
+    "ground_truth": {
+      "capacity": 0.992,
+      "willingness": 0.95,
+      "behavioral": 0.85,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 27,
+      "occupation": "corporate attorney",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.02,
+      "dependents": 0,
+      "investable_amount": 27000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Tessa Murphy",
+      "bio": "27-year-old corporate attorney.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "U100-b1-cautious-moderate",
+    "seed": 400,
+    "ground_truth": {
+      "capacity": 0.925,
+      "willingness": 0.09,
+      "behavioral": 0.07,
+      "final_band": 1,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 49,
+      "occupation": "postal service supervisor",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 12,
+      "income_stability": "very stable",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 116000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Yara James",
+      "bio": "49-year-old postal service supervisor.",
+      "backstory": "",
+      "source": "generated"
+    }
+  }
+]

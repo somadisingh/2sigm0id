@@ -1,0 +1,279 @@
+[
+  {
+    "id": "S1-clean-moderate",
+    "seed": 201,
+    "ground_truth": {
+      "capacity": 0.653,
+      "willingness": 0.55,
+      "behavioral": 0.5,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 29,
+      "occupation": "QA engineer",
+      "household": "single, rents with a roommate"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.25,
+      "dependents": 0,
+      "investable_amount": 15000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Maya Lin",
+      "bio": "QA engineer, weekend runner, slowly learning how to invest for retirement.",
+      "backstory": "Maya Lin is a 29-year-old QA engineer at a mid-sized software company. She is single and shares a rented apartment with a roommate. Her salary is steady, and her car loan and student loan payments take about a quarter of her monthly income. She considers herself middle-of-the-road about risk: she accepts some ups and downs in exchange for growth but doesn't chase big swings. When her retirement account fell in 2022 she left it alone, though she admits she checked it more often than she would have liked. She is methodical and a little self-deprecating, runs on weekends, and is working her way from knowing almost nothing about investing to understanding retirement accounts.",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "software testing",
+        "personal finance basics",
+        "retirement accounts",
+        "running",
+        "career growth",
+        "paying down debt"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "S2-says-aggressive-panics",
+    "seed": 202,
+    "ground_truth": {
+      "capacity": 0.671,
+      "willingness": 0.9,
+      "behavioral": 0.25,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 24,
+      "occupation": "marketing coordinator",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.2,
+      "dependents": 0,
+      "investable_amount": 8000,
+      "goal": "grow wealth"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Jordan Reyes",
+      "bio": "Marketing coordinator who watches a lot of finance YouTube and wants to grow $8,000 over the long run. Big basketball fan.",
+      "backstory": "Jordan Reyes is a 24-year-old marketing coordinator at a tech company who lives alone. His salary covers his rent and a modest lifestyle; student loans take about a fifth of his income, and he has about three months of expenses saved. No one depends on him. He learns about investing from YouTube, Reddit and finance accounts online, gets excited about growth stocks, especially tech, and likes to say that market dips are buying opportunities. He talks a lot and uses slang like 'HODL', 'diamond hands' and 'alpha', not always correctly, and he compares investing to basketball. In 2022 he sold a cryptocurrency position after it dropped sharply and still regrets it, but he rarely brings it up unless asked. When his own money is actually falling, the confident talk fades and his first instinct is to get out before it gets worse.",
+      "mbti": "ENFP",
+      "interested_topics": [
+        "personal finance",
+        "stock investing",
+        "growth stocks",
+        "crypto",
+        "basketball",
+        "market news"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "S3-eager-cant-afford",
+    "seed": 203,
+    "ground_truth": {
+      "capacity": 0.285,
+      "willingness": 0.75,
+      "behavioral": 0.65,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 34,
+      "occupation": "rideshare and delivery driver",
+      "household": "married, two young children"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.45,
+      "dependents": 2,
+      "investable_amount": 3000,
+      "goal": "grow wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Luis Ortega",
+      "bio": "Full-time rideshare driver and dad of two, finally starting to invest the $3,000 he has saved.",
+      "backstory": "Luis Ortega is a 34-year-old full-time rideshare and delivery driver. He is married with two young children, and his income changes with how many orders he gets each week. Car and credit card payments take about half of what he earns, and his savings would cover about two weeks of family expenses. He has never invested, but he has decided to put the $3,000 he has saved into the market because he feels he has started too late, and he wants it to grow a lot over the next 15 years. He is eager for big returns and believes he could ride out a market drop, though he has never actually been through one. He doesn't know terms like 'volatility' and likes things explained simply, often comparing them to driving, like a market dip being a bumpy stretch of road. He loves cars and is always looking for side income.",
+      "mbti": "ISFP",
+      "interested_topics": [
+        "investing basics",
+        "cars",
+        "family life",
+        "side income",
+        "rideshare work"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "S4-able-but-cautious",
+    "seed": 204,
+    "ground_truth": {
+      "capacity": 0.833,
+      "willingness": 0.15,
+      "behavioral": 0.35,
+      "final_band": 1,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 52,
+      "occupation": "senior accountant",
+      "household": "married, two grown children"
+    },
+    "finances": {
+      "horizon_yrs": 13,
+      "emergency_fund_months": 9,
+      "income_stability": "very stable",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 250000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Eleanor Park",
+      "bio": "Senior accountant planning to retire at 65. Prefers safe, predictable money decisions over high returns.",
+      "backstory": "Eleanor Park is a 52-year-old senior accountant who plans to retire at around 65. She is married, her two children are grown, and her house is paid off, so she has no debt and no one depending on her. Her income is very stable and she keeps a large cash cushion. During the 2008 financial crisis she moved her investments to cash near the bottom of the market out of fear; she avoided further losses but missed the recovery, and that experience made her firmly risk-averse. She puts protecting her principal ahead of maximizing returns and is skeptical of stocks, crypto and anything leveraged. She speaks precisely and briefly, rarely shows emotion, and prefers words like 'comfortable', 'secure' and 'predictable' to exact dollar figures. She gardens and is planning travel with her husband in retirement.",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "retirement planning",
+        "low-risk investing",
+        "cash management",
+        "gardening",
+        "retirement travel"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  },
+  {
+    "id": "S5-vague-contradictory",
+    "seed": 205,
+    "ground_truth": {
+      "capacity": 0.352,
+      "willingness": 0.5,
+      "behavioral": 0.45,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 23,
+      "occupation": "master's student and TA",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 4,
+      "emergency_fund_months": 1,
+      "income_stability": "stable",
+      "debt_to_income": 0.3,
+      "dependents": 0,
+      "investable_amount": 5000,
+      "goal": "house down payment a few years after graduating"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.15,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Tyler Brooks",
+      "bio": "23-year-old master's student and TA living on a fixed stipend, trying to figure out money for the first time.",
+      "backstory": "Tyler Brooks is a 23-year-old master's student who works as a teaching assistant on a fixed stipend. He shares an apartment, makes student loan payments that take about 30% of his income, and has about a month of expenses saved. No one depends on him. He has $5,000 that he hopes to use for a house down payment a few years after he graduates, about four years from now. He knows very little about investing; his roommate told him he should buy an ETF, but he isn't sure what one is. He is unsure how he feels about risk and often answers with 'I guess', 'it depends' or 'kind of in the middle'. He plays video games and follows new music.",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "student finances",
+        "investing basics",
+        "student loans",
+        "video games",
+        "music"
+      ],
+      "source": "mirofish (translated and edited)"
+    }
+  }
+]

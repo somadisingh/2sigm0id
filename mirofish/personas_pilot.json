@@ -1,0 +1,472 @@
+[
+  {
+    "id": "PILOT001-b5-match-heavy",
+    "seed": 900,
+    "ground_truth": {
+      "capacity": 0.971,
+      "willingness": 0.86,
+      "behavioral": 0.88,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 47,
+      "occupation": "owner of a small manufacturing business",
+      "household": "married, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.01,
+      "dependents": 1,
+      "investable_amount": 183000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.15,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Deepa Khan",
+      "bio": "47-year-old owner of a small manufacturing business.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT002-b3-panic-clean",
+    "seed": 901,
+    "ground_truth": {
+      "capacity": 0.685,
+      "willingness": 0.9,
+      "behavioral": 0.51,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 34,
+      "occupation": "elementary school teacher",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 6,
+      "income_stability": "stable",
+      "debt_to_income": 0.13,
+      "dependents": 0,
+      "investable_amount": 28000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Nia Castillo",
+      "bio": "34-year-old elementary school teacher.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT003-b1-match-moderate",
+    "seed": 902,
+    "ground_truth": {
+      "capacity": 0.236,
+      "willingness": 0.12,
+      "behavioral": 0.08,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 61,
+      "occupation": "car salesperson",
+      "household": "married, grown children"
+    },
+    "finances": {
+      "horizon_yrs": 4,
+      "emergency_fund_months": 0.5,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.4,
+      "dependents": 0,
+      "investable_amount": 11000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Felix Watson",
+      "bio": "61-year-old car salesperson.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT004-b2-match-moderate",
+    "seed": 903,
+    "ground_truth": {
+      "capacity": 0.446,
+      "willingness": 0.27,
+      "behavioral": 0.24,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 52,
+      "occupation": "real estate agent",
+      "household": "married, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 4,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.29,
+      "dependents": 1,
+      "investable_amount": 20000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Theo Hernandez",
+      "bio": "52-year-old real estate agent.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT005-b3-match-heavy",
+    "seed": 904,
+    "ground_truth": {
+      "capacity": 0.483,
+      "willingness": 0.69,
+      "behavioral": 0.46,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 53,
+      "occupation": "pharmacy technician",
+      "household": "supports an elderly parent"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 2,
+      "income_stability": "stable",
+      "debt_to_income": 0.26,
+      "dependents": 1,
+      "investable_amount": 47000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.2,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Lena Johnson",
+      "bio": "53-year-old pharmacy technician.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT006-b4-match-heavy",
+    "seed": 905,
+    "ground_truth": {
+      "capacity": 0.734,
+      "willingness": 0.72,
+      "behavioral": 0.69,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 42,
+      "occupation": "civil engineer",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 3,
+      "income_stability": "very stable",
+      "debt_to_income": 0.01,
+      "dependents": 0,
+      "investable_amount": 43000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "medium"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.3,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Sana Edwards",
+      "bio": "42-year-old civil engineer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT007-b4-match-clean",
+    "seed": 906,
+    "ground_truth": {
+      "capacity": 1.0,
+      "willingness": 0.73,
+      "behavioral": 0.87,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 28,
+      "occupation": "corporate attorney",
+      "household": "single, shares an apartment"
+    },
+    "finances": {
+      "horizon_yrs": 35,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 59000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "casual",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Valeria Anderson",
+      "bio": "28-year-old corporate attorney.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT008-b5-match-clean",
+    "seed": 907,
+    "ground_truth": {
+      "capacity": 0.989,
+      "willingness": 0.94,
+      "behavioral": 0.95,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 45,
+      "occupation": "corporate attorney",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 24,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.03,
+      "dependents": 0,
+      "investable_amount": 230000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Wei Wright",
+      "bio": "45-year-old corporate attorney.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT009-b1-panic-moderate",
+    "seed": 908,
+    "ground_truth": {
+      "capacity": 0.142,
+      "willingness": 0.9,
+      "behavioral": 0.08,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 24,
+      "occupation": "construction day laborer",
+      "household": "married, two young children; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 5,
+      "emergency_fund_months": 2,
+      "income_stability": "unstable",
+      "debt_to_income": 0.47,
+      "dependents": 3,
+      "investable_amount": 1000,
+      "goal": "a cushion before switching careers"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "casual",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.1,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Carlos Tanaka",
+      "bio": "24-year-old construction day laborer.",
+      "backstory": "",
+      "source": "generated"
+    }
+  },
+  {
+    "id": "PILOT010-b2-panic-clean",
+    "seed": 909,
+    "ground_truth": {
+      "capacity": 0.472,
+      "willingness": 0.67,
+      "behavioral": 0.26,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 57,
+      "occupation": "data analyst",
+      "household": "married, two teenage children"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 3,
+      "income_stability": "stable",
+      "debt_to_income": 0.2,
+      "dependents": 2,
+      "investable_amount": 51000,
+      "goal": "retirement income"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "medium",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Nathan Reed",
+      "bio": "57-year-old data analyst.",
+      "backstory": "",
+      "source": "generated"
+    }
+  }
+]

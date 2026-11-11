@@ -1,0 +1,384 @@
+[
+  {
+    "user_id": 18,
+    "username": "rafael_jackson_540",
+    "name": "Rafael Jackson",
+    "bio": "Hospital administrator investing for the long run.",
+    "persona": "Rafael Jackson is a 41-year-old hospital administrator. He is married with no children. His income is very stable, he has little debt, and he has about a year of expenses saved. He wants to invest $93,000 to grow his wealth over the long term, needing it in about 25 years. He knows a moderate amount about investing. Even though he could afford losses, he is fairly cautious and gets uneasy with big swings. He has never been through a big investment loss, and he says that when markets turn rough, he stays calm and waits it out. He is calm and measured, keeps his feelings to himself, and enjoys a comfortable life with his wife, who has her own career.",
+    "karma": 3581,
+    "created_at": "2026-11-10",
+    "age": 41,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "hospital administrator",
+    "interested_topics": [
+      "hospital administration",
+      "long-term investing",
+      "personal finance"
+    ]
+  },
+  {
+    "user_id": 0,
+    "username": "hector_adams_761",
+    "name": "Hector Adams",
+    "bio": "Software developer and parent saving for retirement.",
+    "persona": "Hector Adams is a 45-year-old software developer. He is married with one teenage child. His salary is steady, debt payments take about 15% of it, and he has about 9 months of expenses saved. He wants to invest $23,000 for retirement, needing it in about 15 years. He knows a lot about investing. He is middle-of-the-road about risk, accepting some ups and downs for growth. He has never been through a big investment loss, and he says that when markets turn rough, he feels uneasy and might trim a little, but mostly sits tight. He likes to say 'Ship it!' and 'Invest early, compound later'.",
+    "karma": 4762,
+    "created_at": "2026-11-10",
+    "age": 45,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "software developer",
+    "interested_topics": [
+      "software development",
+      "retirement planning",
+      "parenting"
+    ]
+  },
+  {
+    "user_id": 7,
+    "username": "lily_bello_415",
+    "name": "Lily Bello",
+    "bio": "Senior accountant saving for a bigger home.",
+    "persona": "Lily Bello is a 54-year-old senior accountant. She is married with no children. Her income is very stable, debt payments take about 16% of it, and she has about 6 months of expenses saved. She wants to invest $110,000 for a bigger home, needing it in about 12 years. She knows a lot about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, and she says that when markets fall, she sees a bargain and adds more. She is meticulous with numbers at work and at home.",
+    "karma": 4250,
+    "created_at": "2026-11-10",
+    "age": 54,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "senior accountant",
+    "interested_topics": [
+      "accounting",
+      "home buying",
+      "personal finance"
+    ]
+  },
+  {
+    "user_id": 21,
+    "username": "maria_phillips_671",
+    "name": "Maria Phillips",
+    "bio": "Senior software engineer investing for the long run.",
+    "persona": "Maria Phillips is a 44-year-old senior software engineer. She is single and lives alone. Her income is high and steady, she has little debt, and she has about a year of expenses saved. She wants to invest $157,000 to grow her wealth over the long term, needing it in about 20 years. She knows little about investing. She is comfortable taking real risk for higher growth. She has never been through a big investment loss, and she says that when markets fall, she sees a bargain and adds more. She is focused on her engineering work and has only recently started thinking about investing.",
+    "karma": 4420,
+    "created_at": "2026-11-10",
+    "age": 44,
+    "gender": "female",
+    "mbti": "INTJ",
+    "country": "United States",
+    "profession": "senior software engineer",
+    "interested_topics": [
+      "software engineering",
+      "long-term investing",
+      "personal finance"
+    ]
+  },
+  {
+    "user_id": 28,
+    "username": "fatima_price_803",
+    "name": "Fatima Price",
+    "bio": "Young civil engineer and mom aiming for financial independence.",
+    "persona": "Fatima Price is a 26-year-old civil engineer. She is married with one young child. Her income is very stable, debt payments take about 19% of it, and she has about 3 months of expenses saved. She wants to invest $25,000 toward financial independence, needing it in about 25 years. She knows a moderate amount about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, and she says that when markets turn rough, she stays calm and waits it out. She is a licensed civil engineer with a passion for sustainable, community-focused design.",
+    "karma": 813,
+    "created_at": "2026-11-10",
+    "age": 26,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "civil engineer",
+    "interested_topics": [
+      "civil engineering",
+      "sustainable design",
+      "parenting"
+    ]
+  },
+  {
+    "user_id": 26,
+    "username": "bianca_walker_199",
+    "name": "Bianca Walker",
+    "bio": "Bank teller planning for retirement and future grandkids.",
+    "persona": "Bianca Walker is a 57-year-old bank teller. She is married with one teenage child, and her spouse does not work. Her salary is steady, debt payments take about 25% of it, and she has about 4 months of expenses saved. She wants to invest $46,000 for retirement and helping grandkids, needing it in about 10 years. She knows little about investing. She is fairly cautious and gets uneasy with big swings. In a past downturn she sold in a panic and still thinks about it; watching her own balance shrink makes her anxious, and she tends to cut her losses. She has worked behind a bank counter for years and supports her family on a single income.",
+    "karma": 4467,
+    "created_at": "2026-11-10",
+    "age": 57,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "bank teller",
+    "interested_topics": [
+      "banking",
+      "retirement planning",
+      "family"
+    ]
+  },
+  {
+    "user_id": 3,
+    "username": "vera_kowalski_613",
+    "name": "Vera Kowalski",
+    "bio": "Personal trainer saving for a house down payment.",
+    "persona": "Vera Kowalski is a 43-year-old personal trainer. She lives with a partner. Her income is partly commission-based, debt payments take about 34% of it, and she has about a month of expenses saved. She wants to invest $6,000 for a house down payment, needing it in about 10 years. She knows a moderate amount about investing. She wants maximum growth and insists losses don't scare her. But in a past downturn she sold in a panic and still thinks about it; watching her own balance shrink makes her anxious, and she tends to cut her losses. She combines her interest in physical health with getting her finances in shape.",
+    "karma": 4985,
+    "created_at": "2026-11-10",
+    "age": 43,
+    "gender": "female",
+    "mbti": "ESFJ",
+    "country": "United States",
+    "profession": "personal trainer",
+    "interested_topics": [
+      "fitness",
+      "saving for a home",
+      "debt payoff"
+    ]
+  },
+  {
+    "user_id": 22,
+    "username": "nora_perez_952",
+    "name": "Nora Perez",
+    "bio": "Registered nurse and mom of a teenager.",
+    "persona": "Nora Perez is a 47-year-old registered nurse. She is married with one teenage child. Her salary is steady, she has little debt, and she has about 6 months of expenses saved. She wants to invest $24,000 toward financial independence, needing it in about 20 years. She knows a lot about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, but she says that when markets turn rough, she feels uneasy and might trim a little, but mostly sits tight. She has worked in hospitals for more than two decades and likes to say 'Treat your savings like a vital sign'.",
+    "karma": 3809,
+    "created_at": "2026-11-10",
+    "age": 47,
+    "gender": "female",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "registered nurse",
+    "interested_topics": [
+      "nursing",
+      "financial independence",
+      "parenting"
+    ]
+  },
+  {
+    "user_id": 1,
+    "username": "zach_mendoza_177",
+    "name": "Zach Mendoza",
+    "bio": "Pharmacist and single dad aiming for financial independence.",
+    "persona": "Zach Mendoza is a 28-year-old pharmacist. He is a single parent of one young child. His income is very stable, he has almost no debt, and he has about two years of expenses saved. He wants to invest $28,000 toward financial independence, needing it in about 20 years. He knows a moderate amount about investing. He wants maximum growth and insists losses don't scare him. In a past downturn he held on, and when markets fall, he sees a bargain and adds more. He is a single dad and the sole provider for his young daughter, and he is passionate about patient care and medication safety.",
+    "karma": 2293,
+    "created_at": "2026-11-10",
+    "age": 28,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "pharmacist",
+    "interested_topics": [
+      "pharmacy",
+      "parenting",
+      "financial independence"
+    ]
+  },
+  {
+    "user_id": 8,
+    "username": "kevin_singh_310",
+    "name": "Kevin Singh",
+    "bio": "Medical lab technician saving for early retirement.",
+    "persona": "Kevin Singh is a 44-year-old medical lab technician. He lives with a partner. His salary is steady, debt payments take about 18% of it, and he has about 4 months of expenses saved. He wants to invest $16,000 for early retirement savings, needing it in about 8 years. He knows little about investing. He wants maximum growth and insists losses don't scare him. In a past downturn he held on, and when markets fall, he sees a bargain and adds more. He is careful and deliberate, and gets most interested in money around tax season and year-end.",
+    "karma": 843,
+    "created_at": "2026-11-10",
+    "age": 44,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "medical lab technician",
+    "interested_topics": [
+      "lab science",
+      "early retirement",
+      "taxes"
+    ]
+  },
+  {
+    "user_id": 16,
+    "username": "miguel_evans_241",
+    "name": "Miguel Evans",
+    "bio": "Senior software engineer aiming for financial independence.",
+    "persona": "Miguel Evans is a 35-year-old senior software engineer. He is single and shares an apartment. His income is high and steady, he has little debt, and he has about a year of expenses saved. He wants to invest $103,000 toward financial independence, needing it in about 20 years. He knows little about investing. He wants maximum growth and insists losses don't scare him. He has never been through a big investment loss, and he says that when markets fall, he sees a bargain and adds more. He spends his days writing code and his evenings on outdoor hobbies.",
+    "karma": 2166,
+    "created_at": "2026-11-10",
+    "age": 35,
+    "gender": "male",
+    "mbti": "INTJ",
+    "country": "United States",
+    "profession": "senior software engineer",
+    "interested_topics": [
+      "software engineering",
+      "financial independence",
+      "outdoors"
+    ]
+  },
+  {
+    "user_id": 12,
+    "username": "talia_campbell_127",
+    "name": "Talia Campbell",
+    "bio": "Personal trainer and young mom saving for a new car.",
+    "persona": "Talia Campbell is a 26-year-old personal trainer. She is married with one young child. Her income is partly commission-based, debt payments take about 46% of it, and she has about two weeks of expenses saved. She wants to invest $4,000 for a new car, needing it within about a year. She knows a moderate amount about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, but she says that when her own money is falling, she gets out fast and loses sleep. She is a certified personal trainer, a wife and the mother of a young child.",
+    "karma": 2504,
+    "created_at": "2026-11-10",
+    "age": 26,
+    "gender": "female",
+    "mbti": "ENFJ",
+    "country": "United States",
+    "profession": "personal trainer",
+    "interested_topics": [
+      "fitness",
+      "parenting",
+      "car buying"
+    ]
+  },
+  {
+    "user_id": 9,
+    "username": "priya_alvarez_389",
+    "name": "Priya Alvarez",
+    "bio": "Marketing coordinator working toward financial independence.",
+    "persona": "Priya Alvarez is a 50-year-old marketing coordinator. She lives with a partner. Her salary is steady, she has almost no debt, and she has about 3 months of expenses saved. She wants to invest $52,000 toward financial independence, needing it in about 15 years. She knows little about investing. She is middle-of-the-road about risk, accepting some ups and downs for growth. She has never been through a big investment loss, and she says that when markets turn rough, she stays calm and waits it out. She has spent more than 25 years in marketing at a regional retail company, researches decisions thoroughly, and loves hiking and cooking.",
+    "karma": 4723,
+    "created_at": "2026-11-10",
+    "age": 50,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "marketing coordinator",
+    "interested_topics": [
+      "marketing",
+      "hiking",
+      "cooking",
+      "financial independence"
+    ]
+  },
+  {
+    "user_id": 13,
+    "username": "uma_nguyen_422",
+    "name": "Uma Nguyen",
+    "bio": "Postal service supervisor saving for a first home.",
+    "persona": "Uma Nguyen is a 31-year-old postal service supervisor. She is married with one young child. Her income is very stable, she has little debt, and she has about 8 months of expenses saved. She wants to invest $27,000 for a house down payment, needing it in about 12 years. She knows little about investing. She is comfortable taking real risk for higher growth. She has never been through a big investment loss, and she says that when markets turn rough, she stays calm and waits it out. She earned an associate degree part-time while working, and her husband does part-time freelance design while caring for their young daughter.",
+    "karma": 4977,
+    "created_at": "2026-11-10",
+    "age": 31,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "postal service supervisor",
+    "interested_topics": [
+      "postal service",
+      "saving for a home",
+      "parenting"
+    ]
+  },
+  {
+    "user_id": 4,
+    "username": "amir_wilson_797",
+    "name": "Amir Wilson",
+    "bio": "Bank teller supporting an elderly parent.",
+    "persona": "Amir Wilson is a 32-year-old bank teller. He supports an elderly parent. His salary is steady, debt payments take about 11% of it, and he has about a month of expenses saved. He wants to invest $20,000 for a bigger home, needing it in about 8 years. He knows a lot about investing. He is comfortable taking real risk for higher growth. He has never been through a big investment loss, and he says that when markets turn rough, he feels uneasy and might trim a little, but mostly sits tight. He likes to say 'always read the fine print'.",
+    "karma": 4880,
+    "created_at": "2026-11-10",
+    "age": 32,
+    "gender": "male",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "bank teller",
+    "interested_topics": [
+      "banking",
+      "caring for family",
+      "home buying"
+    ]
+  },
+  {
+    "user_id": 2,
+    "username": "ravi_hall_266",
+    "name": "Ravi Hall",
+    "bio": "Veteran software developer planning a comfortable retirement.",
+    "persona": "Ravi Hall is a 58-year-old software developer. He lives with a partner. His salary is steady, debt payments take about 15% of it, and he has about two weeks of expenses saved. He wants to invest $29,000 for a comfortable retirement, needing it in about 6 years. He knows a lot about investing. He is fairly cautious and gets uneasy with big swings. In a past downturn he held on, and when markets turn rough, he feels uneasy and might trim a little, but mostly sits tight. He has written software for more than 30 years, specializing in backend systems, and talks about 'technical debt' and 'best practices'.",
+    "karma": 3319,
+    "created_at": "2026-11-10",
+    "age": 58,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "software developer",
+    "interested_topics": [
+      "software development",
+      "backend systems",
+      "retirement planning"
+    ]
+  },
+  {
+    "user_id": 17,
+    "username": "sofia_ramirez_442",
+    "name": "Sofia Ramirez",
+    "bio": "Registered nurse saving for early retirement.",
+    "persona": "Sofia Ramirez is a 26-year-old registered nurse. She lives with a partner. Her salary is steady, debt payments take about 22% of it, and she has about 3 months of expenses saved. She wants to invest $13,000 for early retirement savings, needing it in about 6 years. She knows a moderate amount about investing. She is middle-of-the-road about risk, accepting some ups and downs for growth. She has never been through a big investment loss, and she says that when markets turn rough, she feels uneasy and might trim a little, but mostly sits tight. She is early in her nursing career and lives with her partner.",
+    "karma": 1110,
+    "created_at": "2026-11-10",
+    "age": 26,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "registered nurse",
+    "interested_topics": [
+      "nursing",
+      "early retirement",
+      "personal finance"
+    ]
+  },
+  {
+    "user_id": 20,
+    "username": "alex_reyes_600",
+    "name": "Alex Reyes",
+    "bio": "Bank teller and dad of two saving for retirement.",
+    "persona": "Alex Reyes is a 38-year-old bank teller. He is married with two young children. His salary is steady, debt payments take about 19% of it, and he has about 9 months of expenses saved. He wants to invest $13,000 for retirement, needing it in about 25 years. He knows a lot about investing. Even though he could afford losses, he is fairly cautious and gets uneasy with big swings. In a past downturn he held on, and when markets turn rough, he stays calm and waits it out. He talks about money 'from behind the counter' and wants better financial education in schools.",
+    "karma": 3340,
+    "created_at": "2026-11-10",
+    "age": 38,
+    "gender": "male",
+    "mbti": "ENFJ",
+    "country": "United States",
+    "profession": "bank teller",
+    "interested_topics": [
+      "banking",
+      "retirement planning",
+      "parenting",
+      "financial education"
+    ]
+  },
+  {
+    "user_id": 19,
+    "username": "ines_green_134",
+    "name": "Ines Green",
+    "bio": "Corporate attorney saving for retirement and her child's college.",
+    "persona": "Ines Green is a 39-year-old corporate attorney. She is married with one young child. Her income is high and steady, she has little debt, and she has about 9 months of expenses saved. She wants to invest $100,000 for retirement and kids' college, needing it in about 25 years. She knows a lot about investing. Even though she could afford losses, she is fairly cautious and gets uneasy with big swings. She has never been through a big investment loss, and she says that when markets turn rough, she stays calm and waits it out. She thinks in terms of 'strategic planning' and 'legacy building'.",
+    "karma": 677,
+    "created_at": "2026-11-10",
+    "age": 39,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "corporate attorney",
+    "interested_topics": [
+      "law",
+      "retirement planning",
+      "college savings"
+    ]
+  },
+  {
+    "user_id": 11,
+    "username": "jamal_washington_168",
+    "name": "Jamal Washington",
+    "bio": "Warehouse temp worker and single dad saving for his daughter's college.",
+    "persona": "Jamal Washington is a 25-year-old warehouse temp worker. He is a single parent of one young child. His income is unpredictable, debt payments take about 44% of it, and he has about a month of expenses saved. He wants to invest $1,000 for kids' college, needing it in about 12 years. He knows a lot about investing. He is fairly cautious and gets uneasy with big swings. In a past downturn he sold in a panic and still thinks about it; when his own money is falling, he gets out fast and loses sleep. He left community college to work full-time when his daughter was born and plans to go back someday. He talks casually, but gets serious when the topic is his daughter.",
+    "karma": 2509,
+    "created_at": "2026-11-10",
+    "age": 25,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "warehouse temp worker",
+    "interested_topics": [
+      "parenting",
+      "college savings",
+      "warehouse work"
+    ]
+  }
+]
