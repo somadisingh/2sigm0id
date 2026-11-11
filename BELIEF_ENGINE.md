@@ -111,6 +111,19 @@ Findings:
 - **The stop rule keeps its promise.** C's stop rule fired in 75 of 100 runs, at question 6.5 on average. After that point the final band changed in only 5% of the runs (D: 7%). The promise was "under 5%". Stopping there saves a third of the questions. The band was exactly right in 69% of these runs at the stop point and 72% at the end. The scores are less precise at the stop point (avg error 0.133 against 0.103), because the rule protects only the band.
 - **D is only as good as A, because of willingness.** On clean test users, D equals C (0.084 against 0.083). D's willingness estimates are too low for users whose scores disagree: −0.19 for "says aggressive, would panic-sell" and −0.17 for "says aggressive, can't afford it". C has no such error for the same users. The cause has two parts. In conversation, these AI test users bring their behavior into attitude answers ("they'd say I talk a big game about being brave, but they've seen me panic"). The extractor then scores this as low willingness, although by our definition what the person says about their attitude is high. This is the professor's Milestone 1 question about separating willingness from behavior. A form forces the person to answer the attitude question alone.
 - **The fitted settings did not cause this.** We scored D's recorded evidence again with the starting settings: the avg error stayed at 0.129.
+- **Fix: the extractor scores what the person claims.** The willingness rule now says: score their stated attitude and how they describe themselves, even if they also say that they would act differently or cannot afford it; actions go to behavior, money limits to the facts. We checked the fix first on the pilot users. There it changed little and harmed nothing: willingness error 0.112 → 0.110, behavior error 0.085 → 0.076, and the low bias for panic-sell pilot users went from −0.053 to −0.041. Then we ran D again on the 100 test users (one run, $1.20):
+
+| | D before fix | D after fix | C |
+|---|---|---|---|
+| avg error | 0.129 | **0.116** | 0.104 |
+| willingness error | 0.148 | 0.131 | 0.111 |
+| willingness bias, "says aggressive, would panic-sell" (13 users) | −0.191 | **−0.051** | +0.037 |
+| willingness bias, "says aggressive, can't afford it" (12 users) | −0.169 | −0.121 | −0.024 |
+| willingness bias, no mismatch (65 users) | −0.070 | −0.061 | +0.023 |
+| band exact | 51% | 53% | 68% |
+
+  Paired on the same users: D after the fix against D before, −0.013 (95% range −0.028 to +0.001); against A, −0.006 (−0.019 to +0.008); against C, +0.011 (−0.002 to +0.026). So D is now a little better than A and a little worse than C, and neither difference is clear yet. Part of the change can be run-to-run noise, because each method ran once. **Caution:** we found this failure on the 100 test users, and the full run uses the same users. We wrote this fix before the full run and changed nothing else after seeing these numbers. Report it this way in Milestone 3.
+- **What is still open.** In conversation, D still reads willingness a little low for all users (−0.06), while C does not. For "can't afford it" users the bias is still −0.12: their answers mix money limits into their attitude. This is a fidelity question for the AI test users (persona check 2) and a reading question for D.
 - **Heavy noise hurts the spoken methods more** (D 0.177, B 0.160, C 0.123, A 0.137). Only spoken methods get injected contradictions, so this comparison is not equal by design.
 
 ## First run on 10 of Siya's test users (Nov 11, 2 per band, budget 10, one run each)

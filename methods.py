@@ -65,7 +65,10 @@ Give each number as a range [low, high] that covers what they said: "about 5 yea
 "a few months" -> [2, 4], "no debt" -> [0, 0].
 
 Scores from 0 to 1. Include one only if the answer shows it. Use these points of the scale:
-- willingness: how they SAY they feel about risk. 0.1 = wants to avoid any loss, even with \
+- willingness: how bold or careful they SAY they are about risk: their stated attitude and \
+how they describe themselves. Score what they claim, even if they also say that in practice \
+they would act differently or cannot afford it. What they would actually do belongs under \
+behavioral, and money limits belong under the facts. 0.1 = wants to avoid any loss, even with \
 very low growth. 0.3 = accepts only small ups and downs. 0.5 = accepts moderate risk for \
 moderate growth. 0.7 = accepts large swings for higher growth. 0.9 = wants the highest \
 growth and accepts big losses.

@@ -226,15 +226,22 @@ def extract_eval(args):
     items = {i["id"]: i for i in M.load_bank()["items"]}
     iv = C.EXPERIMENT_INTERVIEWER
 
+    readers = args.readers
+
     def one(r):
         item = items[r["item"]]
-        out = {"r": r}
-        for name, ex in (("D", ""), ("DR", retrieval.examples_block(
-                pool.similar(item, r["question"], r["answer"], exclude_persona=r["persona_id"])))):
+        out = {"r": r, "D": (dict(M.NO_EVIDENCE), []), "DR": (dict(M.NO_EVIDENCE), []), "DP": (None, [])}
+        for name, ex in (("D", ""), ("DR", None)):
+            if name not in readers:
+                continue
+            if ex is None:
+                ex = retrieval.examples_block(
+                    pool.similar(item, r["question"], r["answer"], exclude_persona=r["persona_id"]))
             ev, calls = M.extract(llm, iv, C.EXPERIMENT_INTERVIEWER_REASONING, r["question"], item,
                                   r["answer"], ex)
             out[name] = (ev, calls)
-        out["DP"] = M.read_options(llm, iv, "off", r["question"], item, r["answer"])
+        if "DP" in readers:
+            out["DP"] = M.read_options(llm, iv, "off", r["question"], item, r["answer"])
         return out
 
     with ThreadPoolExecutor(max_workers=C.MAX_WORKERS) as ex:
@@ -294,15 +301,17 @@ def extract_eval(args):
             return f"${v:.5f}"
         return f"{v:.3f}" if isinstance(v, float) else str(v)
 
-    rows = {k: summary(k) for k in ("D", "DR", "DP")}
+    rows = {k: summary(k) for k in ("D", "DR", "DP") if k in readers}
     cols = list(rows["D"])
     raw = [{"persona_id": o["r"]["persona_id"], "item": o["r"]["item"], "question": o["r"]["question"],
             "answer": o["r"]["answer"], "dimension": o["r"]["dimension"], "topic": o["r"]["topic"],
             "gold": o["r"]["gold"], "gold_option": o["r"]["gold_option"],
             "D": o["D"][0], "DR": o["DR"][0], "DP": o["DP"][0]} for o in res]
-    if not args.mock:
+    if not args.mock and set(readers) == {"D", "DR", "DP"}:
         (HERE / "results").mkdir(exist_ok=True)
         (HERE / "results" / "pilot_extract_eval.jsonl").write_text("".join(json.dumps(r) + "\n" for r in raw))
+    if args.save and not args.mock:
+        (HERE / "results" / args.save).write_text("".join(json.dumps(r) + "\n" for r in raw))
     lines = [f"# Extraction check on the pilot pool ({len(res)} labeled answers, {time.strftime('%Y-%m-%d')})", "",
              "| reader | " + " | ".join(cols) + " |", "|---|" + "---|" * len(cols)]
     for k, v in rows.items():
@@ -312,14 +321,14 @@ def extract_eval(args):
               "DP's score is the expected option score. Labels come from the true profiles, so a "
               "pilot user who answered off-profile counts against every reader equally."]
     lines += ["", "Paired differences against D (negative = lower error than D), with 95% bootstrap ranges:", ""]
-    for name in ("DR", "DP"):
+    for name in [x for x in ("DR", "DP") if x in readers and "D" in readers]:
         for dim in ("willingness", "behavioral"):
             d = [score_error(r, name) - score_error(r, "D") for r in raw
                  if r["dimension"] == dim and score_error(r, name) is not None and score_error(r, "D") is not None]
             lo, hi = paired_range(d)
             lines.append(f"- {name} {dim}: {sum(d) / len(d):+.3f} ({lo:+.3f} to {hi:+.3f}), {len(d)} answers")
     text = "\n".join(lines) + "\n"
-    if not args.mock:
+    if not args.mock and set(readers) == {"D", "DR", "DP"}:
         (OUT / "extract_eval.md").write_text(text)
     print(text)
 
@@ -565,6 +574,10 @@ def main():
                      ("extract-eval", extract_eval), ("fit", fit)):
         sp = sub.add_parser(name)
         sp.add_argument("--mock", action="store_true")
+        if name == "extract-eval":
+            sp.add_argument("--readers", nargs="*", default=["D", "DR", "DP"], choices=["D", "DR", "DP"],
+                            help="only these readers; the saved files are written only for all three")
+            sp.add_argument("--save", help="also save the raw readings to this results file")
         sp.set_defaults(fn=fn)
     args = ap.parse_args()
     R.load_env()
