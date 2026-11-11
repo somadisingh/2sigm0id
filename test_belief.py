@@ -95,6 +95,22 @@ def test_corrected_statement_is_not_flagged_again():
     assert flags == [[], [0], [], []], flags
 
 
+def test_soft_evidence():
+    """DP's soft evidence: a sure reading acts like a form answer; a spread-out one moves the
+    belief less; a reading of "never happened" moves nothing."""
+    item = ITEMS["BEH07"]   # sell everything / sell part / hold / buy more
+    sure, form, spread = B.Belief(), B.Belief(), B.Belief()
+    sure.observe_soft(item, [1, 0, 0, 0])
+    form.observe_option(item, 1)
+    spread.observe_soft(item, [0.4, 0.3, 0.2, 0.1])
+    m = lambda b: b.profile()["behavioral"]  # noqa: E731
+    assert abs(m(sure) - m(form)) < 1e-6
+    assert m(sure) < m(spread) < 0.5
+    never = B.Belief()
+    never.observe_soft(ITEMS["BEH02"], [0, 0, 0, 0, 1])
+    assert abs(m(never) - 0.5) < 1e-6
+
+
 def test_small_differences_are_not_contradictions():
     b = B.Belief()
     b.observe_fact("emergency_fund_months", 4, 4, turn=0)

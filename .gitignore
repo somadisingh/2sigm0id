@@ -4,3 +4,5 @@ __pycache__/
 results/*.jsonl
 results/*_summary.*
 results/*.png
+pilot/*_mock.jsonl
+results/*.md

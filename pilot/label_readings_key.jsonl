@@ -1,0 +1,50 @@
+{"id": 1, "reader": "DR", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 2, "reader": "DR", "verdicts": ["supported", "not supported", "supported"]}
+{"id": 3, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 4, "reader": "D", "verdicts": ["not supported", "not supported", "not supported"]}
+{"id": 5, "reader": "D", "verdicts": ["not supported", "not supported", "not supported"]}
+{"id": 6, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 7, "reader": "DR", "verdicts": ["not supported", "supported", "supported"]}
+{"id": 8, "reader": "DR", "verdicts": ["not supported", "not supported", "not supported"]}
+{"id": 9, "reader": "DR", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 10, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 11, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 12, "reader": "D", "verdicts": ["supported", "not supported", "not supported"]}
+{"id": 13, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 14, "reader": "D", "verdicts": ["not supported", "not supported", "not supported"]}
+{"id": 15, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 16, "reader": "D", "verdicts": ["supported", "not supported", "supported"]}
+{"id": 17, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 18, "reader": "D", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 19, "reader": "DR", "verdicts": ["supported", "supported, quote not found", "supported"]}
+{"id": 20, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 21, "reader": "D", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 22, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 23, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 24, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 25, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 26, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 27, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 28, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 29, "reader": "D", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 30, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 31, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 32, "reader": "D", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 33, "reader": "D", "verdicts": ["not supported", "supported", "supported"]}
+{"id": 34, "reader": "DR", "verdicts": ["not supported", "supported", "supported"]}
+{"id": 35, "reader": "D", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 36, "reader": "DR", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 37, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 38, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 39, "reader": "DR", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 40, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 41, "reader": "DR", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 42, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 43, "reader": "D", "verdicts": ["supported", "supported", "supported"]}
+{"id": 44, "reader": "DR", "verdicts": ["supported", "not supported", "not supported"]}
+{"id": 45, "reader": "D", "verdicts": ["not supported", "not supported", "supported"]}
+{"id": 46, "reader": "D", "verdicts": ["supported", "not supported", "supported"]}
+{"id": 47, "reader": "DR", "verdicts": ["supported", "supported", "supported"]}
+{"id": 48, "reader": "D", "verdicts": ["not supported", "supported", "not supported"]}
+{"id": 49, "reader": "D", "verdicts": ["not supported", "supported", "supported"]}
+{"id": 50, "reader": "D", "verdicts": ["supported", "supported", "supported"]}

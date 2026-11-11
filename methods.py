@@ -7,6 +7,9 @@
   D   adaptive interviewer  the belief engine picks each question and may re-ask a fact to
                           clarify it; the person answers in their own words; an LLM turns each
                           answer into evidence and words the clarifying questions
+  DR  D, with retrieval: the extractor also sees similar labeled pilot answers (retrieval.py)
+  DP  D, reading answers with token probabilities: GLM picks the matching option, and its
+      calibrated probability for every option is the evidence (soft evidence)
   C0  the earlier adaptive form: a hand-made rule picks the questions
   D0  the earlier adaptive interviewer: the LLM does everything (run_interview in run_bakeoff.py)
 
@@ -61,12 +64,16 @@ Money facts. Include one only if the answer states or clearly implies it:
 Give each number as a range [low, high] that covers what they said: "about 5 years" -> [4, 6], \
 "a few months" -> [2, 4], "no debt" -> [0, 0].
 
-Scores from 0 to 1. Include one only if the answer shows it:
-- willingness: how they SAY they feel about risk. 0 = wants no risk, 0.5 = some risk for \
-some growth, 1 = wants maximum risk.
-- behavioral: what they DO, or would do, in a real loss. 0 = sells everything in a panic, \
-0.5 = sells some, then holds, 1 = holds calmly or buys more. kind: "past" if it describes \
-something that actually happened, "hypothetical" if it is what they think they would do.
+Scores from 0 to 1. Include one only if the answer shows it. Use these points of the scale:
+- willingness: how they SAY they feel about risk. 0.1 = very cautious, would rather earn \
+little than risk any loss. 0.3 = fairly cautious, small ups and downs are fine. 0.5 = accepts \
+some risk for some growth. 0.7 = fairly bold, happy to take real risk for growth. \
+0.9 = very aggressive, wants maximum growth.
+- behavioral: what they DO, or would do, in a real loss. 0.1 = sells everything fast. \
+0.3 = gets anxious and sells a good part. 0.5 = uneasy, sells a little, mostly holds. \
+0.7 = holds calmly and waits it out. 0.9 = sees a chance and buys more. kind: "past" if it \
+describes something that actually happened, "hypothetical" if it is what they think they \
+would do.
 If the question lists answer options with scores, use them as anchors.
 
 clear: false if the answer is vague, hedged or noncommittal on that point.
@@ -76,7 +83,15 @@ Reply with ONE JSON object and nothing else, leaving out anything the answer doe
 "income_stability": {"value": "stable", "clear": true}},
  "willingness": {"score": 0.6, "clear": true},
  "behavioral": {"score": 0.3, "kind": "past", "clear": true}}"""
-EXTRACT_MESSAGE = "Question: {question}\n{anchors}Their answer: \"{answer}\""
+EXTRACT_MESSAGE = "{examples}Question: {question}\n{anchors}Their answer: \"{answer}\""
+# Method DP: GLM picks the option that matches the answer; we read its token probabilities.
+OPTION_SYSTEM = ("You read a person's spoken answer to a question and pick the multiple-choice "
+                 "option that best matches what they said. Reply with just the option's letter.")
+OPTION_MESSAGE = ("Question: {question}\nOptions:\n{options}\n\nTheir answer: \"{answer}\"\n\n"
+                  "Which option best matches? Reply with just the letter.")
+LETTERS = "ABCDEFGHIJKLMNOPQRST"
+OPTION_FLOOR = 1e-4   # probability for an option outside the model's top 20 tokens
+CALIBRATION_PATH = HERE / "pilot" / "calibration.json"
 EXTRACT_RETRY = "That was not a valid reply. Reply with ONLY the JSON object."
 CLARIFY_SYSTEM = (
     "You write one short follow-up question for a risk-profile interview. The person's earlier "
@@ -92,7 +107,9 @@ FACT_TEXT = {
     "dependents": "how many people depend on their income",
     "past_loss_reaction": "what they actually did the last time their investments fell a lot",
 }
-FORM_METHODS = ("A", "B", "C", "C0", "D")
+D_METHODS = ("D", "DR", "DP")
+FORM_METHODS = ("A", "B", "C", "C0") + D_METHODS
+_POOL, _TEMPERATURE = None, None
 NO_EVIDENCE = {"facts": {}, "willingness": None, "behavioral": None}
 
 
@@ -185,15 +202,73 @@ def clean_evidence(obj):
     return ev
 
 
-def extract(llm, key, setting, question, item, answer):
-    """Method D: one spoken answer -> evidence (one retry if the reply isn't valid)."""
+def pilot_pool():
+    global _POOL
+    if _POOL is None:
+        import retrieval
+        _POOL = retrieval.Pool.load()
+    return _POOL
+
+
+def temperature():
+    """DP's calibration temperature, fitted on the pilot users (pilot.py calibrate)."""
+    global _TEMPERATURE
+    if _TEMPERATURE is None:
+        _TEMPERATURE = (json.loads(CALIBRATION_PATH.read_text())["temperature"]
+                        if CALIBRATION_PATH.exists() else 1.0)
+    return _TEMPERATURE
+
+
+def lettered(item):
+    return "\n".join(f"{LETTERS[n]}. {o['label']}" for n, o in enumerate(item["options"]))
+
+
+def option_probs(logprobs, n):
+    """Probability of each of n options from the answer token's top alternatives. The answer
+    is the last token whose top choice is an option letter (GLM may think first)."""
+    valid = LETTERS[:n]
+    for alts in reversed(logprobs or []):
+        if alts and alts[0][0].strip() in valid:
+            q = [OPTION_FLOOR] * n
+            for tok, lp in alts:
+                t = tok.strip()
+                if len(t) == 1 and t in valid:
+                    q[valid.index(t)] += math.exp(lp)
+            total = sum(q)
+            return [x / total for x in q]
+    return None
+
+
+def sharpen(q, t):
+    """Temperature scaling: t > 1 flattens an overconfident distribution."""
+    w = [x ** (1 / t) for x in q]
+    return [x / sum(w) for x in w]
+
+
+def read_options(llm, key, setting, question, item, answer, t=None):
+    """Method DP: GLM's calibrated probability for each option of the item. Thinking is
+    always off here: the reply is one letter. (setting is accepted for a uniform call.)"""
+    msgs = [{"role": "system", "content": OPTION_SYSTEM},
+            {"role": "user", "content": OPTION_MESSAGE.format(question=question, options=lettered(item),
+                                                              answer=answer)}]
+    r = llm.chat(key, msgs, "off", 400, 0.0, top_logprobs=20)
+    q = option_probs(r.get("logprobs"), len(item["options"]))
+    call = call_log(r, model=key, valid=q is not None, retry=False)
+    if q is None:
+        return None, [call]
+    return sharpen(q, temperature() if t is None else t), [call]
+
+
+def extract(llm, key, setting, question, item, answer, examples=""):
+    """Method D: one spoken answer -> evidence (one retry if the reply isn't valid).
+    examples: retrieved labeled answers for method DR (retrieval.examples_block)."""
     anchors = ""
     if item["dimension"] != "capacity":
         anchors = "Answer options and their scores: " + "; ".join(
             f"{o['label']} ({o['score']})" for o in BE.scored_options(item)) + "\n"
     msgs = [{"role": "system", "content": EXTRACT_SYSTEM},
-            {"role": "user", "content": EXTRACT_MESSAGE.format(question=question, anchors=anchors,
-                                                               answer=answer)}]
+            {"role": "user", "content": EXTRACT_MESSAGE.format(examples=examples, question=question,
+                                                               anchors=anchors, answer=answer)}]
     calls = []
     for retry in (False, True):
         r = llm.chat(key, msgs, setting, C.INTERVIEWER_MAX_TOKENS, 0.0)
@@ -267,7 +342,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     rng = random.Random(zlib.crc32(f"{persona['id']}|{repeat}".encode()))
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
     fixed = short_form(bank, budget) if method in ("A", "B") else None
-    spoken = method in ("B", "D")
+    spoken = method in ("B",) + D_METHODS
     belief = BE.Belief()
     answers, turns, u_calls, m_calls = [], [], [], []
     asks = {}
@@ -284,7 +359,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             item = next_adaptive_item(bank, answers, {a["id"] for a in answers})
         else:
             cands = [i for i in pool if i["id"] not in asks]
-            if method == "D":   # a conversation can come back to a fact to clarify it
+            if method in D_METHODS:   # a conversation can come back to a fact to clarify it
                 cands += [i for i in pool if i.get("fact") and 0 < asks.get(i["id"], 0) < BE.MAX_ASKS_PER_FACT]
             item, info = belief.choose(cands, budget - k, settled, seed=k)
             if info["settled"] and not settled:
@@ -338,8 +413,18 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             valid = isinstance(obj, dict) and (opt is None or (isinstance(opt, int) and 1 <= opt <= n))
             step_calls.append(call_log(mr, model=mapper, valid=valid, retry=False))
             choice = opt if valid else None
-        elif method == "D":
-            evidence, calls = extract(llm, mapper, m_setting, question, item, answer)
+        elif method == "DP":
+            q, calls = read_options(llm, mapper, m_setting, question, item, answer)
+            step_calls += calls
+            evidence = {"option_probs": [round(x, 4) for x in q] if q else None}
+            if q:
+                flags = [f"contradiction: {item.get('fact') or item['dimension']} differs from the answer "
+                         f"to question {t + 1}" for t in belief.observe_soft(item, q, k)[:1]]
+        elif method in D_METHODS:
+            import retrieval
+            examples = (retrieval.examples_block(pilot_pool().similar(item, question, answer))
+                        if method == "DR" else "")
+            evidence, calls = extract(llm, mapper, m_setting, question, item, answer, examples)
             step_calls += calls
             flags = apply_evidence(belief, evidence, k)
         else:
@@ -354,7 +439,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             said.add(item["fact"])
 
         score = item["options"][choice - 1]["score"] if choice else None
-        if method != "D":
+        if method not in D_METHODS:
             belief.observe_option(item, choice)
             answers.append({"id": item["id"], "dimension": item["dimension"], "score": score})
         if belief.mismatch():
@@ -380,7 +465,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         "truth": persona["ground_truth"], "persona": persona,
         "final_profile": belief.profile(),
         # the bank's plain-average scoring, kept for comparison (D has no option answers)
-        "final_profile_mean": estimate(answers) if method != "D" else None,
+        "final_profile_mean": estimate(answers) if method not in D_METHODS else None,
         "final_flags": final_flags,
         "questions_asked": len(turns), "early_stop": early_stop,
         "would_stop_at": would_stop_at, "full_budget": full_budget,

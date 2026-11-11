@@ -2,6 +2,7 @@
 usage logging, JSON parsing, and a mock mode for testing without an API key."""
 
 import json
+import math
 import random
 import re
 import threading
@@ -46,12 +47,16 @@ class LLM:
             return overrides[setting]
         return self.reasoning_settings.get(setting, {})
 
-    def chat(self, key, messages, setting, max_tokens, temperature=None):
-        """Returns dict(text, usage{in,out,reasoning}, latency, finish)."""
+    def chat(self, key, messages, setting, max_tokens, temperature=None, top_logprobs=0):
+        """Returns dict(text, usage{in,out,reasoning}, latency, finish). With top_logprobs > 0
+        it also returns "logprobs": for each output token, its top alternatives as
+        [(token, logprob), ...]. Support depends on the model (GLM 5.3: yes; DeepSeek: no)."""
         if self.mock:
-            return _mock_reply(messages)
+            return _mock_reply(messages, top_logprobs)
         m = self.models[key]
         kwargs = dict(model=m["id"], messages=messages, max_tokens=max_tokens)
+        if top_logprobs:
+            kwargs.update(logprobs=True, top_logprobs=top_logprobs)
         temp = m.get("temperature", temperature)
         if temp is not None:
             kwargs["temperature"] = temp
@@ -74,8 +79,13 @@ class LLM:
                 det = getattr(u, "completion_tokens_details", None)
                 if det is not None and getattr(det, "reasoning_tokens", None):
                     usage["reasoning"] = det.reasoning_tokens
-                return {"text": msg.content or "", "usage": usage, "latency": latency,
-                        "finish": r.choices[0].finish_reason}
+                out = {"text": msg.content or "", "usage": usage, "latency": latency,
+                       "finish": r.choices[0].finish_reason}
+                if top_logprobs:
+                    lp = getattr(r.choices[0], "logprobs", None)
+                    out["logprobs"] = [[(a.token, a.logprob) for a in (t.top_logprobs or [])]
+                                       for t in ((lp.content or []) if lp else [])]
+                return out
             except Exception as e:  # noqa: BLE001 - we classify by status code
                 last_err = e
                 status = getattr(e, "status_code", None)
@@ -124,7 +134,7 @@ def validate_interviewer(obj):
 
 # ---------------------------------------------------------------- mock mode
 
-def _mock_reply(messages):
+def _mock_reply(messages, top_logprobs=0):
     """Fake replies so the whole pipeline can be tested without spending money."""
     system = messages[0]["content"] if messages and messages[0]["role"] == "system" else ""
     last = messages[-1]["content"]
@@ -154,6 +164,10 @@ def _mock_reply(messages):
             if random.random() < 0.5:
                 ev[d] = {"score": round(random.random(), 2), "clear": True, "kind": "past"}
         text = json.dumps(ev) if random.random() > 0.05 else "not json"
+    elif "check one reading" in system:   # check_extractor.py's judge
+        m = re.search(r'Answer: "(.*?)"\nReading', last, re.S)
+        words = (m.group(1) if m else "").split()
+        text = json.dumps({"supported": random.random() < 0.85, "quote": " ".join(words[:4])})
     elif "follow-up question" in system:   # method D's clarifying question
         text = json.dumps({"question": "Just to check, which of those is right?"})
     elif "multiple-choice question" in system:   # method B's answer mapper
@@ -169,5 +183,11 @@ def _mock_reply(messages):
                                        "sure", "a", "few", "months", "risky"])
                         for _ in range(random.randint(5, 60)))
     out = len(text) // 4 + random.randint(0, 200)
-    return {"text": text, "usage": {"in": prompt_chars // 4, "out": out, "reasoning": out // 3},
-            "latency": random.uniform(0.5, 4.0), "finish": "stop"}
+    reply = {"text": text, "usage": {"in": prompt_chars // 4, "out": out, "reasoning": out // 3},
+             "latency": random.uniform(0.5, 4.0), "finish": "stop"}
+    if top_logprobs:   # method DP's option reader: a random spread over the first letters
+        letters = "ABCDE"
+        w = [random.random() ** 3 for _ in letters]
+        reply["text"] = letters[w.index(max(w))]
+        reply["logprobs"] = [[(c, math.log(x / sum(w))) for c, x in zip(letters, w)]]
+    return reply

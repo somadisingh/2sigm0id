@@ -70,6 +70,7 @@ Runs all four methods on the same test users, with the same noise schedule and t
 | B, scripted interview | The same questions in their spoken wording. The person answers in their own words, and the interviewer model maps each answer to an option, or to none if the answer is too vague. |
 | C, adaptive form | The belief engine (`belief.py`) picks each next question from the bank: the one that tells it most about the final band. |
 | D, adaptive interviewer | Our system. The belief engine picks each question and may re-ask a fact to clarify it. The person answers in their own words. GLM 5.3 turns each answer into evidence and words the clarifying questions. |
+| DR, DP | Two versions of D with one generative AI part each. DR (retrieval): before reading an answer, GLM sees 3 similar labeled answers from the pilot users. DP (token probabilities): GLM picks the matching option, and its calibrated probability for each option is the evidence. |
 | C0, D0 | The earlier versions, kept for comparison. C0 uses a hand-made rule. D0 is GLM 5.3 with prompt v1 doing everything. Run them with `--methods C0 D0`. |
 
 A, B, C and D all score answers with the belief engine, so they differ only in how they choose questions and read answers. `BELIEF_ENGINE.md` explains the engine, the stop rule and the sources. `python test_belief.py` checks it, including the professor's example (no API calls).
@@ -135,6 +136,9 @@ Re-scoring the Oct 26 runs with the formula cut P1's capacity error from +0.27 t
 - `question_bank.json` / `question_bank.md`: the 35 shared questions; `check_question_bank.py` checks them.
 - `methods.py`: methods A, B, C, C0 and D for the main experiment (D0 is `run_interview` in `run_bakeoff.py`).
 - `belief.py`: the belief engine. `BELIEF_ENGINE.md` explains it; `test_belief.py` checks it.
+- `pilot.py`: builds the labeled answers of the 10 pilot users (`pilot/pool.jsonl`), fits DP's calibration (`pilot/calibration.json`) and compares D, DR and DP on them (`pilot/extract_eval.md`). Pilot users are never scored.
+- `retrieval.py`: finds similar labeled pilot answers for DR (BM25 keyword search; no model download).
+- `check_extractor.py`: faithfulness test. A judge model from another company checks that each reading the extractor took from an answer is supported by the answer, with a quote that code verifies.
 - `prompts.py`: interviewer prompts (v1 in use; v2 and v3 kept for the record), persona prompt, noise notes, check questions. Contradiction notes name a wrong value for a fact the user already stated, so every injected contradiction can be caught.
 - `run_bakeoff.py`: runs the stages. `llm.py` handles API calls, rate limits and retries.
 - `score.py`: turns results into tables, a CSV and a Markdown summary.

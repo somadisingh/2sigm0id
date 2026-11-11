@@ -52,6 +52,36 @@ A, B, C and D form the 2×2 design. C and D differ only in conversation. D0 agai
 
 These are 5 runs each. The two D runs differ by 0.06, so these numbers don't rank the methods. Run 2 raised 2 contradiction flags, against 8 in run 1, and still caught 2 of the 3 injected contradictions. Engine D costs 62% less than D0 and is 4 times faster per turn. One finding: for P3 ("talks big, panics"), the simulated user answered the willingness questions with panic, and engine D's extractor scored the answers as given (willingness error −0.60). C's forced-choice form kept the two scores apart.
 
+## Generative AI parts in method D
+
+The professor said that prompt chaining alone is not sufficient. In D, the LLM reads language and code makes the decisions. We added three parts to the reading step. Each part has its own measured test. The tests use the labeled answers of the 10 pilot users (`python pilot.py ...`). The labels come from the pilot users' true profiles, not from an LLM. Pilot users are never scored in the experiment.
+
+| Part | Course topic | What it does | Method |
+|---|---|---|---|
+| Retrieval | Retrieval-augmented generation | Before GLM reads an answer, `retrieval.py` finds the 3 most similar labeled pilot answers about the same topic. GLM sees them as worked examples. | DR |
+| Token probabilities | Next-token prediction, decoding, calibration | GLM picks the matching option with one letter. We read its probability for every option, correct the probabilities with one temperature value fitted on the pilot fact answers, and use them as soft evidence. | DP |
+| Faithfulness test | Evaluating generative AI, hallucination tests | A judge model from another company checks each reading against the answer and quotes its support. Code checks that the quote is in the answer. | `check_extractor.py` |
+
+**Calibration (DP).** GLM's raw option probabilities were too confident. On the 50 pilot fact answers, it picked the right option 82% of the time, but its stated confidence was much higher (calibration error 0.176). A temperature of 2.75 brought the calibration error down to 0.045, and the accuracy did not change. We fitted the temperature on fact answers only, because only there the correct option is known exactly. Source: `pilot/calibration.json`.
+
+**A scale error that the tests found.** The first extractor prompt put "holds calmly or buys more" at 1.0. The question bank and the test users put "holds" at about 0.7 and only "buys more" at about 0.9. So the extractor read "I held on" as 1.0. The faithfulness test showed many of these readings as unsupported. We changed the extractor's scale to the band descriptions that the test users get (0.1, 0.3, 0.5, 0.7, 0.9). This fix did more than retrieval did:
+
+| Reader, 290 labeled pilot answers | facts right | willingness error | behavior error | past or imagined right | $ per answer |
+|---|---|---|---|---|---|
+| D, old scale | 88% | 0.137 | 0.114 | 87% | $0.00092 |
+| DR, old scale | 88% | 0.100 | 0.093 | 96% | $0.00121 |
+| **D, fixed scale** | 88% | **0.120** | **0.087** | 91% | $0.00105 |
+| **DR, fixed scale** | 86% | **0.104** | **0.093** | 97% | $0.00134 |
+| DP, token probabilities | 82% | 0.125 | 0.131 | – | $0.00024 |
+
+With the old scale, retrieval cut the willingness error by 0.038 and the behavior error by 0.020. Most of that gain came from examples that showed the correct scale. With the fixed scale, retrieval still cuts the willingness error by 0.017 (95% range 0.005 to 0.029), but it does not change the behavior error (+0.005, range −0.006 to +0.017). Token probabilities cost 77% less per answer than D. Their behavior error is higher by 0.044 (range 0.020 to 0.070). DR never sees examples from the same pilot user. Source: `pilot/extract_eval.md`.
+
+**End to end** (5 test users, budget 10, 2 runs each, old scale): D 0.168, DR 0.168, DP 0.178 avg error. DP costs $0.0042 per profile, D $0.0111 and DR $0.0143. At this size the three are tied on accuracy.
+
+**The judge needs a check too.** We ran the judge (Nemotron 3.5 Super) on the same 150 readings two times with the same settings. The two runs agreed on only 85% of the readings. With thinking off, the judge marked 25% of the readings as unsupported, and most of these marks were wrong (for example, "I have no dependents" read as 0 dependents). With thinking on, it marked 11%, and many marks were still wrong. So the faithfulness numbers are not final. Before we report them, two team members must label 50 readings by hand, and we report how often the judge agrees with them. `check_extractor.py` now uses thinking by default. The hand-labeling sheet is `pilot/label_readings.csv`.
+
+One pattern holds in every judge run. Behavior readings that the extractor takes from an answer to a different question ("volunteered") are the least supported: the judge doubted 36% (D) and 47% (DR) of them. Readings about the question's own topic look sound (1% for willingness, 6–10% for facts). A possible fix is to count volunteered readings as vague evidence. We test this only after the hand labels confirm the pattern.
+
 ## Values to fit
 
 `SIGMA` (evidence strength by type), `LAPSE`, `STOP_CHANCE` and the flat priors are starting values. Fit them on the 10 pilot users (`mirofish/personas_pilot.json`), never on the 100 test users. Report how much the results change when they change.

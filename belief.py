@@ -166,6 +166,33 @@ class Belief:
         row = scored_options(item).index(opt)
         self.update(target, self.model(item)[row])
 
+    def observe_soft(self, item, q, turn=None):
+        """Soft evidence: q = the probability of each of the item's options (all options, in
+        order), for example from an LLM's token probabilities. A sure q acts like a form
+        answer; a spread-out q moves the belief less. Returns contradiction turns."""
+        target = item_target(item)
+        if target is None:
+            return []
+        scored = [i for i, o in enumerate(item["options"]) if o["score"] is not None]
+        q = np.asarray(q, float)
+        null = q.sum() - q[scored].sum()   # "never happened": no information
+        self.update(target, q[scored] @ self.model(item) + null / len(scored))
+        top = scored[int(np.argmax(q[scored]))]
+        if q[top] < 0.6:
+            return []
+        name = target[1]
+        if item["id"] in PAST_ITEMS:
+            s = float((q[scored] * [item["options"][i]["score"] for i in scored]).sum() / q[scored].sum())
+            return self._conflicts("past_loss_reaction", s, s, False, turn)
+        if target[0] != "fact":
+            return []
+        opt = item["options"][top]
+        if name == "income_stability":
+            return self._conflicts(name, opt["score"], opt["score"], False, turn)
+        lo, hi = opt["range"]
+        hi = FACT_GRIDS[name][-1] if hi is None else hi - 1e-6
+        return self._conflicts(name, lo, hi, False, turn)
+
     def observe_fact(self, fact, low, high, vague=False, turn=None):
         """A spoken fact, as a range of values (income: its sub-score as low = high)."""
         grid = FACT_GRIDS[fact]

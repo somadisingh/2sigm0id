@@ -1,0 +1,35 @@
+{
+ "model": "glm-5.3",
+ "temperature": 2.75,
+ "fitted_on": "fact answers",
+ "readable": "289 of 290",
+ "facts_before": {
+  "nll": 1.153,
+  "accuracy": 0.82,
+  "brier": 0.346,
+  "ece": 0.176,
+  "n": 50
+ },
+ "facts_after": {
+  "nll": 0.598,
+  "accuracy": 0.82,
+  "brier": 0.3,
+  "ece": 0.045,
+  "n": 50
+ },
+ "all_before": {
+  "nll": 2.909,
+  "accuracy": 0.599,
+  "brier": 0.758,
+  "ece": 0.373,
+  "n": 289
+ },
+ "all_after": {
+  "nll": 1.244,
+  "accuracy": 0.599,
+  "brier": 0.639,
+  "ece": 0.23,
+  "n": 289
+ },
+ "date": "2026-11-11"
+}
