@@ -20,6 +20,9 @@ The evidence strengths (SIGMA) and LAPSE are starting guesses. Fit them on the 1
 users and report how sensitive the results are to them.
 """
 
+import json
+from pathlib import Path
+
 import numpy as np
 
 import capacity as K
@@ -40,16 +43,47 @@ FACT_GRIDS = {
 FACTS = tuple(FACT_GRIDS)
 
 # How much one answer moves a score: the spread (standard deviation) of answers around the
-# true score. Past actions are the strongest evidence, stated feelings next, and answers
-# about imagined situations the weakest. Vague answers count VAGUE_FACTOR times wider.
-SIGMA = {"stated": 0.20, "hypothetical": 0.25, "past": 0.15}
-VAGUE_FACTOR = 2.0
-PAST_ITEMS = {"BEH02", "BEH10"}   # behavior items about what the person actually did
-# Chance that an answer is off (misread, careless, a contradiction). It keeps one answer
-# from ruling anything out, so two answers that disagree leave both values possible.
+# true score, by type of evidence: a past action, a stated feeling, or an imagined
+# situation. Vague answers count VAGUE_FACTOR times wider.
+# LAPSE: the chance that an answer is off (careless, flipped, a contradiction). It keeps one
+# answer from ruling anything out, so two answers that disagree leave both values possible.
+# Form answers (an option number) and spoken answers (read by D's extractor) have their own
+# values. These are starting guesses; `python pilot.py fit` fits them on the pilot users and
+# saves them in pilot/fitted.json, which this module loads when it exists.
+SIGMA = {"stated": 0.20, "hypothetical": 0.25, "past": 0.15}          # form answers
 LAPSE = 0.10
-OUTSIDE = (LAPSE / 5) / (1 - LAPSE + LAPSE / 5)   # weight of a value a stated fact rules out
+SPOKEN_SIGMA = {"stated": 0.20, "hypothetical": 0.25, "past": 0.15}   # spoken answers
+SPOKEN_LAPSE = 0.10
+FACT_MISS = 0.10   # share of spoken fact readings whose range misses the true value
+VAGUE_FACTOR = 2.0
 OUTSIDE_VAGUE = 0.30
+PAST_ITEMS = {"BEH02", "BEH10"}   # behavior items about what the person actually did
+FITTED_PATH = Path(__file__).resolve().parent / "pilot" / "fitted.json"
+SETTINGS_SOURCE = "starting guesses"
+
+
+def settings():
+    return {"sigma": dict(SIGMA), "lapse": LAPSE, "spoken_sigma": dict(SPOKEN_SIGMA),
+            "spoken_lapse": SPOKEN_LAPSE, "fact_miss": FACT_MISS, "source": SETTINGS_SOURCE}
+
+
+def use(values, source="given"):
+    """Set the evidence settings (a dict like settings() returns; missing keys stay)."""
+    global LAPSE, SPOKEN_LAPSE, FACT_MISS, OUTSIDE, SETTINGS_SOURCE
+    SIGMA.update(values.get("sigma", {}))
+    SPOKEN_SIGMA.update(values.get("spoken_sigma", {}))
+    LAPSE = values.get("lapse", LAPSE)
+    SPOKEN_LAPSE = values.get("spoken_lapse", SPOKEN_LAPSE)
+    FACT_MISS = values.get("fact_miss", FACT_MISS)
+    # weight of a value that a stated fact rules out, relative to a value inside its range
+    OUTSIDE = (FACT_MISS / 5) / (1 - FACT_MISS + FACT_MISS / 5)
+    SETTINGS_SOURCE = source
+
+
+use({}, SETTINGS_SOURCE)
+STARTING = settings()   # the starting guesses, kept for comparisons
+if FITTED_PATH.exists():
+    use(json.loads(FITTED_PATH.read_text()), "pilot/fitted.json")
 
 STOP_CHANCE = 0.05     # stop when the final band has under this chance of changing
 N_SAMPLES = 2000       # fact samples for the capacity distribution
@@ -136,13 +170,14 @@ class Belief:
         # fixed random numbers: the same belief always gives the same capacity samples
         self.u = np.random.default_rng(seed).random((len(FACTS), N_SAMPLES))
         self.said = []   # every stated fact or past-loss score, for contradiction checks
+        self.asked = set()
         self._models = {}
 
     def copy(self):
         b = Belief.__new__(Belief)
         b.dim = {k: v.copy() for k, v in self.dim.items()}
         b.fact = {k: v.copy() for k, v in self.fact.items()}
-        b.u, b.said, b._models = self.u, list(self.said), self._models
+        b.u, b.said, b.asked, b._models = self.u, list(self.said), set(self.asked), self._models
         return b
 
     def model(self, item):
@@ -204,9 +239,9 @@ class Belief:
 
     def observe_score(self, dim, score, kind, vague=False, turn=None):
         """A spoken attitude (willingness) or behavior, scored 0-1 by the extractor."""
-        sigma = SIGMA[kind] * (VAGUE_FACTOR if vague else 1)
+        sigma = SPOKEN_SIGMA[kind] * (VAGUE_FACTOR if vague else 1)
         g = np.exp(-(score - GRID) ** 2 / (2 * sigma ** 2))
-        self.update(("dim", dim), (1 - LAPSE) * g + LAPSE / 5)
+        self.update(("dim", dim), (1 - SPOKEN_LAPSE) * g + SPOKEN_LAPSE / 5)
         if dim == "behavioral" and kind == "past":
             return self._conflicts("past_loss_reaction", score, score, vague, turn)
         return []

@@ -96,9 +96,25 @@ These are 10 runs per method, so they do not rank the methods. Two patterns are 
 - The engine estimates capacity much better. At budget 10, A's fixed form never asks about debt or dependents, so these facts stay at the prior. C chooses the fact questions that matter for each person.
 - C and D estimate behavior less well. In one case (U015, a user with heavy noise), D gave band 2 to a band 5 user. An injected contradiction made the user falsely say "I sold a lot at the bottom" in answer to a clarifying question. A past action is the strongest evidence, so this one false statement outweighed the honest answers. The honest "I would buy more" was hedged, so it counted as vague. Also, the user had said earlier that they never had a big loss. The extractor cannot record "never", so the engine did not flag the contradiction. Fitting the evidence strengths on the pilot users will test whether past actions should count less.
 
-## Values to fit
+## Settings fitted on the pilot users
 
-`SIGMA` (evidence strength by type), `LAPSE`, `STOP_CHANCE` and the flat priors are starting values. Fit them on the 10 pilot users (`mirofish/personas_pilot.json`), never on the 100 test users. Report how much the results change when they change.
+`python pilot.py fit` fits the evidence settings on the 10 pilot users and saves them in `pilot/fitted.json`. `belief.py` loads that file when it exists. Each result record stores the settings it used (`engine_settings`). The 100 test users are never used for fitting. A fitted part is adopted only if it lowered the error on pilot users that it was not fitted on (leave one out). Full table: `pilot/fit.md`.
+
+| Setting | Starting guess | Fitted | Left-out avg error, before → after | Decision |
+|---|---|---|---|---|
+| Form answers: spread for stated / imagined / past | 0.20 / 0.25 / 0.15 | 0.175 / 0.25 / 0.325 | C: 0.120 → 0.101; A: 0.105 → 0.101 | adopted |
+| Form answers: lapse | 0.10 | 0.05 | (as above) | adopted |
+| Spoken readings: spread for stated / imagined / past | 0.20 / 0.25 / 0.15 | 0.10 / 0.05 / 0.075 | D: 0.116 → 0.108 | adopted |
+| Spoken readings: lapse | 0.10 | 0.30 | (as above) | adopted |
+| Fixed-form questions for A and B, chosen on the pilot users | bank priority | see `pilot/fit.md` | A: 0.101 → 0.116 (worse) | not adopted |
+
+Findings:
+
+- **Past actions are not the strongest evidence in form answers.** Their fitted spread (0.325) is the widest. A test user's past-loss story (held, sold, or none) is coarse and does not follow its behavior score closely. So the starting guess "a past action counts most" was wrong for our test users. This guess caused the U015 failure above. With the fitted settings, the professor's example asks BEH01 first instead of BEH02. It still asks about behavior, and another willingness question still has a value of zero.
+- **The spoken fit is too good to trust fully.** The extractor's scale uses the same band wording that the test users get (for example "holds calmly and waits it out"). So the extractor can decode the band from the words, and the fitted spread is small (0.05 to 0.10). Real people do not speak in band wording. The large lapse (0.30) limits the risk, because one wrong reading cannot settle a score. We report this as a limit of AI test users.
+- **BEH01 has a wording leak.** The test-user instructions say "if your investments fell 20% in a month", and BEH01 asks about a 20% drop in one month. This probably makes BEH01 look more informative than it is. After the leak fix, rebuild the pilot answers and fit again (`python pilot.py build`, `forms`, `extract-eval`, `fit`; about $0.75).
+- **Choosing the fixed-form questions on 9 users overfits.** The chosen forms did worse on the left-out user than the bank's default forms. A and B keep the default forms.
+- The fit uses noise-free spoken answers and form answers with form noise only. The pilot answers have no injected contradictions.
 
 ## Limits
 

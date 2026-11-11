@@ -47,9 +47,19 @@ def test_known_facts_give_formula_capacity():
 
 def test_professors_example():
     """Says they like risk (willingness ~0.8) but behavior sits near the band 1/2 edge, and
-    capacity is high. Behavior decides the band, so the engine should ask about behavior,
-    and the past-behavior question should be its first choice; another willingness
-    question should be worth much less."""
+    capacity is high. Behavior decides the band, so the engine should ask about behavior;
+    another willingness question should be worth much less. With the starting settings
+    (past actions = strongest evidence) the past-behavior question comes first."""
+    fitted = B.settings()
+    B.use(B.STARTING, "starting guesses")
+    try:
+        _professors_example(expect_past_first=True)
+    finally:
+        B.use(fitted, fitted["source"])
+    _professors_example(expect_past_first=False)   # whatever settings are in use
+
+
+def _professors_example(expect_past_first):
     b = B.Belief()
     for fact, v in (("horizon_yrs", 25), ("emergency_fund_months", 12), ("income_stability", 1.0),
                     ("debt_to_income", 0.0), ("dependents", 0)):
@@ -63,11 +73,13 @@ def test_professors_example():
     best, info = b.choose(cands, left=6)
     s = b.score_items(cands)
     best_wil = max(s[i["id"]]["gain"] for i in cands if i["dimension"] == "willingness")
-    assert best["id"] == "BEH02", (best["id"], info)
-    assert s["BEH02"]["gain"] > 3 * best_wil, (s["BEH02"], best_wil)
-    print(f"  professor's example: asks {best['id']} (past behavior), gain {s['BEH02']['gain']:.3f} "
-          f"vs best willingness {best_wil:.3f}; most likely band {info['top_band']} "
-          f"({info['top_band_chance']:.0%}); mismatch chance {b.mismatch_chance():.0%}")
+    assert best["dimension"] == "behavioral", (best["id"], info)
+    if expect_past_first:
+        assert best["id"] == "BEH02", (best["id"], info)
+    assert s[best["id"]]["gain"] > 3 * best_wil, (s[best["id"]], best_wil)
+    print(f"  professor's example ({B.SETTINGS_SOURCE}): asks {best['id']}, gain "
+          f"{s[best['id']]['gain']:.3f} vs best willingness {best_wil:.3f}; most likely band "
+          f"{info['top_band']} ({info['top_band_chance']:.0%}); mismatch chance {b.mismatch_chance():.0%}")
 
 
 def test_contradiction_widens_then_clarifies():

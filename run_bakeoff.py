@@ -378,7 +378,8 @@ def experiment(args):
     llm = make_llm(args.mock)
     personas = load_personas(args.personas, args.limit)
     print(f"{len(personas)} test users from {args.personas}"
-          f"{', with backstories' if C.USE_BACKSTORIES else ''}")
+          f"{', with backstories' if C.USE_BACKSTORIES else ''}; engine settings: "
+          f"{methods.BE.SETTINGS_SOURCE}")
     iv, user = C.EXPERIMENT_INTERVIEWER, C.EXPERIMENT_USER
     if C.MODELS[iv]["family"] == C.MODELS[user]["family"]:
         sys.exit(f"{iv} and {user} are from the same company. Change EXPERIMENT_USER in config.py.")

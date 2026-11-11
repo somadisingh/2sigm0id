@@ -117,8 +117,17 @@ def load_bank():
     return json.loads((HERE / "question_bank.json").read_text())
 
 
-def short_form(bank, budget):
-    """Default short form: top-priority items per dimension (see short_form_allocation)."""
+SHORT_FORMS_PATH = HERE / "pilot" / "short_forms.json"
+
+
+def short_form(bank, budget, use_fitted=True):
+    """The fixed form for methods A and B: the questions chosen on the pilot users
+    (pilot/short_forms.json, from `python pilot.py fit`), else the top-priority items per
+    dimension (short_form_allocation in the bank)."""
+    if use_fitted and SHORT_FORMS_PATH.exists():
+        ids = json.loads(SHORT_FORMS_PATH.read_text())[str(budget)]
+        items = {i["id"]: i for i in bank["items"]}
+        return [items[i] for i in ids]
     alloc = bank["short_form_allocation"][str(budget)]
     chosen = []
     for dim in DIMS:
@@ -472,6 +481,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         "aborted_invalid": False,
         "unanswered": sum(a["score"] is None for a in answers),
         "turns": turns, "interviewer_calls": m_calls, "user_calls": u_calls,
-        "start_latency": 0.0,
+        "start_latency": 0.0, "engine_settings": BE.settings(),
+        "short_form": [i["id"] for i in fixed] if fixed else None,
         "probes": [], "seconds": round(time.monotonic() - t0, 1),
     }
