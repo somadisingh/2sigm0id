@@ -16,6 +16,8 @@
 
   python check_personas.py facts                                   # about $0.06
   python check_personas.py noise results/experiment_100users_b10.jsonl   # about $0.10
+  python check_personas.py human-read make    # check 6 (Siya's): 20 conversations to read, no cost
+  python check_personas.py human-read score   # after everyone has filled in guesses.csv
 
 Results: persona_checks/check1_facts.md and persona_checks/check4_noise.md.
 Persona checks 2, 3, 5 and 6 are Siya's (plan.md, task S3).
@@ -286,6 +288,99 @@ def noise(args):
                                          "verdict": v} for j, v in zip(jobs, verdicts)])
 
 
+READ_DIR = OUT / "human_read"
+READ_INTRO = """# Persona check 6: read 20 conversations and guess the band
+
+Each conversation is a real run of method D (the adaptive interviewer) with one AI test user.
+We removed the true profiles. Your task: read each conversation and guess the person's final
+band. This tells us if a person can see the profile in the answers, as the AI model must.
+
+## The bands
+
+Each person has three scores. Each score has a band from 1 (very careful) to 5 (very bold):
+
+- **Capacity**: how much loss the person can afford. Look at the years until they need the
+  money, emergency savings, income stability, debt payments and dependents.
+- **Willingness**: how the person *says* they feel about risk.
+- **Behavior**: what the person *does*, or would do, in a real loss.
+
+The **final band is the lowest of the three bands**. Example: capacity 4, willingness 5,
+behavior 2 gives final band 2.
+
+## Steps
+
+1. Read one conversation.
+2. In `guesses.csv`, in your column, write the final band (1 to 5) for that conversation ID.
+3. If you are not sure, write your best guess and add a note.
+4. Do not open `key_DO_NOT_OPEN.json`. Do not talk about your guesses with the others before
+   all three of you finish.
+5. When all three columns are full, run `python check_personas.py human-read score`.
+
+Some answers are vague or contradict earlier answers on purpose. That is planned noise.
+"""
+
+
+def human_read(args):
+    if args.action == "score":
+        return score_human_read()
+    recs = [json.loads(x) for x in Path(args.file).read_text().splitlines() if x.strip()]
+    d = [r for r in recs if r.get("method") == "D" and not r.get("error")]
+    rng = random.Random(0)
+    pick = []
+    for b in range(1, 6):   # 4 per true final band
+        pool = sorted((r for r in d if r["truth"]["final_band"] == b), key=lambda r: r["persona_id"])
+        pick += rng.sample(pool, min(args.per_band, len(pool)))
+    rng.shuffle(pick)
+    parts, key = [READ_INTRO], []
+    for n, r in enumerate(pick, 1):
+        cid = f"C{n:02d}"
+        parts.append(f"\n---\n\n## {cid}\n")
+        for i, t in enumerate(r["turns"], 1):
+            parts.append(f"**Q{i}.** {t['q']}\n\n> {t['a']}\n")
+        given = min(P.band(r["final_profile"][d_]) for d_ in ("capacity", "willingness", "behavioral"))
+        key.append({"id": cid, "persona_id": r["persona_id"], "true_final_band": r["truth"]["final_band"],
+                    "true": {k: r["truth"][k] for k in ("capacity", "willingness", "behavioral")},
+                    "mismatch_type": r["truth"]["mismatch_type"], "method_D_band": given,
+                    "source": Path(args.file).name})
+    if args.mock:
+        print("".join(parts)[:1500])
+        return
+    READ_DIR.mkdir(parents=True, exist_ok=True)
+    (READ_DIR / "conversations.md").write_text("\n".join(parts))
+    (READ_DIR / "key_DO_NOT_OPEN.json").write_text(json.dumps(key, indent=1) + "\n")
+    with (READ_DIR / "guesses.csv").open("w") as f:
+        f.write("id,siya,preyansh,somaditya,notes\n" + "".join(f"{k['id']},,,,\n" for k in key))
+    print(f"Saved {len(pick)} conversations to {READ_DIR.relative_to(HERE)}/conversations.md")
+
+
+def score_human_read():
+    import csv
+    key = {k["id"]: k for k in json.loads((READ_DIR / "key_DO_NOT_OPEN.json").read_text())}
+    rows = list(csv.DictReader((READ_DIR / "guesses.csv").open()))
+    readers = [c for c in rows[0] if c not in ("id", "notes")]
+    lines = ["# Persona check 6: people read 20 conversations", "",
+             "| reader | guesses | final band exact | within 1 band |", "|---|---|---|---|"]
+    guesses = {}
+    for who in readers:
+        g = {r["id"]: int(r[who]) for r in rows if r[who].strip().isdigit()}
+        guesses[who] = g
+        if g:
+            ex = st.mean(g[i] == key[i]["true_final_band"] for i in g)
+            w1 = st.mean(abs(g[i] - key[i]["true_final_band"]) <= 1 for i in g)
+            lines.append(f"| {who} | {len(g)} | {ex:.0%} | {w1:.0%} |")
+    ex = st.mean(k["method_D_band"] == k["true_final_band"] for k in key.values())
+    w1 = st.mean(abs(k["method_D_band"] - k["true_final_band"]) <= 1 for k in key.values())
+    lines.append(f"| method D (the system) | {len(key)} | {ex:.0%} | {w1:.0%} |")
+    full = [i for i in key if all(i in g for g in guesses.values())]
+    if len(readers) > 1 and full:
+        agree = st.mean(len({guesses[w][i] for w in readers}) == 1 for i in full)
+        lines += ["", f"All readers gave the same band for {agree:.0%} of the {len(full)} conversations "
+                  "that every reader guessed."]
+    text = "\n".join(lines) + "\n"
+    (OUT / "check6_human_read.md").write_text(text)
+    print(text)
+
+
 def write(args, name, lines, raw):
     text = "\n".join(lines) + "\n"
     if not args.mock:
@@ -309,6 +404,13 @@ def main():
     n.add_argument("--sample", type=int, default=200, help="at most this many control answers")
     n.add_argument("--mock", action="store_true")
     n.set_defaults(fn=noise)
+    h = sub.add_parser("human-read", help="persona check 6: make the reading sheet, or score the guesses")
+    h.add_argument("action", choices=["make", "score"])
+    h.add_argument("file", nargs="?", default="results/experiment_100users_b10_willfix.jsonl",
+                   help="experiment results with method D runs (for make)")
+    h.add_argument("--per-band", type=int, default=4)
+    h.add_argument("--mock", action="store_true", help="print the start of the sheet; save nothing")
+    h.set_defaults(fn=human_read)
     args = ap.parse_args()
     R.load_env()
     args.fn(args)

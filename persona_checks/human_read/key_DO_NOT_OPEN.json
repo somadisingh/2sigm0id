@@ -1,0 +1,262 @@
+[
+ {
+  "id": "C01",
+  "persona_id": "U057-b4-match-heavy",
+  "true_final_band": 4,
+  "true": {
+   "capacity": 0.992,
+   "willingness": 0.69,
+   "behavioral": 0.65
+  },
+  "mismatch_type": "none",
+  "method_D_band": 4,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C02",
+  "persona_id": "U075-b3-cantafford-clean",
+  "true_final_band": 3,
+  "true": {
+   "capacity": 0.52,
+   "willingness": 0.89,
+   "behavioral": 0.9
+  },
+  "mismatch_type": "says aggressive, can't afford it",
+  "method_D_band": 3,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C03",
+  "persona_id": "U099-b5-match-moderate",
+  "true_final_band": 5,
+  "true": {
+   "capacity": 0.992,
+   "willingness": 0.95,
+   "behavioral": 0.85
+  },
+  "mismatch_type": "none",
+  "method_D_band": 5,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C04",
+  "persona_id": "U063-b1-match-clean",
+  "true_final_band": 1,
+  "true": {
+   "capacity": 0.352,
+   "willingness": 0.32,
+   "behavioral": 0.15
+  },
+  "mismatch_type": "none",
+  "method_D_band": 2,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C05",
+  "persona_id": "U043-b5-match-clean",
+  "true_final_band": 5,
+  "true": {
+   "capacity": 0.891,
+   "willingness": 0.94,
+   "behavioral": 0.92
+  },
+  "mismatch_type": "none",
+  "method_D_band": 5,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C06",
+  "persona_id": "U083-b2-cautious-moderate",
+  "true_final_band": 2,
+  "true": {
+   "capacity": 0.75,
+   "willingness": 0.3,
+   "behavioral": 0.71
+  },
+  "mismatch_type": "can afford risk, prefers caution",
+  "method_D_band": 2,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C07",
+  "persona_id": "U098-b4-match-heavy",
+  "true_final_band": 4,
+  "true": {
+   "capacity": 0.683,
+   "willingness": 0.95,
+   "behavioral": 0.73
+  },
+  "mismatch_type": "none",
+  "method_D_band": 3,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C08",
+  "persona_id": "U059-b2-cantafford-clean",
+  "true_final_band": 2,
+  "true": {
+   "capacity": 0.316,
+   "willingness": 0.95,
+   "behavioral": 0.49
+  },
+  "mismatch_type": "says aggressive, can't afford it",
+  "method_D_band": 2,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C09",
+  "persona_id": "U092-b5-match-clean",
+  "true_final_band": 5,
+  "true": {
+   "capacity": 0.966,
+   "willingness": 0.89,
+   "behavioral": 0.9
+  },
+  "mismatch_type": "none",
+  "method_D_band": 4,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C10",
+  "persona_id": "U024-b5-match-moderate",
+  "true_final_band": 5,
+  "true": {
+   "capacity": 0.981,
+   "willingness": 0.9,
+   "behavioral": 0.85
+  },
+  "mismatch_type": "none",
+  "method_D_band": 5,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C11",
+  "persona_id": "U031-b4-match-clean",
+  "true_final_band": 4,
+  "true": {
+   "capacity": 0.672,
+   "willingness": 0.72,
+   "behavioral": 0.76
+  },
+  "mismatch_type": "none",
+  "method_D_band": 4,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C12",
+  "persona_id": "U066-b2-cautious-clean",
+  "true_final_band": 2,
+  "true": {
+   "capacity": 0.966,
+   "willingness": 0.26,
+   "behavioral": 0.7
+  },
+  "mismatch_type": "can afford risk, prefers caution",
+  "method_D_band": 1,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C13",
+  "persona_id": "U081-b2-match-moderate",
+  "true_final_band": 2,
+  "true": {
+   "capacity": 0.35,
+   "willingness": 0.3,
+   "behavioral": 0.56
+  },
+  "mismatch_type": "none",
+  "method_D_band": 1,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C14",
+  "persona_id": "U065-b1-match-clean",
+  "true_final_band": 1,
+  "true": {
+   "capacity": 0.35,
+   "willingness": 0.15,
+   "behavioral": 0.28
+  },
+  "mismatch_type": "none",
+  "method_D_band": 1,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C15",
+  "persona_id": "U073-b3-panic-heavy",
+  "true_final_band": 3,
+  "true": {
+   "capacity": 0.754,
+   "willingness": 0.85,
+   "behavioral": 0.46
+  },
+  "mismatch_type": "says aggressive, would panic-sell",
+  "method_D_band": 4,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C16",
+  "persona_id": "U030-b4-match-clean",
+  "true_final_band": 4,
+  "true": {
+   "capacity": 0.953,
+   "willingness": 0.88,
+   "behavioral": 0.73
+  },
+  "mismatch_type": "none",
+  "method_D_band": 4,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C17",
+  "persona_id": "U020-b3-cautious-heavy",
+  "true_final_band": 3,
+  "true": {
+   "capacity": 0.97,
+   "willingness": 0.5,
+   "behavioral": 0.88
+  },
+  "mismatch_type": "can afford risk, prefers caution",
+  "method_D_band": 3,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C18",
+  "persona_id": "U012-b1-match-heavy",
+  "true_final_band": 1,
+  "true": {
+   "capacity": 0.309,
+   "willingness": 0.08,
+   "behavioral": 0.13
+  },
+  "mismatch_type": "none",
+  "method_D_band": 1,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C19",
+  "persona_id": "U050-b1-cantafford-heavy",
+  "true_final_band": 1,
+  "true": {
+   "capacity": 0.116,
+   "willingness": 0.9,
+   "behavioral": 0.48
+  },
+  "mismatch_type": "says aggressive, can't afford it",
+  "method_D_band": 2,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ },
+ {
+  "id": "C20",
+  "persona_id": "U047-b3-cautious-moderate",
+  "true_final_band": 3,
+  "true": {
+   "capacity": 0.917,
+   "willingness": 0.5,
+   "behavioral": 0.5
+  },
+  "mismatch_type": "can afford risk, prefers caution",
+  "method_D_band": 2,
+  "source": "experiment_100users_b10_willfix.jsonl"
+ }
+]
