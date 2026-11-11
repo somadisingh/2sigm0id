@@ -62,9 +62,9 @@ The professor said that prompt chaining alone is not sufficient. In D, the LLM r
 | Token probabilities | Next-token prediction, decoding, calibration | GLM picks the matching option with one letter. We read its probability for every option, correct the probabilities with one temperature value fitted on the pilot fact answers, and use them as soft evidence. | DP |
 | Faithfulness test | Evaluating generative AI, hallucination tests | A judge model from another company checks each reading against the answer and quotes its support. Code checks that the quote is in the answer. | `check_extractor.py` |
 
-**Calibration (DP).** GLM's raw option probabilities were too confident. On the 50 pilot fact answers, it picked the right option 82% of the time, but its stated confidence was much higher (calibration error 0.176). A temperature of 2.75 brought the calibration error down to 0.045, and the accuracy did not change. We fitted the temperature on fact answers only, because only there the correct option is known exactly. Source: `pilot/calibration.json`.
+**Calibration (DP).** GLM's raw option probabilities were too confident. On the 50 pilot fact answers (after the leak fix), it picked the right option 86% of the time, but its stated confidence was higher (calibration error 0.151). A temperature of 2.5 brought the calibration error down to 0.106, and the accuracy did not change. (Before the leak fix: 82% right, calibration error 0.176 → 0.045 with a temperature of 2.75.) We fitted the temperature on fact answers only, because only there the correct option is known exactly. Source: `pilot/calibration.json`.
 
-**A scale error that the tests found.** The first extractor prompt put "holds calmly or buys more" at 1.0. The question bank and the test users put "holds" at about 0.7 and only "buys more" at about 0.9. So the extractor read "I held on" as 1.0. The faithfulness test showed many of these readings as unsupported. We changed the extractor's scale to the band descriptions that the test users get (0.1, 0.3, 0.5, 0.7, 0.9). This fix did more than retrieval did:
+**A scale error that the tests found.** The first extractor prompt put "holds calmly or buys more" at 1.0. The question bank and the test users put "holds" at about 0.7 and only "buys more" at about 0.9. So the extractor read "I held on" as 1.0. The faithfulness test showed many of these readings as unsupported. We gave the extractor five points of the scale (0.1, 0.3, 0.5, 0.7, 0.9). At first, these points used the test users' own band wording. That let the extractor decode the band from the words, so on Nov 11 we changed them to neutral wording with the same meaning. On the same day we removed the "20% in a month" leak from the test users' instructions and rebuilt all pilot answers. The scale fix did more than retrieval did:
 
 | Reader, 290 labeled pilot answers | facts right | willingness error | behavior error | past or imagined right | $ per answer |
 |---|---|---|---|---|---|
@@ -73,8 +73,12 @@ The professor said that prompt chaining alone is not sufficient. In D, the LLM r
 | **D, fixed scale** | 88% | **0.120** | **0.087** | 91% | $0.00105 |
 | **DR, fixed scale** | 86% | **0.104** | **0.093** | 97% | $0.00134 |
 | DP, token probabilities | 82% | 0.125 | 0.131 | – | $0.00024 |
+| **After the leak fix, neutral scale (current)** | | | | | |
+| D | 90% | **0.115** | **0.085** | 94% | $0.00103 |
+| DR, retrieval | 86% | 0.103 | 0.082 | 96% | $0.00131 |
+| DP, token probabilities | 88% | 0.132 | 0.116 | – | $0.00023 |
 
-With the old scale, retrieval cut the willingness error by 0.038 and the behavior error by 0.020. Most of that gain came from examples that showed the correct scale. With the fixed scale, retrieval still cuts the willingness error by 0.017 (95% range 0.005 to 0.029), but it does not change the behavior error (+0.005, range −0.006 to +0.017). Token probabilities cost 77% less per answer than D. Their behavior error is higher by 0.044 (range 0.020 to 0.070). DR never sees examples from the same pilot user. Source: `pilot/extract_eval.md`.
+With the old scale, retrieval cut the willingness error by 0.038 and the behavior error by 0.020. Most of that gain came from examples that showed the correct scale. Now, retrieval does not clearly help: willingness −0.012 (95% range −0.025 to 0.000), behavior −0.005 (−0.028 to +0.012). Token probabilities cost 78% less per answer than D, but their errors are higher: willingness +0.017 (0.004 to 0.031), behavior +0.027 (0.014 to 0.040). The neutral scale did not make D less accurate. DR never sees examples from the same pilot user. Source: `pilot/extract_eval.md`.
 
 **End to end** (5 test users, budget 10, 2 runs each, old scale): D 0.168, DR 0.168, DP 0.178 avg error. DP costs $0.0042 per profile, D $0.0111 and DR $0.0143. At this size the three are tied on accuracy.
 
@@ -91,7 +95,7 @@ One pattern holds in every judge run. Behavior readings that the extractor takes
 | C adaptive form | 0.121 | **0.070** | 0.123 | 0.168 | $0 |
 | D adaptive interviewer | 0.147 | 0.127 | 0.122 | 0.191 | $0.0117 |
 
-These are 10 runs per method, so they do not rank the methods. Two patterns are worth a check in the full run:
+This run used the starting settings and the old test-user wording (before the leak fix). These are 10 runs per method, so they do not rank the methods. Two patterns are worth a check in the full run:
 
 - The engine estimates capacity much better. At budget 10, A's fixed form never asks about debt or dependents, so these facts stay at the prior. C chooses the fact questions that matter for each person.
 - C and D estimate behavior less well. In one case (U015, a user with heavy noise), D gave band 2 to a band 5 user. An injected contradiction made the user falsely say "I sold a lot at the bottom" in answer to a clarifying question. A past action is the strongest evidence, so this one false statement outweighed the honest answers. The honest "I would buy more" was hedged, so it counted as vague. Also, the user had said earlier that they never had a big loss. The extractor cannot record "never", so the engine did not flag the contradiction. Fitting the evidence strengths on the pilot users will test whether past actions should count less.
@@ -100,21 +104,25 @@ These are 10 runs per method, so they do not rank the methods. Two patterns are 
 
 `python pilot.py fit` fits the evidence settings on the 10 pilot users and saves them in `pilot/fitted.json`. `belief.py` loads that file when it exists. Each result record stores the settings it used (`engine_settings`). The 100 test users are never used for fitting. A fitted part is adopted only if it lowered the error on pilot users that it was not fitted on (leave one out). Full table: `pilot/fit.md`.
 
+These are the settings after the leak fix (Nov 11). The pilot answers were rebuilt for this fit.
+
 | Setting | Starting guess | Fitted | Left-out avg error, before → after | Decision |
 |---|---|---|---|---|
-| Form answers: spread for stated / imagined / past | 0.20 / 0.25 / 0.15 | 0.175 / 0.25 / 0.325 | C: 0.120 → 0.101; A: 0.105 → 0.101 | adopted |
-| Form answers: lapse | 0.10 | 0.05 | (as above) | adopted |
-| Spoken readings: spread for stated / imagined / past | 0.20 / 0.25 / 0.15 | 0.10 / 0.05 / 0.075 | D: 0.116 → 0.108 | adopted |
-| Spoken readings: lapse | 0.10 | 0.30 | (as above) | adopted |
-| Fixed-form questions for A and B, chosen on the pilot users | bank priority | see `pilot/fit.md` | A: 0.101 → 0.116 (worse) | not adopted |
+| Form answers: spread for stated / imagined / past | 0.20 / 0.25 / 0.15 | 0.15 / 0.15 / 0.20 | C: 0.096 → 0.091; A: 0.100 → 0.099 | adopted |
+| Form answers: lapse | 0.10 | 0.10 | (as above) | adopted |
+| Spoken readings: spread for stated / imagined / past | 0.20 / 0.25 / 0.15 | 0.10 / 0.05 / 0.10 | D: 0.107 → 0.089 | adopted |
+| Spoken readings: lapse | 0.10 | 0.20 | (as above) | adopted |
+| Spoken fact readings that miss the true value | 0.10 | 0.104 | (as above) | adopted |
+| Fixed-form questions for A and B, chosen on the pilot users | bank priority | see `pilot/fit.md` | A: 0.099 → 0.108 (worse) | not adopted |
 
 Findings:
 
-- **Past actions are not the strongest evidence in form answers.** Their fitted spread (0.325) is the widest. A test user's past-loss story (held, sold, or none) is coarse and does not follow its behavior score closely. So the starting guess "a past action counts most" was wrong for our test users. This guess caused the U015 failure above. With the fitted settings, the professor's example asks BEH01 first instead of BEH02. It still asks about behavior, and another willingness question still has a value of zero.
-- **The spoken fit is too good to trust fully.** The extractor's scale uses the same band wording that the test users get (for example "holds calmly and waits it out"). So the extractor can decode the band from the words, and the fitted spread is small (0.05 to 0.10). Real people do not speak in band wording. The large lapse (0.30) limits the risk, because one wrong reading cannot settle a score. We report this as a limit of AI test users.
-- **BEH01 has a wording leak.** The test-user instructions say "if your investments fell 20% in a month", and BEH01 asks about a 20% drop in one month. This probably makes BEH01 look more informative than it is. After the leak fix, rebuild the pilot answers and fit again (`python pilot.py build`, `forms`, `extract-eval`, `fit`; about $0.75).
-- **Choosing the fixed-form questions on 9 users overfits.** The chosen forms did worse on the left-out user than the bank's default forms. A and B keep the default forms.
+- **Past actions are not the strongest evidence in form answers.** Their fitted spread (0.20) is the widest of the three. A test user's past-loss story (held, sold, or none) is coarse and does not follow its behavior score closely. So the starting guess "a past action counts most" was wrong for our test users. This guess caused the U015 failure above. With the fitted settings, the professor's example asks BEH01 ("your investments drop 20% in one month") first instead of BEH02. It still asks about behavior, and another willingness question still has a value of zero.
+- **The leak did not cause the choice of BEH01.** Before the leak fix the fitted spread for past actions was 0.325; after it, 0.20. The engine still prefers BEH01 after the fix.
+- **Spoken readings fit very closely, and this is a limit of AI test users.** The fitted spread is 0.05 to 0.10, even with the neutral scale wording. The AI test users describe their behavior in words that follow their band closely. Real people are less consistent. The lapse (0.20) limits the risk, because one wrong reading cannot settle a score. Persona checks and the classmate study must test this.
+- **Choosing the fixed-form questions on 9 users overfits.** The chosen forms did worse on the left-out user than the bank's default forms, before and after the leak fix. A and B keep the default forms.
 - The fit uses noise-free spoken answers and form answers with form noise only. The pilot answers have no injected contradictions.
+- Before the leak fix the fit gave similar decisions; the earlier report is in git history (`pilot/fit.md`, commit 54a2303).
 
 ## Limits
 

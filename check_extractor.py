@@ -50,12 +50,12 @@ def describe(kind, name, v):
             return f"{M.FACT_TEXT[name]}: between {lo:.0%} and {hi:.0%} of income"
         return f"{M.FACT_TEXT[name]}: between {lo:g} and {hi:g}"
     if kind == "willingness":
-        return (f"how they say they feel about risk: {v['score']} on a scale where 0.1 = very "
-                "cautious, 0.5 = some risk for some growth, 0.9 = wants maximum growth")
+        return (f"how they say they feel about risk: {v['score']} on a scale where 0.1 = wants to "
+                "avoid any loss, 0.5 = moderate risk for moderate growth, 0.9 = highest growth, big losses ok")
     when = "something that actually happened" if v.get("kind") == "past" else "what they think they would do"
-    return (f"what they do in a real loss: {v['score']} on a scale where 0.1 = sells everything, "
-            f"0.3 = sells a good part, 0.5 = sells a little, mostly holds, 0.7 = holds calmly, "
-            f"0.9 = buys more; this describes {when}")
+    return (f"what they do in a real loss: {v['score']} on a scale where 0.1 = sells all or almost all, "
+            f"0.3 = sells a large part, 0.5 = sells a small part, 0.7 = keeps everything and waits, "
+            f"0.9 = invests more; this describes {when}")
 
 
 def readings(ev, reader, question, answer, item_id, source):

@@ -110,12 +110,14 @@ WILLINGNESS_TEXT = {
     4: "You see yourself as fairly bold. You are happy to take real risk for higher growth.",
     5: "You see yourself as very aggressive. You want maximum growth and claim losses don't scare you.",
 }
+# No numbers or scenario here: an earlier version said "if your investments fell 20% in a
+# month", the same scenario as bank question BEH01, which made that question too easy.
 BEHAVIORAL_TEXT = {
-    1: "In reality, if your investments fell 20% in a month, you would sell everything fast and lose sleep over it.",
-    2: "In reality, if your investments fell 20% in a month, you would get anxious and probably sell a good part.",
-    3: "In reality, if your investments fell 20% in a month, you would feel uneasy, maybe sell a little, but mostly hold.",
-    4: "In reality, if your investments fell 20% in a month, you would hold calmly and wait it out.",
-    5: "In reality, if your investments fell 20% in a month, you would see it as a chance and buy more.",
+    1: "In reality, when your investments lose a lot of value, you panic: you sell quickly to stop the losses and lose sleep over it.",
+    2: "In reality, when your investments lose a lot of value, you get anxious and usually sell a good part to feel safer.",
+    3: "In reality, when your investments lose a lot of value, you feel uneasy and may sell a little, but you mostly hold.",
+    4: "In reality, when your investments lose a lot of value, you stay calm, keep everything and wait for a recovery.",
+    5: "In reality, when your investments lose a lot of value, you see a bargain and invest more.",
 }
 PAST_LOSS_TEXT = {
     "none": "You have never been through a big investment loss.",

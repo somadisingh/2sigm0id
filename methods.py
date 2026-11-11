@@ -65,15 +65,14 @@ Give each number as a range [low, high] that covers what they said: "about 5 yea
 "a few months" -> [2, 4], "no debt" -> [0, 0].
 
 Scores from 0 to 1. Include one only if the answer shows it. Use these points of the scale:
-- willingness: how they SAY they feel about risk. 0.1 = very cautious, would rather earn \
-little than risk any loss. 0.3 = fairly cautious, small ups and downs are fine. 0.5 = accepts \
-some risk for some growth. 0.7 = fairly bold, happy to take real risk for growth. \
-0.9 = very aggressive, wants maximum growth.
-- behavioral: what they DO, or would do, in a real loss. 0.1 = sells everything fast. \
-0.3 = gets anxious and sells a good part. 0.5 = uneasy, sells a little, mostly holds. \
-0.7 = holds calmly and waits it out. 0.9 = sees a chance and buys more. kind: "past" if it \
-describes something that actually happened, "hypothetical" if it is what they think they \
-would do.
+- willingness: how they SAY they feel about risk. 0.1 = wants to avoid any loss, even with \
+very low growth. 0.3 = accepts only small ups and downs. 0.5 = accepts moderate risk for \
+moderate growth. 0.7 = accepts large swings for higher growth. 0.9 = wants the highest \
+growth and accepts big losses.
+- behavioral: what they DO, or would do, in a real loss. 0.1 = sells all or almost all. \
+0.3 = sells a large part. 0.5 = sells a small part and keeps the rest. 0.7 = keeps \
+everything and waits. 0.9 = invests more. kind: "past" if it describes something that \
+actually happened, "hypothetical" if it is what they think they would do.
 If the question lists answer options with scores, use them as anchors.
 
 clear: false if the answer is vague, hedged or noncommittal on that point.
