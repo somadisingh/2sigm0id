@@ -164,6 +164,10 @@ def _mock_reply(messages, top_logprobs=0):
             if random.random() < 0.5:
                 ev[d] = {"score": round(random.random(), 2), "clear": True, "kind": "past"}
         text = json.dumps(ev) if random.random() > 0.05 else "not json"
+    elif "check one answer from an interview" in system:   # check_personas.py's judge
+        m = re.search(r'Answer: "(.*?)"\nStatement', last, re.S)
+        words = (m.group(1) if m else "").split()
+        text = json.dumps({"says_it": random.random() < 0.7, "quote": " ".join(words[:3])})
     elif "check one reading" in system:   # check_extractor.py's judge
         m = re.search(r'Answer: "(.*?)"\nReading', last, re.S)
         words = (m.group(1) if m else "").split()

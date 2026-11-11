@@ -140,6 +140,7 @@ Re-scoring the Oct 26 runs with the formula cut P1's capacity error from +0.27 t
 - `belief.py`: the belief engine. `BELIEF_ENGINE.md` explains it; `test_belief.py` checks it.
 - `pilot.py`: builds the labeled answers of the 10 pilot users (`pilot/pool.jsonl`, `pilot/form_answers.jsonl`), fits DP's calibration (`pilot/calibration.json`), compares D, DR and DP on them (`pilot/extract_eval.md`), and fits the belief engine's evidence settings (`pilot/fitted.json`, `pilot/fit.md`). Pilot users are never scored.
 - `retrieval.py`: finds similar labeled pilot answers for DR (BM25 keyword search; no model download).
+- `check_personas.py`: persona checks 1 (each test user states its facts correctly) and 4 (the planned noise really shows in the answers). Results: `persona_checks/`. Checks 2, 3, 5 and 6 are Siya's.
 - `check_extractor.py`: faithfulness test. A judge model from another company checks that each reading the extractor took from an answer is supported by the answer, with a quote that code verifies.
 - `prompts.py`: interviewer prompts (v1 in use; v2 and v3 kept for the record), persona prompt, noise notes, check questions. Contradiction notes name a wrong value for a fact the user already stated, so every injected contradiction can be caught.
 - `run_bakeoff.py`: runs the stages. `llm.py` handles API calls, rate limits and retries.
