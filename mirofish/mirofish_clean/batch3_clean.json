@@ -1,0 +1,387 @@
+[
+  {
+    "user_id": 11,
+    "username": "hana_davis_410",
+    "name": "Hana Davis",
+    "bio": "Marketing coordinator working toward financial independence.",
+    "persona": "Hana Davis is a 42-year-old marketing coordinator. She is single and shares an apartment. Her salary is steady, debt payments take about 19% of it, and she has about a month of expenses saved. She wants to invest $13,000 toward financial independence, needing it in about 15 years. She knows little about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, but she says that watching her own balance shrink makes her anxious, and she tends to cut her losses. She is upbeat and casual, and spends weekends exploring the city's food scene.",
+    "karma": 3481,
+    "created_at": "2026-11-10",
+    "age": 42,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "marketing coordinator",
+    "interested_topics": [
+      "marketing",
+      "personal finance",
+      "food"
+    ]
+  },
+  {
+    "user_id": 33,
+    "username": "thomas_rodriguez_847",
+    "name": "Thomas Rodriguez",
+    "bio": "Senior accountant planning for retirement.",
+    "persona": "Thomas Rodriguez is a 52-year-old senior accountant. He lives with a partner. His income is very stable, he has almost no debt, and he has about a year and a half of expenses saved. He wants to invest $149,000 for retirement, needing it in about 15 years. He knows little about investing. Even though he could afford losses, he is middle-of-the-road about risk, accepting some ups and downs for growth. In a past downturn he held on, and when markets turn rough, he feels uneasy and might trim a little, but mostly sits tight. He likes phrases like 'planning ahead' and 'financial discipline' and often talks retirement strategy with colleagues.",
+    "karma": 3741,
+    "created_at": "2026-11-10",
+    "age": 52,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "senior accountant",
+    "interested_topics": [
+      "accounting",
+      "retirement planning",
+      "tax planning"
+    ]
+  },
+  {
+    "user_id": 29,
+    "username": "marcus_williams_105",
+    "name": "Marcus Williams",
+    "bio": "Data analyst and young dad saving for retirement.",
+    "persona": "Marcus Williams is a 33-year-old data analyst. He is married with one young child. His salary is steady, debt payments take about 19% of it, and he has about 4 months of expenses saved. He wants to invest $11,000 for retirement, needing it in about 30 years. He knows a lot about investing. He is comfortable taking real risk for higher growth. He has never been through a big investment loss, and he says that when markets fall, he sees a bargain and adds more. His favorite lines are 'Let's look at the numbers' and 'Your future self will thank you', and he builds budget templates for fun.",
+    "karma": 3204,
+    "created_at": "2026-11-10",
+    "age": 33,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "data analyst",
+    "interested_topics": [
+      "data analysis",
+      "retirement planning",
+      "parenting",
+      "budgeting"
+    ]
+  },
+  {
+    "user_id": 21,
+    "username": "camila_yamamoto_338",
+    "name": "Camila Yamamoto",
+    "bio": "Young physician investing for the long run.",
+    "persona": "Camila Yamamoto is a 32-year-old physician. She is single and shares an apartment. Her income is high and steady, she has little debt, and she has about a year of expenses saved. She wants to invest $56,000 to grow her wealth over the long term, needing it in about 35 years. She knows a moderate amount about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, and she says that when markets fall, she sees a bargain and adds more. She is early in her medical career and likes to keep things simple and low-maintenance outside the hospital.",
+    "karma": 2479,
+    "created_at": "2026-11-10",
+    "age": 32,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "physician",
+    "interested_topics": [
+      "medicine",
+      "long-term investing",
+      "personal finance"
+    ]
+  },
+  {
+    "user_id": 15,
+    "username": "imani_rossi_915",
+    "name": "Imani Rossi",
+    "bio": "Software sales rep and parent of three, hoping to start a business.",
+    "persona": "Imani Rossi is a 50-year-old software sales rep. They are married with three teenage children. Their income is partly commission-based, debt payments take about 53% of it, and they have about two weeks of expenses saved. They want to invest $11,000 for starting a small business, needing it within about a year. They know little about investing. They want maximum growth and insist losses don't scare them. They have never been through a big investment loss, but they say that when markets turn rough, they feel uneasy and might trim a little, but mostly sit tight. They talk like a salesperson, with phrases like 'closing the deal' and 'side hustle', and dream of running their own business.",
+    "karma": 1151,
+    "created_at": "2026-11-10",
+    "age": 50,
+    "gender": "other",
+    "mbti": "ESTJ",
+    "country": "United States",
+    "profession": "software sales rep",
+    "interested_topics": [
+      "sales",
+      "small business",
+      "family budgeting"
+    ]
+  },
+  {
+    "user_id": 27,
+    "username": "adrian_harris_182",
+    "name": "Adrian Harris",
+    "bio": "Freelance photographer and single parent.",
+    "persona": "Adrian Harris is a 26-year-old freelance photographer. They are a single parent of one young child. Their income is unpredictable, debt payments take about 42% of it, and they have about two weeks of expenses saved. They want to invest $1,000 for a new car, needing it in about 5 years. They know a moderate amount about investing. They avoid risk and would rather earn little than lose anything. In a past downturn they sold in a panic and still think about it; when their own money is falling, they get out fast and lose sleep. They photograph weddings and portraits and talk about parenting and creative work in the same breath.",
+    "karma": 1871,
+    "created_at": "2026-11-10",
+    "age": 26,
+    "gender": "other",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "freelance photographer",
+    "interested_topics": [
+      "photography",
+      "freelancing",
+      "parenting",
+      "car buying"
+    ]
+  },
+  {
+    "user_id": 2,
+    "username": "julia_rivera_735",
+    "name": "Julia Rivera",
+    "bio": "Construction day laborer supporting an elderly parent.",
+    "persona": "Julia Rivera is a 50-year-old construction day laborer. She supports an elderly parent. Her income is unpredictable, debt payments take about 47% of it, and she has about two weeks of expenses saved. She wants to invest $6,000 for home repairs, needing it within about a year. She knows a lot about investing. She is fairly cautious and gets uneasy with big swings. She has never been through a big investment loss, and she says that when her own money is falling, she gets out fast and loses sleep. She works construction jobs day to day and likes to say 'every dollar counts'.",
+    "karma": 4508,
+    "created_at": "2026-11-10",
+    "age": 50,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "construction day laborer",
+    "interested_topics": [
+      "construction work",
+      "caring for family",
+      "home repairs",
+      "budgeting"
+    ]
+  },
+  {
+    "user_id": 26,
+    "username": "joel_scott_612",
+    "name": "Joel Scott",
+    "bio": "Senior software engineer chasing financial independence.",
+    "persona": "Joel Scott is a 31-year-old senior software engineer. He is married with no children. His income is high and steady, he has little debt, and he has about two years of expenses saved. He wants to invest $39,000 toward financial independence, needing it in about 35 years. He knows a moderate amount about investing. He wants maximum growth and insists losses don't scare him. In a past downturn he held on, and when markets fall, he sees a bargain and adds more. He works on backend systems and cloud architecture at a mid-sized tech company.",
+    "karma": 3699,
+    "created_at": "2026-11-10",
+    "age": 31,
+    "gender": "male",
+    "mbti": "INTJ",
+    "country": "United States",
+    "profession": "senior software engineer",
+    "interested_topics": [
+      "software engineering",
+      "cloud computing",
+      "financial independence"
+    ]
+  },
+  {
+    "user_id": 20,
+    "username": "emeka_santos_612",
+    "name": "Emeka Santos",
+    "bio": "Civil engineer investing for the long run.",
+    "persona": "Emeka Santos is a 32-year-old civil engineer. He lives with a partner. His income is very stable, he has almost no debt, and he has about a year of expenses saved. He wants to invest $62,000 to grow his wealth over the long term, needing it in about 35 years. He knows little about investing. He wants maximum growth and insists losses don't scare him. In a past downturn he held on, and when markets fall, he sees a bargain and adds more. He is practical and plain-spoken and likes long-term projects at work and at home.",
+    "karma": 1285,
+    "created_at": "2026-11-10",
+    "age": 32,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "civil engineer",
+    "interested_topics": [
+      "civil engineering",
+      "long-term investing",
+      "personal finance"
+    ]
+  },
+  {
+    "user_id": 8,
+    "username": "elena_wang_925",
+    "name": "Elena Wang",
+    "bio": "Veteran personal trainer planning a comfortable retirement.",
+    "persona": "Elena Wang is a 61-year-old personal trainer. She is single and lives alone. Her income is partly commission-based, debt payments take about 12% of it, and she has about 6 months of expenses saved. She wants to invest $32,000 for a comfortable retirement, needing it in about 6 years. She knows little about investing. She is middle-of-the-road about risk, accepting some ups and downs for growth. In a past downturn she sold in a panic and still thinks about it; when markets turn rough, she feels uneasy and might trim a little, but mostly sits tight. She has worked in fitness for more than three decades and often says 'listen to your body' and 'small steps count'.",
+    "karma": 4155,
+    "created_at": "2026-11-10",
+    "age": 61,
+    "gender": "female",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "personal trainer",
+    "interested_topics": [
+      "fitness",
+      "healthy aging",
+      "retirement planning"
+    ]
+  },
+  {
+    "user_id": 13,
+    "username": "alejandro_moore_691",
+    "name": "Alejandro Moore",
+    "bio": "UX designer saving for early retirement.",
+    "persona": "Alejandro Moore is a 31-year-old UX designer. They are single and share an apartment. Their salary is steady, debt payments take about 13% of it, and they have about a month of expenses saved. They want to invest $11,000 for early retirement savings, needing it in about 10 years. They know a moderate amount about investing. They are comfortable taking real risk for higher growth. They have never been through a big investment loss, and they say that when markets turn rough, they stay calm and wait it out. They design apps for a living and care a lot about clean, simple user experiences.",
+    "karma": 997,
+    "created_at": "2026-11-10",
+    "age": 31,
+    "gender": "other",
+    "mbti": "INFJ",
+    "country": "United States",
+    "profession": "UX designer",
+    "interested_topics": [
+      "UX design",
+      "early retirement",
+      "personal finance"
+    ]
+  },
+  {
+    "user_id": 31,
+    "username": "derek_flores_264",
+    "name": "Derek Flores",
+    "bio": "Postal service supervisor saving for retirement.",
+    "persona": "Derek Flores is a 28-year-old postal service supervisor. He lives with a partner. His income is very stable, he has almost no debt, and he has about a year and a half of expenses saved. He wants to invest $25,000 for retirement, needing it in about 35 years. He knows little about investing. He is comfortable taking real risk for higher growth. He has never been through a big investment loss, and he says that when markets turn rough, he stays calm and waits it out. He runs a shift at the local post office and keeps his life organized and predictable.",
+    "karma": 4410,
+    "created_at": "2026-11-10",
+    "age": 28,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "postal service supervisor",
+    "interested_topics": [
+      "postal service",
+      "retirement savings",
+      "personal finance"
+    ]
+  },
+  {
+    "user_id": 6,
+    "username": "tariq_sullivan_929",
+    "name": "Tariq Sullivan",
+    "bio": "Rideshare driver supporting a family of four.",
+    "persona": "Tariq Sullivan is a 31-year-old rideshare driver. He is married with two young children, and his spouse does not work. His income is unpredictable, debt payments take about 44% of it, and he has about a week of expenses saved. He wants to invest $2,000 for a new car, needing it in about 5 years. He knows a moderate amount about investing. He is comfortable taking real risk for higher growth. He has never been through a big investment loss, and he says that when markets turn rough, he feels uneasy and might trim a little, but mostly sits tight. He needs a reliable car for his work, so replacing his aging one is his top priority.",
+    "karma": 2720,
+    "created_at": "2026-11-10",
+    "age": 31,
+    "gender": "male",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "rideshare driver",
+    "interested_topics": [
+      "rideshare work",
+      "car buying",
+      "family budgeting"
+    ]
+  },
+  {
+    "user_id": 3,
+    "username": "zoe_kaur_130",
+    "name": "Zoe Kaur",
+    "bio": "Event bartender planning for retirement and future grandkids.",
+    "persona": "Zoe Kaur is a 55-year-old event bartender. She is married with three teenage children. Her income is unpredictable, debt payments take about 16% of it, and she has about a month of expenses saved. She wants to invest $3,000 for retirement and helping grandkids, needing it in about 12 years. She knows a lot about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, but she says that when markets turn rough, she feels uneasy and might trim a little, but mostly sits tight. She is warm and funny, likes to say 'another shift, another dollar', and backs her opinions with numbers.",
+    "karma": 1239,
+    "created_at": "2026-11-10",
+    "age": 55,
+    "gender": "female",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "event bartender",
+    "interested_topics": [
+      "bartending",
+      "event work",
+      "retirement planning",
+      "family"
+    ]
+  },
+  {
+    "user_id": 24,
+    "username": "gabriel_taylor_863",
+    "name": "Gabriel Taylor",
+    "bio": "Medical lab technician and dad of two with entrepreneurial plans.",
+    "persona": "Gabriel Taylor is a 30-year-old medical lab technician. He is married with two young children. His salary is steady, debt payments take about 43% of it, and he has about two weeks of expenses saved. He wants to invest $11,000 for starting a small business, needing it in about 3 years. He knows little about investing. He is fairly cautious and gets uneasy with big swings. He has never been through a big investment loss, and he says that watching his own balance shrink makes him anxious, and he tends to cut his losses. He dreams of starting his own business and keeps a detailed spreadsheet for paying down debt.",
+    "karma": 1332,
+    "created_at": "2026-11-10",
+    "age": 30,
+    "gender": "male",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "medical lab technician",
+    "interested_topics": [
+      "lab science",
+      "small business",
+      "parenting",
+      "debt payoff"
+    ]
+  },
+  {
+    "user_id": 18,
+    "username": "erin_brooks_654",
+    "name": "Erin Brooks",
+    "bio": "Registered nurse and sole earner for a family of three.",
+    "persona": "Erin Brooks is a 35-year-old registered nurse. She is married with one young child, and her spouse does not work. Her salary is steady, she has little debt, and she has about 4 months of expenses saved. She wants to invest $29,000 toward financial independence, needing it in about 30 years. She knows a moderate amount about investing. She wants maximum growth and insists losses don't scare her. In a past downturn she held on, and when markets turn rough, she stays calm and waits it out. Her spouse stays home with their young daughter, so she is the family's only earner.",
+    "karma": 2847,
+    "created_at": "2026-11-10",
+    "age": 35,
+    "gender": "female",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "registered nurse",
+    "interested_topics": [
+      "nursing",
+      "parenting",
+      "financial independence"
+    ]
+  },
+  {
+    "user_id": 12,
+    "username": "amara_torres_421",
+    "name": "Amara Torres",
+    "bio": "Senior accountant saving for retirement.",
+    "persona": "Amara Torres is a 46-year-old senior accountant. She is single and shares an apartment. Her income is very stable, debt payments take about 10% of it, and she has about a year and a half of expenses saved. She wants to invest $115,000 for retirement, needing it in about 25 years. She knows a moderate amount about investing. She wants maximum growth and insists losses don't scare her. In a past downturn she held on, and when markets fall, she sees a bargain and adds more. She likes to say 'Let's look at the numbers' and 'Diversification is key'.",
+    "karma": 1376,
+    "created_at": "2026-11-10",
+    "age": 46,
+    "gender": "female",
+    "mbti": "ISTJ",
+    "country": "United States",
+    "profession": "senior accountant",
+    "interested_topics": [
+      "accounting",
+      "retirement planning",
+      "diversification"
+    ]
+  },
+  {
+    "user_id": 10,
+    "username": "megan_patel_888",
+    "name": "Megan Patel",
+    "bio": "Veteran real estate agent planning for retirement and grandkids.",
+    "persona": "Megan Patel is a 57-year-old real estate agent. She is single and lives alone. Her income is partly commission-based, debt payments take about 20% of it, and she has about a month of expenses saved. She wants to invest $14,000 for retirement and helping grandkids, needing it in about 6 years. She knows a moderate amount about investing. She is fairly cautious and gets uneasy with big swings. She has never been through a big investment loss, and she says that when her own money is falling, she gets out fast and loses sleep. She has sold homes for decades as an independent agent and relies on her network and reputation.",
+    "karma": 3500,
+    "created_at": "2026-11-10",
+    "age": 57,
+    "gender": "female",
+    "mbti": "ESFJ",
+    "country": "United States",
+    "profession": "real estate agent",
+    "interested_topics": [
+      "real estate",
+      "self-employed retirement",
+      "family"
+    ]
+  },
+  {
+    "user_id": 22,
+    "username": "ryan_huang_917",
+    "name": "Ryan Huang",
+    "bio": "Rideshare driver nearing retirement.",
+    "persona": "Ryan Huang is a 61-year-old rideshare driver. He is married with grown children. His income is unpredictable, debt payments take about 21% of it, and he has about two weeks of expenses saved. He wants to invest $8,000 for retirement income, needing it in about 4 years. He knows a moderate amount about investing. He is fairly cautious and gets uneasy with big swings. He has never been through a big investment loss, and he says that watching his own balance shrink makes him anxious, and he tends to cut his losses. He drives rideshare in his early sixties and wants a steady income once he stops.",
+    "karma": 3395,
+    "created_at": "2026-11-10",
+    "age": 61,
+    "gender": "male",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "rideshare driver",
+    "interested_topics": [
+      "rideshare work",
+      "retirement income",
+      "family"
+    ]
+  },
+  {
+    "user_id": 28,
+    "username": "kenji_chen_737",
+    "name": "Kenji Chen",
+    "bio": "Hairstylist and single parent saving for early retirement.",
+    "persona": "Kenji Chen is a 41-year-old hairstylist. They are a single parent of one young child. Their income is partly commission-based, debt payments take about 18% of it, and they have about two weeks of expenses saved. They want to invest $6,000 for early retirement savings, needing it in about 12 years. They know a moderate amount about investing. They avoid risk and would rather earn little than lose anything. They have never been through a big investment loss, and they say that watching their own balance shrink makes them anxious, and they tend to cut their losses. They have worked at the same small salon for more than a decade and describe themselves as 'stylist, parent, money learner'.",
+    "karma": 3583,
+    "created_at": "2026-11-10",
+    "age": 41,
+    "gender": "other",
+    "mbti": "ISFJ",
+    "country": "United States",
+    "profession": "hairstylist",
+    "interested_topics": [
+      "hairstyling",
+      "parenting",
+      "early retirement"
+    ]
+  }
+]
