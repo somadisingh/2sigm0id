@@ -106,6 +106,21 @@ Two findings so far:
 - **Old leak (fixed Nov 11).** The test-user instructions described behavior with the words "20% in a month". Bank question BEH01 uses the same words. Somaditya changed the test-user wording. All pilot answers were then made again.
 - **Past actions are weak evidence for our test users.** We fitted the belief engine on the pilot users. Past-action questions told us the least about the behavior score, not the most. The test users' past-loss story (held, sold or none) does not follow their behavior score closely. The engine now uses the fitted values (`pilot/fitted.json`, explained in `pilot/fit.md`).
 
+### First run on all 100 test users (Nov 11, budget 10, one run each, $1.83)
+
+This is a preview, not the full run. Details: `BELIEF_ENGINE.md`, section "Run on all 100 test users".
+
+| Method | avg error | final band exactly right |
+|---|---|---|
+| A, fixed form | 0.122 | 47% |
+| B, scripted interview | 0.129 | 45% |
+| C, adaptive form (belief engine) | **0.104** | **68%** |
+| D, adaptive interviewer (belief engine + conversation) | 0.129 | 51% |
+
+- **C is better than A.** The difference is clear, not noise. So the belief engine works.
+- **The stop rule keeps its promise.** After the stop point, the band changed in only 5% of the runs.
+- **D is only as good as A.** The problem is willingness. Some test users say that they like risk but would panic or cannot afford it. In conversation, these users talk about their panic when we ask about their attitude. Then the AI model reads their willingness as too low. On a form, the same users tick the bold answers. This is the professor's question about how to keep willingness apart from behavior. Siya's persona check 2 (task S3) and Preyansh's review (task P1) must look at this.
+
 ## 5. What Somaditya does now
 
 ### Phase 1: Nov 11 to Nov 13 (before the full run)
