@@ -82,6 +82,20 @@ With the old scale, retrieval cut the willingness error by 0.038 and the behavio
 
 One pattern holds in every judge run. Behavior readings that the extractor takes from an answer to a different question ("volunteered") are the least supported: the judge doubted 36% (D) and 47% (DR) of them. Readings about the question's own topic look sound (1% for willingness, 6–10% for facts). A possible fix is to count volunteered readings as vague evidence. We test this only after the hand labels confirm the pattern.
 
+## First run on Siya's test users (Nov 11, 10 users, 2 per band, budget 10, one run each)
+
+| Method | avg error | capacity | willingness | behavior | system $ |
+|---|---|---|---|---|---|
+| A fixed form | 0.122 | 0.171 | 0.099 | 0.097 | $0 |
+| B scripted interview | 0.134 | 0.185 | 0.113 | 0.105 | $0.0031 |
+| C adaptive form | 0.121 | **0.070** | 0.123 | 0.168 | $0 |
+| D adaptive interviewer | 0.147 | 0.127 | 0.122 | 0.191 | $0.0117 |
+
+These are 10 runs per method, so they do not rank the methods. Two patterns are worth a check in the full run:
+
+- The engine estimates capacity much better. At budget 10, A's fixed form never asks about debt or dependents, so these facts stay at the prior. C chooses the fact questions that matter for each person.
+- C and D estimate behavior less well. In one case (U015, a user with heavy noise), D gave band 2 to a band 5 user. An injected contradiction made the user falsely say "I sold a lot at the bottom" in answer to a clarifying question. A past action is the strongest evidence, so this one false statement outweighed the honest answers. The honest "I would buy more" was hedged, so it counted as vague. Also, the user had said earlier that they never had a big loss. The extractor cannot record "never", so the engine did not flag the contradiction. Fitting the evidence strengths on the pilot users will test whether past actions should count less.
+
 ## Values to fit
 
 `SIGMA` (evidence strength by type), `LAPSE`, `STOP_CHANCE` and the flat priors are starting values. Fit them on the 10 pilot users (`mirofish/personas_pilot.json`), never on the 100 test users. Report how much the results change when they change.

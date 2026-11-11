@@ -98,6 +98,10 @@ EXPERIMENT_INTERVIEWER = "glm-5.3"            # method D, and the answer mapper 
 EXPERIMENT_INTERVIEWER_REASONING = "low"
 EXPERIMENT_USER = "deepseek-v4-flash-0731"    # simulated users for every method
 EXPERIMENT_USER_REASONING = "off"
+EXPERIMENT_PERSONAS = "mirofish/personas_100_with_backstories.json"   # Siya's 100 test users
+# Give each test user its MiroFish backstory. Off until Siya and Somaditya agree on the
+# wording (plan.md, task S1). The bake-off stages always use personas.json, which has none.
+USE_BACKSTORIES = False
 
 # ---------------- Interview settings ----------------
 BUDGET = 10                 # the middle budget from the shared contract

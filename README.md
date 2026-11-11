@@ -77,9 +77,11 @@ A, B, C and D all score answers with the belief engine, so they differ only in h
 
 ```bash
 python run_bakeoff.py experiment                        # all methods, budgets 5/10/15, 3 repeats
-python run_bakeoff.py experiment --methods A D --budgets 10 --repeats 1   # a quick smoke test
+python run_bakeoff.py experiment --methods A D --budgets 10 --repeats 1 --limit 10   # a quick smoke test
 python score.py results/experiment.jsonl --by-persona
 ```
+
+The experiment uses Siya's 100 test users (`mirofish/personas_100_with_backstories.json`). Add `--limit 10` for a quick run on 10 of them, 2 per final band, or `--personas personas.json` for the 5 old ones. The runner refuses a file that contains pilot users. The backstories reach the test users only when `USE_BACKSTORIES` in `config.py` is on. It stays off until Siya and Somaditya agree on the wording (plan.md, task S1).
 
 Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. Contradictions are injected only in the spoken methods (B and D), since a form has no follow-ups.
 

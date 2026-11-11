@@ -57,8 +57,19 @@ def make_llm(mock):
     return LLM(C.MODELS, C.REASONING_SETTINGS, base_url=base_url, api_key=key)
 
 
-def load_personas():
-    personas = json.loads((HERE / "personas.json").read_text())
+def load_personas(path="personas.json", limit=None):
+    """Test users from `path` (relative to this folder), checked against the contract.
+    limit: take this many, spread evenly over the final bands (for quick test runs)."""
+    personas = json.loads((HERE / path).read_text())
+    pilot_ids = {p["id"] for p in json.loads((HERE / "mirofish" / "personas_pilot.json").read_text())}
+    if "pilot" not in str(path) and pilot_ids & {p["id"] for p in personas}:
+        sys.exit(f"{path} contains pilot users. Pilot users tune the system and are never scored.")
+    if limit:
+        by_band = {}
+        for p in personas:
+            by_band.setdefault(p["ground_truth"]["final_band"], []).append(p)
+        rounds = zip(*(by_band[b] for b in sorted(by_band)))   # band 1, 2, 3, 4, 5, band 1, ...
+        personas = [p for r in rounds for p in r][:limit]
     for p in personas:
         gt = p["ground_truth"]
         expected = min(P.band(gt[d]) for d in ("capacity", "willingness", "behavioral"))
@@ -365,7 +376,9 @@ def prompts(args):
 def experiment(args):
     """The main experiment: methods A-D x budgets, same users, same noise schedule."""
     llm = make_llm(args.mock)
-    personas = load_personas()
+    personas = load_personas(args.personas, args.limit)
+    print(f"{len(personas)} test users from {args.personas}"
+          f"{', with backstories' if C.USE_BACKSTORIES else ''}")
     iv, user = C.EXPERIMENT_INTERVIEWER, C.EXPERIMENT_USER
     if C.MODELS[iv]["family"] == C.MODELS[user]["family"]:
         sys.exit(f"{iv} and {user} are from the same company. Change EXPERIMENT_USER in config.py.")
@@ -449,6 +462,9 @@ def main():
                     help="DR and DP are D variants; C0 and D0 are the versions before the belief engine")
     ex.add_argument("--budgets", nargs="*", type=int, default=[5, 10, 15], choices=[5, 10, 15])
     ex.add_argument("--repeats", type=int, default=3)
+    ex.add_argument("--personas", default=C.EXPERIMENT_PERSONAS,
+                    help="test-user file (default: Siya's 100); personas.json = the 5 old ones")
+    ex.add_argument("--limit", type=int, help="use only this many test users, spread over the bands")
     ex.add_argument("--out", help="results file name")
     ex.add_argument("--mock", action="store_true")
     ex.set_defaults(fn=experiment)

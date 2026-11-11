@@ -1,5 +1,7 @@
 """Prompts for the interviewer, the simulated user and the persona checks."""
 
+import config as C
+
 INTERVIEWER_SYSTEM = """You are a friendly onboarding interviewer for beginner investors. \
 Your only job is to learn the person's risk profile through conversation. \
 You never give investment advice.
@@ -160,6 +162,12 @@ def build_user_system(p: dict) -> str:
         f"How you would really act: {BEHAVIORAL_TEXT[band(gt['behavioral'])]}",
         f"Past experience: {PAST_LOSS_TEXT[e['past_loss_reaction']]}",
         f"Financial knowledge: {e['fin_literacy']}.",
+    ]
+    story = (p.get("profile") or {}).get("backstory")
+    if C.USE_BACKSTORIES and story:
+        lines.append(f"Your background: {story} If this background and the facts above "
+                     "disagree, the facts above are correct.")
+    lines += [
         "",
         "How you talk: " + " ".join([VERBOSITY_TEXT[s['verbosity']], VOCAB_TEXT[s['vocabulary']],
                                      HEDGING_TEXT[s['hedging']]]),
