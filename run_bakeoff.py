@@ -265,7 +265,7 @@ def run_jobs(llm, jobs, out_path):
 
     def work(j):
         try:
-            if j.get("method") in ("A", "B", "C"):
+            if j.get("method") in methods.FORM_METHODS:
                 rec = methods.run_form(llm, j["method"], j["budget"], j["persona"], j["repeat"],
                                        j["user"], j["u_setting"], j["interviewer"], j["i_setting"],
                                        draw_noise)
@@ -444,7 +444,9 @@ def main():
     pr.add_argument("--mock", action="store_true")
     pr.set_defaults(fn=prompts)
     ex = sub.add_parser("experiment", help="main experiment: methods A-D at each budget")
-    ex.add_argument("--methods", nargs="*", default=["A", "B", "C", "D"], choices=["A", "B", "C", "D"])
+    ex.add_argument("--methods", nargs="*", default=["A", "B", "C", "D"],
+                    choices=["A", "B", "C", "D", "C0", "D0"],
+                    help="C0 and D0 are the versions before the belief engine")
     ex.add_argument("--budgets", nargs="*", type=int, default=[5, 10, 15], choices=[5, 10, 15])
     ex.add_argument("--repeats", type=int, default=3)
     ex.add_argument("--out", help="results file name")

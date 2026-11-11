@@ -144,6 +144,18 @@ def _mock_reply(messages):
                 "flags": flags,
                 "question": None if done else "How would you feel if your savings dropped by a fifth?",
             }) + "\n```"
+    elif "into evidence" in system:   # method D's extractor
+        ev = {"facts": {}}
+        if random.random() < 0.5:
+            lo = random.choice([1, 3, 6, 12, 20])
+            ev["facts"][random.choice(["horizon_yrs", "emergency_fund_months", "dependents"])] = {
+                "range": [lo, lo + 2], "clear": random.random() < 0.8}
+        for d in ("willingness", "behavioral"):
+            if random.random() < 0.5:
+                ev[d] = {"score": round(random.random(), 2), "clear": True, "kind": "past"}
+        text = json.dumps(ev) if random.random() > 0.05 else "not json"
+    elif "follow-up question" in system:   # method D's clarifying question
+        text = json.dumps({"question": "Just to check, which of those is right?"})
     elif "multiple-choice question" in system:   # method B's answer mapper
         text = json.dumps({"option": random.choice([1, 2, 3, None])})
     elif "Reply with just the number of your answer" in last or "Please reply with just one number" in last:
