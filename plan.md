@@ -115,11 +115,13 @@ This is a preview, not the full run. Details: `BELIEF_ENGINE.md`, section "Run o
 | A, fixed form | 0.122 | 47% |
 | B, scripted interview | 0.129 | 45% |
 | C, adaptive form (belief engine) | **0.104** | **68%** |
-| D, adaptive interviewer (belief engine + conversation) | 0.129 | 51% |
+| D, adaptive interviewer (belief engine + conversation) | 0.129 (0.116 after the fix below) | 51% (53%) |
 
 - **C is better than A.** The difference is clear, not noise. So the belief engine works.
 - **The stop rule keeps its promise.** After the stop point, the band changed in only 5% of the runs.
-- **D is only as good as A.** The problem is willingness. Some test users say that they like risk but would panic or cannot afford it. In conversation, these users talk about their panic when we ask about their attitude. Then the AI model reads their willingness as too low. On a form, the same users tick the bold answers. This is the professor's question about how to keep willingness apart from behavior. Siya's persona check 2 (task S3) and Preyansh's review (task P1) must look at this.
+- **D was only as good as A.** The problem was willingness. Some test users say that they like risk but would panic or cannot afford it. In conversation, these users talk about their panic when we ask about their attitude. Then the AI model read their willingness as too low. On a form, the same users tick the bold answers. This is the professor's question about how to keep willingness apart from behavior.
+- **Fix (Nov 11).** The AI model now scores what the person claims about their attitude, and puts actions under behavior. After the fix, D's avg error went from 0.129 to 0.116. For "says aggressive, would panic-sell" users, the willingness error went from −0.19 to −0.05. D is now a little better than A and a little worse than C, but these differences are not clear yet. We found the problem on the same 100 users that the full run uses, so Milestone 3 must say this.
+- Siya's persona check 2 (task S3) and Preyansh's review (task P1) must look at this. "Can't afford it" users still get a willingness that is too low (−0.12).
 
 ## 5. What Somaditya does now
 
