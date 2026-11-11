@@ -78,6 +78,13 @@ The AI model now does the language work, and code makes the decisions. Research 
 2. **Token probabilities** (course topics: next-token prediction, decoding). The model picks the matching option, and we read the model's own probability for every option. We then correct these probabilities on the pilot users. The model's raw probabilities were too confident: it was right 82% of the time, but it said it was much more sure than that. After the correction, the confidence matched the accuracy (calibration error went from 0.18 to 0.05).
 3. **Faithfulness test** (course topic: evaluating generative AI, hallucination tests). This test finds facts that the model reads from an answer but that the person never said.
 
+First results (Nov 11, on 290 labeled answers from the pilot users):
+
+- The tests found an error in the reading step. The model read "I held on" as the highest behavior score. We fixed the scale. This fix made the readings more accurate than retrieval did.
+- After the fix, retrieval still makes the willingness readings a little more accurate. It does not change the behavior readings.
+- Token probabilities cost 77% less per answer, but the behavior readings are a little less accurate.
+- The judge model of the faithfulness test is not reliable yet. It gave a different result for 15% of the same readings when we ran it again. So we need people to label 50 readings by hand (task L1 in section 8).
+
 ## 4. What is done (up to Nov 11)
 
 | Done | Where |
@@ -90,7 +97,7 @@ The AI model now does the language work, and code makes the decisions. Research 
 | Every method uses its full question budget | `run_bakeoff.py` (on `main`) |
 | Siya's 100 test users and 10 pilot users, checked and merged | `mirofish/` (on `main`) |
 | Belief engine, methods C and D on the engine, tests, design note | `belief.py`, `methods.py`, `test_belief.py`, `BELIEF_ENGINE.md` (on branch `belief-engine`) |
-| Labeled answers from the 10 pilot users, and the probability correction | in progress on `belief-engine` |
+| Labeled answers from the 10 pilot users, retrieval (DR), token probabilities (DP), faithfulness test | `pilot.py`, `retrieval.py`, `check_extractor.py`, `pilot/` (on branch `belief-engine`). Results: `BELIEF_ENGINE.md`, section "Generative AI parts in method D". |
 
 Two findings so far:
 
@@ -273,6 +280,21 @@ This test shows if the way a person talks changes their result.
 ## 8. Work for all three
 
 1. If the reply email to Professor Gashami is not sent yet, give Somaditya your OK today. The email can now point to the belief engine.
+
+### L1. Label 50 readings by hand (Preyansh and Siya, each person alone, by Fri Nov 13, about 20 minutes)
+
+A judge model checks if the AI model reads answers correctly. We must know if we can trust this judge. So we compare the judge with people. Each of you labels the same 50 readings without help, so that we can also see how often two people agree.
+
+1. Open the file: https://github.com/somadisingh/2sigm0id/blob/belief-engine/pilot/label_readings.csv
+2. Download it, or copy it into a Google Sheet.
+3. For each row, read the question, the answer and the reading.
+4. In your column, write "yes" if the answer supports the reading. Write "no" if it does not.
+   - A number range is supported if the answer gives a value in the range, or words that clearly mean such a value.
+   - A score is supported if the answer says something about that topic, and the score is near (about 0.2 or less) the point on the scale that fits the answer. The reading text shows the points of the scale.
+5. If you are not sure, write your best answer and add a note in the "notes" column.
+6. Do not open `pilot/label_readings_key.jsonl`. It contains the judge's answers.
+7. Do not talk about the labels with the other person before you both finish.
+8. Send your file to Somaditya.
 2. Send your Milestone 3 draft sections by Tue Nov 17. Somaditya combines them.
 3. Do not change files that another person owns without asking. Do not commit the `.env` file or any API key.
 
@@ -284,6 +306,7 @@ This test shows if the way a person talks changes their result.
 | Somaditya: add corrections | Corrections decision (S2) | Siya | Nov 12 |
 | Siya: persona checks 2, 3, 5 | Backstories set up (S1) | Siya and Somaditya | Nov 12 |
 | Somaditya: final list of methods for the full run | Ablation plan (P2) | Preyansh | Nov 13 |
+| Somaditya: report the faithfulness test | 50 hand labels (L1) | Preyansh and Siya | Nov 13 |
 | Siya: classmate study | Live chat (P3) | Preyansh | Nov 14 |
 | Siya: persona check 6 | 20 conversations | Somaditya | Nov 14 |
 | Everyone: Milestone 3 numbers | Full-run results | Somaditya | Nov 16 |
