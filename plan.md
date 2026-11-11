@@ -150,7 +150,7 @@ This is a preview, not the full run. Details: `BELIEF_ENGINE.md`, section "Run o
 ### Phase 2: Nov 13 to Nov 14
 
 9. Run the full experiment: 100 test users, the methods in Preyansh's ablation plan, budgets 5, 10 and 15, three repeats. Estimated cost: $70 to $100.
-10. Give Siya 20 conversations for persona check 6.
+10. Give Siya 20 conversations for persona check 6. (Done Nov 11: `persona_checks/human_read/`.)
 
 ### Phase 3: Nov 14 to Nov 17
 
@@ -274,13 +274,19 @@ How to build them:
 
 **Also look at these results from checks 1 and 4 (section 3):** 16 users with the income "stable and high" say "stable", and "flip" notes rarely change form answers. Decide with Somaditya if the income label and the flip note need new wording.
 
-### S4. Run persona check 6: people read conversations (Mon Nov 16)
+### S4. Run persona check 6: people read conversations (by Mon Nov 16)
 
-1. Get 20 conversations from Somaditya (on Nov 13 or Nov 14). They come without the true profiles.
-2. You, Preyansh and Somaditya each guess the final band of each person.
-3. Compare the guesses with the true bands. Report how often each reader was correct or one band away.
+The 20 conversations are ready (Nov 11). They are real runs of method D with 20 of the 100 test users, 4 for each true final band. We removed the true profiles.
 
-**You need:** the 20 conversations from Somaditya.
+1. Open the reading sheet: https://github.com/somadisingh/2sigm0id/blob/belief-engine/persona_checks/human_read/conversations.md
+2. Read the instructions at the top of the sheet. Reading all 20 takes about 45 to 60 minutes.
+3. Copy `persona_checks/human_read/guesses.csv` into a shared Google Sheet. Give Preyansh and Somaditya edit access.
+4. Each of the three readers writes a final band (1 to 5) for each conversation in their own column. Work alone. Do not talk about the guesses before all three finish.
+5. Nobody opens `persona_checks/human_read/key_DO_NOT_OPEN.json`.
+6. When all three columns are full, download the sheet as `guesses.csv` and put it back in `persona_checks/human_read/`.
+7. Run `python check_personas.py human-read score`. It writes `persona_checks/check6_human_read.md`: how often each reader and method D got the band right, and how often the readers agreed.
+
+**You need:** nothing from others. The files are on branch `belief-engine` until it is merged into `main`.
 
 ### S5. Run the classmate study (Sat Nov 14 to Mon Nov 16)
 
@@ -340,7 +346,7 @@ A judge model checks if the AI model reads answers correctly. We must know if we
 | Somaditya: final list of methods for the full run | Ablation plan (P2) | Preyansh | Nov 13 |
 | Somaditya: report the faithfulness test | 50 hand labels (L1) | Preyansh and Siya | Nov 13 |
 | Siya: classmate study | Live chat (P3) | Preyansh | Nov 14 |
-| Siya: persona check 6 | 20 conversations | Somaditya | Nov 14 |
+| Siya: persona check 6 | 20 conversations | Somaditya | done (Nov 11) |
 | Everyone: Milestone 3 numbers | Full-run results | Somaditya | Nov 16 |
 
 ## 10. Words we use
