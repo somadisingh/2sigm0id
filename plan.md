@@ -66,6 +66,17 @@ When two answers about the same fact do not agree, the engine keeps both values 
 5. Three AI models from three companies play the same test user, and their answers agree. (Siya)
 6. People read 20 conversations without the true profile and guess the band. (Siya, with Preyansh and Somaditya as readers)
 
+**Results of checks 1 and 4 (Nov 11, backstories off).** The code is `check_personas.py`. The full tables are in `persona_checks/` on branch `belief-engine`.
+
+- Check 1: 89 of the 100 test users state all six facts correctly. No user has two or more wrong facts.
+- Check 1 found two small problems:
+  - 16 users have the income "stable and high". When we ask, they say "stable". The capacity formula counts "stable and high" as "very stable". So these users can get a capacity that is too low.
+  - 2 users say "three" dependents when the true number is 2.
+- Check 4: an injected contradiction states the planned wrong value in 91% to 93% of the cases. On clean answers, the judge found the wrong value in only 0% to 8%. So this noise works.
+- Check 4: a "flip" note changes the spoken answer in 57% of the cases. It changes a form answer in only 21%.
+- Check 4: a "vague" note makes a form answer pick a middle option in 74% of the cases (clean answers: 40%).
+- Check 4: the "acquiescence" note has no effect. Our questions never suggest an answer, so the test user has nothing to agree with.
+
 ### Question 3: Compare the methods on cost and speed too, not only on the number of questions.
 
 **Our answer: done** (on `main`). The scorer (`score.py`) shows four values for each completed profile: the number of AI calls, the tokens, the cost in dollars, and the wait time per question. It also saves a chart of error against cost. Results from a small test: A and C cost $0. B costs about $0.003. Old D cost $0.029 and made the person wait 9.2 seconds per question. New D costs $0.011 and makes the person wait 1.8 seconds per question.
@@ -130,7 +141,7 @@ This is a preview, not the full run. Details: `BELIEF_ENGINE.md`, section "Run o
 1. Finish the three generative AI parts in section 3 and test each one on the pilot users.
 2. With Siya: add the backstories to the test-user instructions (section 7, task S1).
 3. Remove the "20% in a month" leak. (Done Nov 11.)
-4. Build persona checks 1 and 4.
+4. Build persona checks 1 and 4. (Done Nov 11. Run them again after S1, because the backstories change the answers.)
 5. Fit the evidence strengths of the belief engine on the pilot users. Choose the fixed-form questions on the pilot users. (Done Nov 11. The fitted evidence strengths are in use. The fixed-form questions chosen on the pilot users were worse for a left-out pilot user, so A and B keep the default questions.)
 6. Add injected corrections, after Siya's decision (task S2).
 7. Run a quick check of Muse Spark Open as a test-user model. Then rotate three test-user models across the three repeats.
@@ -260,6 +271,8 @@ How to build them:
 
 **Done when:** you have one table with the result of each check and the share of users that fail it. Mark each user that fails 2 or more checks. We then fix or remove those users.
 **You need:** S1 done. An API key (ask Somaditya). Estimated cost: $2 to $3.
+
+**Also look at these results from checks 1 and 4 (section 3):** 16 users with the income "stable and high" say "stable", and "flip" notes rarely change form answers. Decide with Somaditya if the income label and the flip note need new wording.
 
 ### S4. Run persona check 6: people read conversations (Mon Nov 16)
 
