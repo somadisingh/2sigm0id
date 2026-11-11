@@ -86,7 +86,34 @@ With the old scale, retrieval cut the willingness error by 0.038 and the behavio
 
 One pattern holds in every judge run. Behavior readings that the extractor takes from an answer to a different question ("volunteered") are the least supported: the judge doubted 36% (D) and 47% (DR) of them. Readings about the question's own topic look sound (1% for willingness, 6–10% for facts). A possible fix is to count volunteered readings as vague evidence. We test this only after the hand labels confirm the pattern.
 
-## First run on Siya's test users (Nov 11, 10 users, 2 per band, budget 10, one run each)
+## Run on all 100 test users (Nov 11, budget 10, one run each)
+
+This run used the fixed test-user wording (no leak), the fitted settings and no backstories. It cost $1.83. It is a preview: the full run has 3 repeats and budgets 5, 10 and 15. File: `results/experiment_100users_b10.jsonl` (not in git).
+
+| Method | avg error | capacity | willingness | behavior | band exact | system $ | wait per turn |
+|---|---|---|---|---|---|---|---|
+| A fixed form | 0.122 | 0.169 | 0.098 | 0.097 | 47% | $0 | 0 s |
+| B scripted interview | 0.129 | 0.186 | 0.106 | 0.094 | 45% | $0.0031 | 1.3 s |
+| **C adaptive form** | **0.104** | **0.120** | 0.111 | **0.082** | **68%** | $0 | 0 s |
+| D adaptive interviewer | 0.129 | 0.146 | 0.148 | 0.093 | 51% | $0.0113 | 2.0 s |
+
+Paired against A on the same 100 users (`score.py` now prints this table):
+
+| Method | avg error vs A | 95% range | band exact vs A |
+|---|---|---|---|
+| B | +0.007 | −0.002 to +0.016 | −2 points |
+| **C** | **−0.017** | **−0.029 to −0.005** | **+21 points** |
+| D | +0.007 | −0.010 to +0.026 | +4 points |
+
+Findings:
+
+- **The belief engine works with a form.** C is better than A, and the range excludes zero. Most of the gain is in capacity and in band 4 and 5 users (C 0.097 and 0.086, A 0.128 and 0.152).
+- **The stop rule keeps its promise.** C's stop rule fired in 75 of 100 runs, at question 6.5 on average. After that point the final band changed in only 5% of the runs (D: 7%). The promise was "under 5%". Stopping there saves a third of the questions. The band was exactly right in 69% of these runs at the stop point and 72% at the end. The scores are less precise at the stop point (avg error 0.133 against 0.103), because the rule protects only the band.
+- **D is only as good as A, because of willingness.** On clean test users, D equals C (0.084 against 0.083). D's willingness estimates are too low for users whose scores disagree: −0.19 for "says aggressive, would panic-sell" and −0.17 for "says aggressive, can't afford it". C has no such error for the same users. The cause has two parts. In conversation, these AI test users bring their behavior into attitude answers ("they'd say I talk a big game about being brave, but they've seen me panic"). The extractor then scores this as low willingness, although by our definition what the person says about their attitude is high. This is the professor's Milestone 1 question about separating willingness from behavior. A form forces the person to answer the attitude question alone.
+- **The fitted settings did not cause this.** We scored D's recorded evidence again with the starting settings: the avg error stayed at 0.129.
+- **Heavy noise hurts the spoken methods more** (D 0.177, B 0.160, C 0.123, A 0.137). Only spoken methods get injected contradictions, so this comparison is not equal by design.
+
+## First run on 10 of Siya's test users (Nov 11, 2 per band, budget 10, one run each)
 
 | Method | avg error | capacity | willingness | behavior | system $ |
 |---|---|---|---|---|---|

@@ -89,7 +89,7 @@ Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. 
 
 **Estimated cost:** about $2 and 30 minutes with the 5 placeholder test users. With 100 test users it's about $60–75 and 5 hours; B's answer mapping adds roughly $15 to the earlier projection. These are estimates; `score.py` prints the actual spend.
 
-**score.py options:** `--by-persona` adds an error table per test user, and `--truth formula` re-scores older runs with capacity from `capacity.py`. Recovery shows how often the final estimate came back after a contradiction pulled it off course.
+**score.py options:** the experiment report always includes a paired table: each method against A on the same test users, with a 95% range. `--by-group` adds avg error by true band, mismatch and noise level. `--by-persona` adds an error table per test user, and `--truth formula` re-scores older runs with capacity from `capacity.py`. Recovery shows how often the final estimate came back after a contradiction pulled it off course.
 
 **Cost per completed profile.** The experiment's COST AND SPEED table compares the methods on more than question count. "System" means the calls that build the profile: D's interviewer and B's answer mapper. A and C choose and score questions in code, so they make no system LLM calls. Simulated-user calls are listed separately, because a real user replaces them.
 

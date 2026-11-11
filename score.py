@@ -223,6 +223,68 @@ def persona_table(groups, order, label):
             + table(rows, cols))
 
 
+def interview_error(r):
+    return mean([abs(r["final_profile"][d] - r["truth"][d]) for d in DIMS])
+
+
+def noise_level(p):
+    """clean / moderate / heavy: from the test-user ID, else from its noise rates."""
+    tail = p["id"].rsplit("-", 1)[-1]
+    if tail in ("clean", "moderate", "heavy"):
+        return tail
+    n = p["noise"]
+    total = n["vague_rate"] + n["flip_prob"] + n["contradiction_rate"]
+    return "clean" if total <= 0.05 else "moderate" if total <= 0.4 else "heavy"
+
+
+def paired_table(groups, order, label, base="A"):
+    """Each method against the base method on the same test users and repeats: the
+    difference in avg error (negative = better than the base) with a paired 95% range."""
+    rows = []
+    for k in order:
+        if k[0] == base or (base, k[1]) not in groups:
+            continue
+        ref = {(r["persona_id"], r["repeat"]): r for r in groups[(base, k[1])]
+               if not r.get("error") and r.get("final_profile")}
+        diffs, band_diffs = [], []
+        for r in groups[k]:
+            b = ref.get((r["persona_id"], r["repeat"]))
+            if b is None or r.get("error") or not r.get("final_profile"):
+                continue
+            diffs.append(interview_error(r) - interview_error(b))
+            exact = lambda x: min(band(x["final_profile"][d]) for d in DIMS) == x["truth"]["final_band"]  # noqa: E731
+            band_diffs.append(exact(r) - exact(b))
+        if not diffs:
+            continue
+        lo, hi = bootstrap_ci(diffs)
+        rows.append([label(k), str(len(diffs)), f"{mean(diffs):+.3f}",
+                     "-" if lo is None else f"{lo:+.3f} to {hi:+.3f}",
+                     f"{100 * mean(band_diffs):+.0f} points"])
+    cols = [("method and budget", None), ("pairs", None), (f"avg error vs {base}", None),
+            ("95% range", None), ("band exact vs " + base, None)]
+    return (f"PAIRED AGAINST {base} (same test users; negative error = better than {base}; "
+            "a range that excludes 0 is a real difference)\n" + table(rows, cols))
+
+
+def group_table(groups, order, label):
+    """Avg error by true final band, by mismatch, and by noise level."""
+    cuts = ([(f"band {b}", lambda r, b=b: r["truth"]["final_band"] == b) for b in range(1, 6)]
+            + [("no mismatch", lambda r: r["truth"]["mismatch_type"] == "none"),
+               ("mismatch", lambda r: r["truth"]["mismatch_type"] != "none")]
+            + [(lvl, lambda r, lvl=lvl: noise_level(r["persona"]) == lvl)
+               for lvl in ("clean", "moderate", "heavy")])
+    rows = []
+    for k in order:
+        ok = [r for r in groups[k] if not r.get("error") and r.get("final_profile")]
+        cells = []
+        for _, f in cuts:
+            xs = [interview_error(r) for r in ok if f(r)]
+            cells.append(f"{mean(xs):.3f} ({len(xs)})" if xs else "-")
+        rows.append([label(k)] + cells)
+    cols = [("method and budget", None)] + [(name, None) for name, _ in cuts]
+    return "AVG ERROR BY GROUP (number of runs in brackets)\n" + table(rows, cols)
+
+
 def cost_chart(summaries, path):
     """Avg error vs. system cost and system time per completed profile, one point per method+budget."""
     try:
@@ -265,6 +327,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("file")
     ap.add_argument("--by-persona", action="store_true", help="add a per-test-user error table")
+    ap.add_argument("--by-group", action="store_true",
+                    help="add avg error by true band, mismatch and noise level (experiment only)")
     ap.add_argument("--truth", choices=["file", "formula"], default="file",
                     help="'formula' recomputes true capacity with capacity.py")
     args = ap.parse_args()
@@ -370,6 +434,10 @@ def main():
     title = "QUALITY (lower error is better)" if stage == "experiment" else \
         "QUALITY (sorted by avg error, lower is better)"
     blocks.append(title + "\n" + table(q_rows, q_cols))
+    if stage == "experiment":
+        blocks.append(paired_table(groups, order, label))
+        if args.by_group:
+            blocks.append(group_table(groups, order, label))
     if args.by_persona:
         blocks.append(persona_table(groups, order, label))
     blocks.append(("COST AND SPEED" if stage == "experiment" else
