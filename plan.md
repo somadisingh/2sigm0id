@@ -42,7 +42,7 @@ The professor said that the technical details were not clear. The professor also
 
 ### Question 1: How does the system choose the next question? How does it know that another question will not change the band?
 
-**Our answer: the belief engine** (`belief.py`, on the branch `belief-engine`). It is normal code, not an AI model.
+**Our answer: the belief engine** (`belief.py`, on `main` since Nov 12). It is normal code, not an AI model.
 
 1. For each score, the engine keeps a range of possible values, with a probability for each value. A wide range means that the engine is not sure.
 2. Each answer makes the range smaller. A real past action counts most. A stated feeling counts less. An answer about an imagined situation counts least. A vague answer counts half.
@@ -66,7 +66,7 @@ When two answers about the same fact do not agree, the engine keeps both values 
 5. Three AI models from three companies play the same test user, and their answers agree. (Siya)
 6. People read 20 conversations without the true profile and guess the band. (Siya, with Preyansh and Somaditya as readers)
 
-**Results of checks 1 and 4 (Nov 11, backstories off).** The code is `check_personas.py`. The full tables are in `persona_checks/` on branch `belief-engine`.
+**Results of checks 1 and 4 (Nov 11, backstories off).** The code is `check_personas.py`. The full tables are in `persona_checks/`.
 
 - Check 1: 89 of the 100 test users state all six facts correctly. No user has two or more wrong facts.
 - Check 1 found two small problems:
@@ -107,9 +107,9 @@ First results (Nov 11, on 290 labeled answers from the pilot users):
 | Cost and speed logging, cost chart | `score.py` (on `main`) |
 | Every method uses its full question budget | `run_bakeoff.py` (on `main`) |
 | Siya's 100 test users and 10 pilot users, checked and merged | `mirofish/` (on `main`) |
-| Belief engine, methods C and D on the engine, tests, design note | `belief.py`, `methods.py`, `test_belief.py`, `BELIEF_ENGINE.md` (on branch `belief-engine`) |
-| Leak fix, and the belief engine fitted on the pilot users | `prompts.py`, `pilot/fitted.json`, `pilot/fit.md` (on branch `belief-engine`) |
-| Labeled answers from the 10 pilot users, retrieval (DR), token probabilities (DP), faithfulness test | `pilot.py`, `retrieval.py`, `check_extractor.py`, `pilot/` (on branch `belief-engine`). Results: `BELIEF_ENGINE.md`, section "Generative AI parts in method D". |
+| Belief engine, methods C and D on the engine, tests, design note | `belief.py`, `methods.py`, `test_belief.py`, `BELIEF_ENGINE.md` |
+| Leak fix, and the belief engine fitted on the pilot users | `prompts.py`, `pilot/fitted.json`, `pilot/fit.md` |
+| Labeled answers from the 10 pilot users, retrieval (DR), token probabilities (DP), faithfulness test | `pilot.py`, `retrieval.py`, `check_extractor.py`, `pilot/`. Results: `BELIEF_ENGINE.md`, section "Generative AI parts in method D". |
 
 Two findings so far:
 
@@ -149,7 +149,7 @@ We made all review changes and checked D on 20 test users. D's avg error is the 
 5. Fit the evidence strengths of the belief engine on the pilot users. Choose the fixed-form questions on the pilot users. (Done Nov 11. The fitted evidence strengths are in use. The fixed-form questions chosen on the pilot users were worse for a left-out pilot user, so A and B keep the default questions.)
 6. Add injected corrections, after Siya's decision (task S2).
 7. Run a quick check of Muse Spark Open as a test-user model. Then rotate three test-user models across the three repeats.
-8. Merge the belief engine into `main`, after Preyansh's review (task P1). (Review done Nov 12. All changes made on `belief-engine`.)
+8. Merge the belief engine into `main`, after Preyansh's review (task P1). (Done Nov 12: the engine is on `main`.)
 
 ### Phase 2: Nov 13 to Nov 14
 
@@ -165,7 +165,7 @@ We made all review changes and checked D on 20 test users. D's avg error is the 
 
 ### P1. Review the belief engine (Thu Nov 12, first priority) — DONE
 
-**Done Nov 12.** Preyansh approved the engine with six changes. Somaditya made all of them on branch `belief-engine`. Details: `BELIEF_ENGINE.md`, section "Changes after Preyansh's review". The evidence values in use now:
+**Done Nov 12.** Preyansh approved the engine with six changes. Somaditya made all of them. The engine is on `main` since Nov 12. Details: `BELIEF_ENGINE.md`, section "Changes after Preyansh's review". The evidence values in use now:
 
 | Evidence | Form answer | Spoken answer (method D) |
 |---|---|---|
@@ -226,8 +226,28 @@ Siya needs this for the classmate study. We also need it for the final demo.
 4. Save each conversation to a file. The classmate study uses these files.
 5. Test it with Somaditya before Nov 14.
 
+How to use the engine (all on `main`; method D's loop in `run_form` in `methods.py` shows every step):
+
+- `belief.Belief(channel="spoken")` holds the person's profile.
+- `methods.engine_pool(methods.load_bank())` gives the questions. Before each question, `belief.choose(candidates, questions_left, seed=k)` returns the question to ask and its stop information.
+- Ask `item["spoken"]`. To ask a fact again, `methods.clarify(...)` words the question.
+- Read the typed answer with `methods.extract(llm, "glm-5.3", "low", question, item, answer)`. Then call `methods.apply_evidence(belief, evidence, k)`, which returns contradiction flags, and `methods.update_unclear(...)`.
+- At the end: `belief.profile()` gives the three scores, and `belief.final_pmf(belief.band_pmfs())` gives the band probabilities.
+- The spoken settings in use are the starting values you asked for. You do not need to change them.
+- For the standard form (method A), use `methods.short_form(bank, budget)` and `belief.observe_option(item, option_number)` with a `belief.Belief()` (form channel).
+
 **Done when:** Siya can run it with a classmate.
 **You need:** P1 done (the engine is on `main`). You need an API key for the AI model. Ask Somaditya. Never put the key in the repo.
+
+### P2b. Update `ablations.md` after the review (when you can, before the full run)
+
+Your plan rule says to record changes in the "Changes" section. Three tests were written before the review changes:
+
+- Test 5 predicts that D's stop rule stops too early because it uses the weaker form model. D now uses its own spoken model.
+- Test 7 assumes that the fitted spoken values are in use. They are not: D uses the starting values (0.15, 0.15, 0.20). The test now compares fitted and starting values for the form answers only.
+- Test 8 is not needed: `N_ROLLOUTS` is 400.
+
+Method DN (D without re-asks) for test 3 is on `main`.
 
 ### P4. Write the Milestone 3 system section (Tue Nov 17)
 
@@ -295,7 +315,7 @@ How to build them:
 
 The 20 conversations are ready (Nov 11). They are real runs of method D with 20 of the 100 test users, 4 for each true final band. We removed the true profiles.
 
-1. Open the reading sheet: https://github.com/somadisingh/2sigm0id/blob/belief-engine/persona_checks/human_read/conversations.md
+1. Open the reading sheet: https://github.com/somadisingh/2sigm0id/blob/main/persona_checks/human_read/conversations.md
 2. Read the instructions at the top of the sheet. Reading all 20 takes about 45 to 60 minutes.
 3. Copy `persona_checks/human_read/guesses.csv` into a shared Google Sheet. Give Preyansh and Somaditya edit access.
 4. Each of the three readers writes a final band (1 to 5) for each conversation in their own column. Work alone. Do not talk about the guesses before all three finish.
@@ -303,7 +323,7 @@ The 20 conversations are ready (Nov 11). They are real runs of method D with 20 
 6. When all three columns are full, download the sheet as `guesses.csv` and put it back in `persona_checks/human_read/`.
 7. Run `python check_personas.py human-read score`. It writes `persona_checks/check6_human_read.md`: how often each reader and method D got the band right, and how often the readers agreed.
 
-**You need:** nothing from others. The files are on branch `belief-engine` until it is merged into `main`.
+**You need:** nothing from others.
 
 ### S5. Run the classmate study (Sat Nov 14 to Mon Nov 16)
 
@@ -342,7 +362,7 @@ This test shows if the way a person talks changes their result.
 
 A judge model checks if the AI model reads answers correctly. We must know if we can trust this judge. So we compare the judge with people. Each of you labels the same 50 readings without help, so that we can also see how often two people agree.
 
-1. Open the file: https://github.com/somadisingh/2sigm0id/blob/belief-engine/pilot/label_readings.csv
+1. Open the file: https://github.com/somadisingh/2sigm0id/blob/main/pilot/label_readings.csv
 2. Download it, or copy it into a Google Sheet.
 3. For each row, read the question, the answer and the reading.
 4. In your column, write "yes" if the answer supports the reading. Write "no" if it does not.
@@ -393,7 +413,7 @@ A judge model checks if the AI model reads answers correctly. We must know if we
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python test_belief.py                       # engine tests, no key needed (branch belief-engine)
+python test_belief.py                       # engine tests, no key needed
 python run_bakeoff.py experiment --mock --methods A B C D --budgets 5 --repeats 1   # fake answers, no cost
 python score.py results/experiment_mock.jsonl
 ```
