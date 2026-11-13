@@ -116,12 +116,15 @@ WILLINGNESS_TEXT = {
 # No numbers or scenario here: an earlier version said "if your investments fell 20% in a
 # month", the same scenario as bank question BEH01, which made that question too easy.
 BEHAVIORAL_TEXT = {
-    1: "In reality, when your investments lose a lot of value, you panic: you sell quickly to stop the losses and lose sleep over it.",
+    1: "In reality, when your investments lose a lot of value, you sell most or all of them quickly to stop the losses.",
     2: "In reality, when your investments lose a lot of value, you get anxious and usually sell a good part to feel safer.",
     3: "In reality, when your investments lose a lot of value, you feel uneasy and may sell a little, but you mostly hold.",
     4: "In reality, when your investments lose a lot of value, you stay calm, keep everything and wait for a recovery.",
-    5: "In reality, when your investments lose a lot of value, you see a bargain and invest more.",
+    5: "In reality, when your investments lose a lot of value, you invest more while prices are low.",
 }
+# Nov 13: bands 1 and 5 lost their stock phrases ("you panic ... and lose sleep over it", "you
+# see a bargain"). Every band-1 user repeated them. The meaning is the same; the backstory now
+# gives each user their own way to show it.
 PAST_LOSS_TEXT = {
     "none": "You have never been through a big investment loss.",
     "held": "When your investments dropped sharply in the past, you held on.",

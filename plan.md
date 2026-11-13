@@ -289,7 +289,14 @@ Checks (`persona_checks/backstory_rewrite.md`, `persona_checks/check1_facts.md`)
 
 With backstories off, persona check 1 was 89 of 100. The first rewrite made users with no past loss say "held" (81 of 100), because their stories told of small past dips. The second rewrite fixed this.
 
-Still open: the test-user instructions in `prompts.py` (`BEHAVIORAL_TEXT`) still say "you panic … and lose sleep over it" for behavior band 1. These instructions win over the backstory. Somaditya decides before the full run if this sentence changes.
+**The test-user instructions also changed** (`BEHAVIORAL_TEXT` in `prompts.py`). These instructions win over the backstory, so the stock phrases had to go there too:
+- Behavior band 1 was "you panic: you sell quickly to stop the losses and lose sleep over it". Now: "you sell most or all of them quickly to stop the losses".
+- Behavior band 5 was "you see a bargain and invest more". Now: "you invest more while prices are low".
+- Bands 2, 3 and 4 did not change.
+
+Check: we asked the 13 behavior-band-1 and 32 behavior-band-5 test users two questions about a big market drop, before and after the change. Band 1 sold in 24 of 26 answers both times; "sleep" went from 10 answers to 0. Band 5 said it would buy more in 51 of 64 answers before and 48 of 64 after.
+
+Limit: the pilot answers (`pilot/`) and the 100-user preview runs used the old wording. The full run uses the new wording for all methods, so the comparison between methods is still fair.
 
 The original steps:
 
