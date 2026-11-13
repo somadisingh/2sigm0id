@@ -8,6 +8,7 @@
                           clarify it; the person answers in their own words; an LLM turns each
                           answer into evidence and words the clarifying questions
   DR  D, with retrieval: the extractor also sees similar labeled pilot answers (retrieval.py)
+  DN  D without clarifying questions: each question is asked only once (ablation test 3)
   DP  D, reading answers with token probabilities: GLM picks the matching option, and its
       calibrated probability for every option is the evidence (soft evidence)
   C0  the earlier adaptive form: a hand-made rule picks the questions
@@ -112,7 +113,7 @@ FACT_TEXT = {
     "dependents": "how many people depend on their income",
     "past_loss_reaction": "what they actually did the last time their investments fell a lot",
 }
-D_METHODS = ("D", "DR", "DP")
+D_METHODS = ("D", "DR", "DP", "DN")
 FORM_METHODS = ("A", "B", "C", "C0") + D_METHODS
 _POOL, _TEMPERATURE = None, None
 NO_EVIDENCE = {"facts": {}, "willingness": None, "behavioral": None, "no_past_loss": False}
@@ -388,7 +389,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
     fixed = short_form(bank, budget) if method in ("A", "B") else None
     spoken = method in ("B",) + D_METHODS
-    belief = BE.Belief(channel="spoken" if method in ("D", "DR") else "form")
+    belief = BE.Belief(channel="spoken" if method in ("D", "DR", "DN") else "form")
     answers, turns, u_calls, m_calls = [], [], [], []
     asks = {}
     unclear = {}   # D: fact item -> "vague" (no clear reading) or "conflict" (contradicted)
@@ -405,7 +406,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             item = next_adaptive_item(bank, answers, {a["id"] for a in answers})
         else:
             cands = [i for i in pool if i["id"] not in asks]
-            if method in D_METHODS:   # a conversation can come back to a fact to check it.
+            if method in D_METHODS and method != "DN":   # a conversation can come back to a fact to check it.
                 # Money facts: up to MAX_ASKS_PER_FACT asks; a second statement guards the
                 # estimate against vague or false answers. The past-loss question: only when
                 # unclear, because people repeat the same story (Nov 12, 20-user checks).
