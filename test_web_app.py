@@ -2,28 +2,27 @@
 
   python test_web_app.py
 
-Walks one participant through login, consent, both parts and the results page, and checks the
-saved session files. Also checks a wrong access code, an unknown ID and a reused ID.
+Walks an odd code (standard form first) through part 1, closes the page, logs in again,
+continues with part 2 and checks the saved files. Checks that an even code starts with the
+interviewer, and that a wrong access code, a bad code and a finished code are refused.
+Uses codes P97 and P98, so a real study's files are not touched.
 """
 
 import json
 import os
-import shutil
 
 os.environ["LIVE_MOCK"] = "1"
 os.environ["STUDY_ACCESS_CODE"] = "test"
 
 from streamlit.testing.v1 import AppTest   # noqa: E402
 
-import study_order                          # noqa: E402
 from live_session import OUT_DIR            # noqa: E402
 
-PID = "P39"   # an ID late in the list, so a real study's files are not touched
-TIMEOUT = 60
+ODD, EVEN = "P97", "P98"
 
 
 def app():
-    return AppTest.from_file("web_app.py", default_timeout=TIMEOUT).run()
+    return AppTest.from_file("web_app.py", default_timeout=60).run()
 
 
 def login(at, pid, code="test"):
@@ -37,49 +36,56 @@ def errors(at):
     return " ".join(e.value for e in at.error)
 
 
-def main():
-    for f in OUT_DIR.glob(f"{PID}_*.json"):
-        f.unlink()
-
-    assert "not correct" in errors(login(app(), PID, "wrong")), "wrong code accepted"
-    assert "not in the study list" in errors(login(app(), "P99")), "unknown ID accepted"
-
-    at = login(app(), PID)
-    assert at.session_state.stage == "consent", at.session_state.stage
-    at.checkbox[0].check().run()
+def do_part(at, method):
+    assert at.session_state.stage == "intro", at.session_state.stage
     at.button[0].click().run()
-
-    order = study_order.load()[PID]
-    for part, method in enumerate(order):
-        assert at.session_state.stage == "part" and at.session_state.part == part
-        for k in range(10):
-            if method == "D":
-                at.chat_input[0].set_value("I would hold and wait, about 12 years, no debt").run()
-            else:
-                at.radio[0].set_value(at.radio[0].options[min(2, len(at.radio[0].options) - 1)])
-                at.button[0].click().run()
-            assert not at.exception, at.exception
-        if part == 0:
-            assert at.session_state.stage == "between", at.session_state.stage
+    for _ in range(10):
+        if method == "D":
+            at.chat_input[0].set_value("I would hold and wait, about 12 years, no debt").run()
+        else:
+            at.radio[0].set_value(at.radio[0].options[min(2, len(at.radio[0].options) - 1)])
             at.button[0].click().run()
-
-    assert at.session_state.stage == "done", at.session_state.stage
-    assert set(at.session_state.results) == {"A", "D"}
-    text = " ".join(m.value for m in at.markdown)
+        assert not at.exception, at.exception
+    assert at.session_state.stage == "result", at.session_state.stage
     assert "not investment advice" in " ".join(i.value for i in at.info)
-    assert PID in text
+    assert any("Final band" in m.value for m in at.markdown)
 
-    files = sorted(OUT_DIR.glob(f"{PID}_*.json"))
-    data = [json.loads(f.read_text()) for f in files]
+
+def clean():
+    for pid in (ODD, EVEN):
+        for f in OUT_DIR.glob(f"{pid}_*.json"):
+            f.unlink()
+
+
+def main():
+    clean()
+    assert "not correct" in errors(login(app(), ODD, "wrong")), "wrong access code accepted"
+    assert "P followed by two digits" in errors(login(app(), "Jane")), "bad code accepted"
+
+    at = login(app(), EVEN)
+    assert at.session_state.order == ["D", "A"], at.session_state.order
+
+    # odd code: standard form first; part 1, then the page is closed
+    at = login(app(), ODD)
+    assert at.session_state.order == ["A", "D"], at.session_state.order
+    do_part(at, "A")
+    assert "After interview 1" in " ".join(m.value for m in at.markdown)
+
+    # logs in again later: continues with part 2
+    at = login(app(), ODD)
+    assert at.session_state.part == 1, at.session_state.part
+    assert "Welcome back" in " ".join(s.value for s in at.success)
+    do_part(at, "D")
+    assert "After interview 2" in " ".join(m.value for m in at.markdown)
+
+    data = [json.loads(f.read_text()) for f in sorted(OUT_DIR.glob(f"{ODD}_*.json"))]
     assert len(data) == 2 and all(d["finished"] and len(d["turns"]) == 10 for d in data)
-    assert {d["method"] for d in data} == {"A", "D"}
-    assert all(d["study_order"] == order and d["channel"] == "web" for d in data)
-    assert "already completed" in errors(login(app(), PID)), "reused ID accepted"
+    assert {(d["method"], d["position"]) for d in data} == {("A", 1), ("D", 2)}
+    assert "already finished both parts" in errors(login(app(), ODD)), "finished code accepted"
 
-    for f in files:
-        f.unlink()
-    print(f"ok: {PID} order {order}, both parts saved and finished; wrong code, unknown ID "
-          "and reused ID are refused")
+    clean()
+    print("ok: odd code A then D with a break between parts, even code D first; wrong access "
+          "code, bad code and finished code are refused")
 
 
 if __name__ == "__main__":
