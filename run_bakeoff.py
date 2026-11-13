@@ -445,8 +445,15 @@ def experiment(args):
                         u_setting=C.EXPERIMENT_USER_REASONING, persona=p, repeat=r, probes=False,
                         prompt=P.INTERVIEWER_PROMPT, full_budget=True,
                         job_key=f"experiment|{m}|{b}|{iv}|{user}|{p['id']}|{r}"))
+    # Mix the methods over time, so each method's wait times are measured under the same
+    # load, and a stopped run has some of every method. Noise is seeded by user and repeat,
+    # so the order changes nothing else.
+    random.Random(0).shuffle(jobs)
+    if args.workers:
+        C.MAX_WORKERS = args.workers
     name = args.out or ("experiment_mock.jsonl" if args.mock else "experiment.jsonl")
     config = run_config(args.personas)
+    config["workers"] = C.MAX_WORKERS   # not in "setup": it changes wait times, not answers
     print(f"setup: {config['setup']}; commit {config['commit']}"
           f"{' + uncommitted code changes' if config['uncommitted_code'] else ''}")
     run_jobs(llm, jobs, RESULTS / name, config)
@@ -520,6 +527,8 @@ def main():
                     help="test-user file (default: Siya's 100); personas.json = the 5 old ones")
     ex.add_argument("--limit", type=int, help="use only this many test users, spread over the bands")
     ex.add_argument("--out", help="results file name")
+    ex.add_argument("--workers", type=int, help=f"interviews in parallel (default {C.MAX_WORKERS}); "
+                    "each model is still held under its requests-per-minute limit")
     ex.add_argument("--mock", action="store_true")
     ex.set_defaults(fn=experiment)
     args = ap.parse_args()

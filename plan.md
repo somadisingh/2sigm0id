@@ -9,7 +9,7 @@ The file uses simple, short sentences. Section 10 explains the words that we use
 | Date | What happens |
 |---|---|
 | Thu Nov 12 | Preyansh reviews the belief engine. Siya decides the corrections design. Siya and Somaditya set up the backstories together. |
-| Fri Nov 13 | Preyansh sends the ablation plan (done). Backstories on (done). Somaditya starts the full experiment run tonight (about 10 hours). |
+| Fri Nov 13 | Preyansh sends the ablation plan (done). Backstories on (done). Somaditya starts the full experiment run tonight (about 18 hours, about $77). |
 | Sat Nov 14 | Preyansh's live chat is ready. Siya can start the classmate study. |
 | Mon Nov 16 | All results are ready for writing. |
 | Tue Nov 17 | Each person sends a draft of their Milestone 3 sections. |
@@ -161,6 +161,9 @@ These two generative AI parts are agreed but wait until the main work is done. B
 ### Phase 2: Nov 13 to Nov 14
 
 9. Run the full experiment: 100 test users, the methods in Preyansh's ablation plan, budgets 5, 10 and 15, three repeats. Estimated cost: $70 to $100.
+   - **Before the run (Nov 13):** every record now saves its setup (backstories on or off, a hash of the persona file and of the test-user instructions, the models, the engine settings, the git commit). A resume into a file made with another setup is refused. A test on 10 users with all 8 methods and all budgets ran first (`results/experiment_pretest.jsonl`): 240 interviews, no errors, $2.58. The full run is 30 times this test, so about $77.
+   - **Full run started Nov 13 evening:** file `results/experiment_full.jsonl`, 7,200 interviews, 12 in parallel (each model stays under 120 requests per minute), methods in random order so that every method meets the same load. Expected time: about 18 hours, so the results are ready on Sat Nov 14.
+   - **Decided Nov 13:** D's capacity problem is not fixed before the run. It is the first item of the failure analysis. A fix after the run would need a new run of D, DR, DP and DN.
 10. Give Siya 20 conversations for persona check 6. (Done Nov 11: `persona_checks/human_read/`.)
 
 ### Phase 3: Nov 14 to Nov 17
@@ -345,7 +348,7 @@ How to build them:
 
 **Check 5: three models agree.** Ask the 8 questions to each test user with three models: `deepseek-v4-flash-0731`, `nemotron-3.5-super` and `muse-spark-open`. Report how often the three models give the same band. Muse costs about 15 times more per word, so first run it on 10 users.
 
-**Done when:** you have one table with the result of each check and the share of users that fail it. Mark each user that fails 2 or more checks. We then fix or remove those users.
+**Done when:** you have one table with the result of each check and the share of users that fail it. Mark each user that fails 2 or more checks. **Decided Nov 13:** we leave those users out of the scoring. We do not fix them, because the full run already uses them, and a fixed user would need a new run. So your checks can run at the same time as the full run.
 **You need:** S1 done. An API key (ask Somaditya). Estimated cost: $2 to $3.
 
 **Also look at these results from checks 1 and 4 (section 3):** 16 users with the income "stable and high" say "stable", and "flip" notes rarely change form answers. Decide with Somaditya if the income label and the flip note need new wording.
