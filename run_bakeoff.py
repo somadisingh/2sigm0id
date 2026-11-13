@@ -272,13 +272,49 @@ def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat,
 
 # ---------------------------------------------------------------- stages
 
-def run_jobs(llm, jobs, out_path):
-    """Run interviews in parallel; skip ones already in the results file (resume)."""
+def run_config(personas_file=None):
+    """What a result depends on, saved in every experiment record. "setup" must match to
+    resume into a file; "commit" is for the record only (doc-only commits may happen mid-run)."""
+    import hashlib
+    import subprocess
+
+    def digest(obj):
+        return hashlib.sha256(json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()[:12]
+
+    def git(*a):
+        try:
+            return subprocess.run(["git", *a], cwd=HERE, capture_output=True, text=True).stdout.strip()
+        except OSError:
+            return ""
+    pf = Path(personas_file or C.EXPERIMENT_PERSONAS)
+    pf = pf if pf.is_absolute() else HERE / pf
+    setup = {
+        "use_backstories": C.USE_BACKSTORIES,
+        "personas_file": pf.name,
+        "personas_sha": hashlib.sha256(pf.read_bytes()).hexdigest()[:12] if pf.exists() else None,
+        "user_text": digest([P.WILLINGNESS_TEXT, P.BEHAVIORAL_TEXT, P.PAST_LOSS_TEXT, P.NOISE_NOTES,
+                             P.build_user_system.__code__.co_consts]),
+        "interviewer_prompt": P.INTERVIEWER_PROMPT,
+        "interviewer": C.EXPERIMENT_INTERVIEWER, "user": C.EXPERIMENT_USER,
+        "engine_settings": methods.BE.SETTINGS_SOURCE,
+    }
+    return {"setup": setup, "commit": git("rev-parse", "--short", "HEAD"),
+            "uncommitted_code": bool(git("status", "--porcelain", "--untracked-files=no", "--", "*.py"))}
+
+
+def run_jobs(llm, jobs, out_path, config=None):
+    """Run interviews in parallel; skip ones already in the results file (resume).
+    With config (the experiment), every record gets it, and a file made with a different
+    setup is refused, so a resume never mixes old and new results."""
     done = set()
     if out_path.exists():
         for line in out_path.read_text().splitlines():
             if line.strip():
                 rec = json.loads(line)
+                if config and (rec.get("run_config") or {}).get("setup") != config["setup"]:
+                    sys.exit(f"{out_path.name} was made with a different setup "
+                             f"({(rec.get('run_config') or {}).get('setup')} vs {config['setup']}). "
+                             "Use a new --out name.")
                 if not rec.get("error"):
                     done.add(rec["job_key"])
     todo = [j for j in jobs if j["job_key"] not in done]
@@ -304,6 +340,8 @@ def run_jobs(llm, jobs, out_path):
                        persona_id=j["persona"]["id"], error=f"{type(e).__name__}: {e}")
         rec["job_key"] = j["job_key"]
         rec["stage"] = j["stage"]
+        if config:
+            rec["run_config"] = config
         with lock:
             with out_path.open("a") as f:
                 f.write(json.dumps(rec) + "\n")
@@ -408,7 +446,10 @@ def experiment(args):
                         prompt=P.INTERVIEWER_PROMPT, full_budget=True,
                         job_key=f"experiment|{m}|{b}|{iv}|{user}|{p['id']}|{r}"))
     name = args.out or ("experiment_mock.jsonl" if args.mock else "experiment.jsonl")
-    run_jobs(llm, jobs, RESULTS / name)
+    config = run_config(args.personas)
+    print(f"setup: {config['setup']}; commit {config['commit']}"
+          f"{' + uncommitted code changes' if config['uncommitted_code'] else ''}")
+    run_jobs(llm, jobs, RESULTS / name, config)
 
 
 def list_models(args):
