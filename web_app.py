@@ -1,33 +1,40 @@
-"""Web app for the classmate study (task S5): each classmate does the interview (method D) and
-the form (method A) in their browser, in the order from study_order.json.
+"""Web app for the classmate study (task S5). Siya's Google Form runs the study and links here
+for "Interview 1" and "Interview 2". Each classmate does the standard form (method A) and the
+adaptive interviewer (method D) in this app, in the order that the form gives:
 
-Run it on one laptop and share it with a Cloudflare quick tunnel (see README, "Web app"):
+  odd participant code (P01, P03, ...)   standard form first, then the adaptive interviewer
+  even participant code (P02, P04, ...)  adaptive interviewer first, then the standard form
+
+After each part the app shows that part's result, and the person goes back to the form to rate
+it. A person who closes the page after part 1 logs in again and continues with part 2.
 
   streamlit run web_app.py                      # needs BASETEN_API_KEY and STUDY_ACCESS_CODE in .env
   LIVE_MOCK=1 streamlit run web_app.py          # no API key: random readings, for testing
 
-The API key and the answers stay on the laptop that runs the app. Answers are saved to
-live_sessions/ (gitignored) after every answer. Results are shown only after both parts, so
-the first result cannot change the answers in the second part. The result is a risk profile
-for a study. It is not investment advice.
+Answers are saved to live_sessions/ (gitignored) after every answer. The result is a risk
+profile for a study. It is not investment advice.
 """
 
 import hmac
+import json
 import os
+import re
 
 import streamlit as st
 
 import config as C
-import study_order
-from live_session import BAND_NAMES, DIM_NAMES, OUT_DIR, AForm, DInterview
+from live_session import DIM_NAMES, OUT_DIR, AForm, DInterview
 from run_bakeoff import load_env, make_llm
 
 load_env()
 MOCK = os.environ.get("LIVE_MOCK") == "1"
 ACCESS_CODE = os.environ.get("STUDY_ACCESS_CODE", "test" if MOCK else "")
-FORM_URL = os.environ.get("STUDY_FORM_URL", "")   # Siya's Google Form, shown at the end
 BUDGET = 10
-PART_NAMES = {"D": "Interview: answer in your own words", "A": "Form: pick one answer for each question"}
+PID_RE = re.compile(r"^P\d{2}$")
+# the names that Siya's form uses for the two parts and the five bands
+PART_NAMES = {"A": "Standard form", "D": "Adaptive interviewer"}
+PART_HELP = {"A": "Pick one answer for each question.", "D": "Answer each question in your own words."}
+FORM_BANDS = {1: "Very Conservative", 2: "Conservative", 3: "Moderate", 4: "Aggressive", 5: "Very aggressive"}
 
 st.set_page_config(page_title="Risk-profile study", page_icon="📋", layout="centered")
 
@@ -41,31 +48,44 @@ def llm():
     return make_llm(MOCK)
 
 
-@st.cache_resource
-def orders():
-    return study_order.load()
+def order_for(pid):
+    """Siya's form: odd codes do the standard form first, even codes the interviewer first."""
+    return ["A", "D"] if int(pid[1:]) % 2 else ["D", "A"]
 
 
-def finished_before(pid):
-    """True if this ID already has a finished interview and a finished form."""
-    import json
-    done = set()
-    for f in OUT_DIR.glob(f"{pid}_*.json"):
+def finished_parts(pid):
+    """Methods this participant already finished, with their saved results."""
+    done = {}
+    for f in sorted(OUT_DIR.glob(f"{pid}_*.json")):
         try:
             d = json.loads(f.read_text())
         except (OSError, ValueError):
             continue
         if d.get("finished"):
-            done.add(d.get("method"))
-    return {"A", "D"} <= done
+            done[d["method"]] = {"profile": d["final_profile"], "bands": d["final_bands"],
+                                 "final_band": d["final_band"], "band_probs": d["band_probs"]}
+    return done
 
 
 def new_part(method, pid, position):
-    extra = {"study_order": orders()[pid], "position": position, "channel": "web"}
+    extra = {"study_order": S.order, "position": position, "channel": "web"}
     if method == "D":
         return DInterview(pid, llm(), C.EXPERIMENT_INTERVIEWER, C.EXPERIMENT_INTERVIEWER_REASONING,
                           BUDGET, extra=extra)
     return AForm(pid, BUDGET, extra=extra)
+
+
+def show_result(r):
+    cols = st.columns(3)
+    for col, (d, v) in zip(cols, r["profile"].items()):
+        col.metric(DIM_NAMES[d].split(" (")[0], f"band {r['bands'][d]}", f"score {v:.2f}", delta_color="off")
+    st.markdown(f"### Final band: {r['final_band']} ({FORM_BANDS[r['final_band']]})")
+    st.caption("Each score is from 0 (very careful) to 1 (very bold) and has a band from 1 to 5. "
+               "The final band is the lowest of the three bands.")
+    st.write("How sure the assistant is about your final band:")
+    st.bar_chart({"chance": {f"band {i}": p for i, p in enumerate(r["band_probs"], 1)}},
+                 horizontal=True, height=180)
+    st.info("This is a research profile for a class project. It is not investment advice.")
 
 
 S = st.session_state
@@ -77,49 +97,48 @@ if MOCK:
 
 # ---------------------------------------------------------------- login
 if S.stage == "login":
-    st.write("Thank you for helping with our class project. Enter the participant ID and the "
-             "access code that you received.")
+    st.write("Enter your participant code from the survey and the access code.")
     with st.form("login"):
-        pid = st.text_input("Participant ID (for example P07)").strip().upper()
+        pid = st.text_input("Participant code (for example P07)").strip().upper()
         code = st.text_input("Access code", type="password")
         ok = st.form_submit_button("Continue")
     if ok:
+        done = finished_parts(pid) if PID_RE.match(pid) else {}
         if not hmac.compare_digest(code.encode(), ACCESS_CODE.encode()):
             st.error("The access code is not correct.")
-        elif pid not in orders():
-            st.error("This participant ID is not in the study list. Check the ID that you received.")
-        elif finished_before(pid):
-            st.error("This ID has already completed the study. If this is a mistake, contact the study team.")
+        elif not PID_RE.match(pid) or pid == "P00":
+            st.error("The participant code is P followed by two digits, for example P07.")
+        elif {"A", "D"} <= set(done):
+            st.error("This code has already finished both parts. Go back to the survey. "
+                     "If this is a mistake, contact the study team.")
         else:
-            S.pid, S.order, S.stage = pid, orders()[pid], "consent"
+            S.pid, S.order, S.results = pid, order_for(pid), done
+            S.part = 0 if S.order[0] not in done else 1
+            S.stage = "intro"
             st.rerun()
 
-# ---------------------------------------------------------------- consent
-elif S.stage == "consent":
-    st.subheader("Before you start")
+# ---------------------------------------------------------------- before a part
+elif S.stage == "intro":
+    method = S.order[S.part]
+    if S.part == 1 and S.order[0] in S.results:
+        st.success(f"Welcome back. You finished part 1 ({PART_NAMES[S.order[0]]}).")
+    st.subheader(f"Part {S.part + 1} of 2: {PART_NAMES[method]}")
     st.markdown(
-        "- You do two short parts: an **interview** where you answer in your own words, and a "
-        "**form** where you pick answers. Each part has 10 questions. Together they take about "
-        "15 to 20 minutes.\n"
-        "- Answer as yourself. There are no right or wrong answers. You can skip details you "
-        "do not want to share by saying so.\n"
+        f"- {PART_HELP[method]} There are {BUDGET} questions and no right or wrong answers.\n"
+        "- Use the same finances as in the survey. Ranges are fine.\n"
         "- **Do not type your name** or other details that identify you.\n"
-        "- Your answers are saved with your participant ID only and used for our class project. "
-        "In the interview, an AI model reads your answers.\n"
-        "- At the end you see a risk profile. It is a research result, **not investment advice**.\n"
-        "- **Do not refresh or close this page** until the end, or your progress is lost.")
-    agree = st.checkbox("I understand and want to take part.")
-    if st.button("Start", disabled=not agree):
-        S.part = 0
-        S.session = new_part(S.order[0], S.pid, 1)
+        "- **Do not refresh or close this page** until you see your result."
+        + ("\n- An AI model reads your answers." if method == "D" else ""))
+    if st.button(f"Start part {S.part + 1}"):
+        S.session = new_part(method, S.pid, S.part + 1)
         S.stage = "part"
         st.rerun()
 
-# ---------------------------------------------------------------- the two parts
+# ---------------------------------------------------------------- a part
 elif S.stage == "part":
     s = S.session
     method = S.order[S.part]
-    st.subheader(f"Part {S.part + 1} of 2. {PART_NAMES[method]}")
+    st.subheader(f"Part {S.part + 1} of 2: {PART_NAMES[method]}")
 
     if method == "D":
         for t in s.data["turns"]:
@@ -152,38 +171,24 @@ elif S.stage == "part":
                     st.rerun()
 
     if q is None:   # this part is over
-        S.setdefault("results", {})[method] = s.finish()
-        if S.part == 0:
-            S.part, S.stage = 1, "between"
-        else:
-            S.stage = "done"
+        S.results[method] = s.finish()
+        S.stage = "result"
         st.rerun()
 
-# ---------------------------------------------------------------- between the parts
-elif S.stage == "between":
-    st.success("Part 1 is done. Thank you.")
-    st.write(f"Part 2: **{PART_NAMES[S.order[1]]}**. You will see your results after part 2.")
-    if st.button("Start part 2"):
-        S.session = new_part(S.order[1], S.pid, 2)
-        S.stage = "part"
-        st.rerun()
-
-# ---------------------------------------------------------------- results
-elif S.stage == "done":
-    st.success("You are done. Thank you for taking part.")
-    st.write("Here are your two risk profiles. Each score is from 0 (very careful) to 1 (very bold). "
-             "Each score has a band from 1 to 5. The final band is the lowest of the three bands.")
-    for method, title in (("D", "Interview result"), ("A", "Form result")):
-        r = S.results[method]
-        st.subheader(title)
-        cols = st.columns(3)
-        for col, (d, v) in zip(cols, r["profile"].items()):
-            col.metric(DIM_NAMES[d].split(" (")[0], f"{v:.2f}", f"band {r['bands'][d]}", delta_color="off")
-        st.write(f"**Final band: {r['final_band']} ({BAND_NAMES[r['final_band']]})**")
-        st.bar_chart({"chance": {f"band {i}": p for i, p in enumerate(r["band_probs"], 1)}},
-                     horizontal=True, height=180)
-    st.info("This is a research profile for a class project. It is not investment advice.")
-    st.subheader("Last step")
-    st.write(f"Please complete the short survey and enter your participant ID **{S.pid}**.")
-    if FORM_URL:
-        st.link_button("Open the survey", FORM_URL)
+# ---------------------------------------------------------------- after a part
+elif S.stage == "result":
+    method = S.order[S.part]
+    st.success(f"Part {S.part + 1} of 2 is done. Thank you.")
+    st.subheader(f"Your result: {PART_NAMES[method]}")
+    show_result(S.results[method])
+    st.subheader("Next step")
+    if S.part == 0:
+        st.write(f"Go back to the survey tab and answer the questions under **After interview 1**. "
+                 f"Then come back to this page and start part 2 ({PART_NAMES[S.order[1]]}). "
+                 "Keep this page open.")
+        if st.button("Start part 2"):
+            S.part, S.stage = 1, "intro"
+            st.rerun()
+    else:
+        st.write("Go back to the survey tab, answer the questions under **After interview 2**, "
+                 "and submit the survey. You can then close this page.")

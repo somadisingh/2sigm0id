@@ -121,28 +121,21 @@ At the end it shows the three scores, the final band and the band probabilities.
 
 ## Web app (classmate study)
 
-`web_app.py` runs the classmate study (task S5) in the browser. Each classmate logs in with a participant ID and an access code, does the interview (D) and the form (A) in the order from `study_order.json`, and sees both results only after both parts. It then points them to Siya's survey with their ID. Answers are saved to `live_sessions/` on the laptop that runs the app.
+`web_app.py` runs the two parts of the classmate study (task S5). Siya's Google Form runs the study and links here for "Interview 1" and "Interview 2". Each classmate logs in with their participant code and the access code and does the standard form (A) and the adaptive interviewer (D). **Odd codes (P01, P03, ...) do the form first; even codes do the interviewer first**, as the form says. After each part the app shows that part's result, and the person goes back to the form to rate it. A person who closes the page after part 1 logs in again and continues with part 2. A code that finished both parts can't log in again. Answers are saved to `live_sessions/` (gitignored) on the machine that runs the app.
 
-Setup (once, on the laptop that hosts the study):
+Setup (once, on the machine that hosts the study):
 
 ```bash
 pip install -r requirements.txt -r requirements-web.txt
-brew install cloudflared
 ```
 
-In `.env`, next to `BASETEN_API_KEY`, set `STUDY_ACCESS_CODE` (a code you send with the link) and `STUDY_FORM_URL` (the survey link).
-
-Run the app and share it (two terminals; keep both open during the study):
+In `.env`, next to `BASETEN_API_KEY`, set `STUDY_ACCESS_CODE`: a code that the form gives with the link.
 
 ```bash
 streamlit run web_app.py
-cloudflared tunnel --url http://localhost:8501
 ```
 
-`cloudflared` prints a link like `https://<random-words>.trycloudflare.com`. Send that link and the access code to the classmates. The link changes each time `cloudflared` starts, and it works only while your laptop is on and both commands run.
-
-- **Participant IDs:** give P01, P02, ... in sign-up order. Don't skip or reuse one. `study_order.json` (seed in `study_order.py`) gives each pair one A-first and one D-first person. A finished ID can't log in again.
-- **Refresh:** a refresh loses the current part. The answers so far stay saved; the person logs in again with the same ID and starts over.
+- **Refresh:** a refresh during a part restarts that part. Finished parts are kept.
 - **Test without a key:** `LIVE_MOCK=1 streamlit run web_app.py` (access code `test`), and `python test_web_app.py` for a headless run through both parts.
 
 ## Question bank
