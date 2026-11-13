@@ -106,6 +106,19 @@ Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. 
 
 `score.py` also saves `<name>_cost_vs_error.png`: avg error against system $ and system seconds per profile, one point per method and budget. It needs `matplotlib`, which `requirements.txt` now installs.
 
+## Live chat (real people)
+
+`live_chat.py` lets a real person answer method D's questions in the terminal, for the classmate study and the demo. It runs the same steps as method D in `run_form`; the person's typed answer replaces the AI test user, and no noise is injected.
+
+```bash
+python live_chat.py --participant P01                # method D, 10 questions
+python live_chat.py --participant P01 --method A     # the fixed form, scored by the same engine
+python live_chat.py --participant demo --stop-early  # end at the stop point (demo only)
+python live_chat.py --participant test --mock        # no API key, random readings
+```
+
+At the end it shows the three scores, the final band and the band probabilities. It gives no investment advice. Each session is saved to `live_sessions/<participant>_<method>_<time>.json` after every answer, including the band before and after each answer and whether the answer was a re-ask (ablation test 3). `live_sessions/` is in `.gitignore`: the repo is public, so use participant IDs, never names, and share the files privately.
+
 ## Question bank
 
 `question_bank.json` holds the 35 shared questions for methods A, B and C: 11 on capacity, 12 on willingness, 12 on behavior. `question_bank.md` is a readable copy. Run `python check_question_bank.py --write-md` after editing the JSON; it checks the format and regenerates the readable copy. The default short forms are placeholders until a pilot picks the most informative questions.
