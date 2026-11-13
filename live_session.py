@@ -9,7 +9,6 @@ Each session is saved to live_sessions/<participant>_<method>_<time>.json after 
 live_sessions/ is in .gitignore: the repo is public, and these files hold real people's answers.
 """
 
-import json
 import re
 import time
 from datetime import datetime
@@ -18,11 +17,12 @@ from pathlib import Path
 import numpy as np
 
 import belief as BE
+import session_store
 import methods as M
 from prompts import band
 
 HERE = Path(__file__).resolve().parent
-OUT_DIR = HERE / "live_sessions"
+OUT_DIR = session_store.LOCAL_DIR
 ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,32}$")
 BAND_NAMES = {1: "very careful", 2: "careful", 3: "balanced", 4: "bold", 5: "very bold"}
 DIM_NAMES = {"capacity": "Capacity (how much loss you can afford)",
@@ -47,8 +47,8 @@ class _Session:
         self.k = 0          # questions answered so far
         self.current = None  # (question text, item) waiting for an answer
         self.asked_at = None
+        self.stored = True   # False if the last save to the private repo failed
         stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        OUT_DIR.mkdir(exist_ok=True)
         self.path = OUT_DIR / f"{participant}_{self.method}_{stamp}.json"
         self.data = {"participant": participant, "method": self.method, "budget": budget,
                      "started": datetime.now().isoformat(timespec="seconds"),
@@ -56,9 +56,8 @@ class _Session:
                      "finished": False, **(extra or {})}
 
     def save(self):
-        tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(self.data, indent=1))
-        tmp.replace(self.path)
+        """Saved locally, and to the private repo if one is set (session_store.py)."""
+        self.stored = session_store.save(self.path.name, self.data)
 
     @property
     def done(self):

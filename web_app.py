@@ -16,14 +16,14 @@ profile for a study. It is not investment advice.
 """
 
 import hmac
-import json
 import os
 import re
 
 import streamlit as st
 
 import config as C
-from live_session import DIM_NAMES, OUT_DIR, AForm, DInterview
+import session_store
+from live_session import DIM_NAMES, AForm, DInterview
 from run_bakeoff import load_env, make_llm
 
 load_env()
@@ -39,7 +39,25 @@ FORM_BANDS = {1: "Very Conservative", 2: "Conservative", 3: "Moderate", 4: "Aggr
 st.set_page_config(page_title="Risk-profile study", page_icon="📋", layout="centered")
 
 if not ACCESS_CODE:
-    st.error("STUDY_ACCESS_CODE is not set in .env. The app will not start without it.")
+    st.error("STUDY_ACCESS_CODE is not set. The app will not start without it.")
+    st.stop()
+
+
+@st.cache_resource
+def store_check():
+    """None if storage is fine, else the problem. A hosted app sets SESSION_STORE_REQUIRED=1:
+    its disk is wiped on restart, so it must save to the private repo."""
+    try:
+        repo = session_store.check_remote()
+    except Exception as e:   # noqa: BLE001 - shown to the operator, the app stops
+        return f"The private session repo can't be used: {e}"
+    if not repo and os.environ.get("SESSION_STORE_REQUIRED") == "1":
+        return "SESSION_REPO and SESSION_REPO_TOKEN are not set, so answers would be lost."
+    return None
+
+
+if problem := store_check():
+    st.error(f"The study app is not ready. {problem}")
     st.stop()
 
 
@@ -56,11 +74,7 @@ def order_for(pid):
 def finished_parts(pid):
     """Methods this participant already finished, with their saved results."""
     done = {}
-    for f in sorted(OUT_DIR.glob(f"{pid}_*.json")):
-        try:
-            d = json.loads(f.read_text())
-        except (OSError, ValueError):
-            continue
+    for d in session_store.load_all(f"{pid}_"):
         if d.get("finished"):
             done[d["method"]] = {"profile": d["final_profile"], "bands": d["final_bands"],
                                  "final_band": d["final_band"], "band_probs": d["band_probs"]}
@@ -103,7 +117,11 @@ if S.stage == "login":
         code = st.text_input("Access code", type="password")
         ok = st.form_submit_button("Continue")
     if ok:
-        done = finished_parts(pid) if PID_RE.match(pid) else {}
+        try:
+            done = finished_parts(pid) if PID_RE.match(pid) else {}
+        except Exception:   # noqa: BLE001 - the session repo can't be read right now
+            st.error("The study app can't check your progress right now. Please try again in a minute.")
+            st.stop()
         if not hmac.compare_digest(code.encode(), ACCESS_CODE.encode()):
             st.error("The access code is not correct.")
         elif not PID_RE.match(pid) or pid == "P00":
@@ -172,6 +190,7 @@ elif S.stage == "part":
 
     if q is None:   # this part is over
         S.results[method] = s.finish()
+        S.stored = s.stored
         S.stage = "result"
         st.rerun()
 
@@ -179,6 +198,9 @@ elif S.stage == "part":
 elif S.stage == "result":
     method = S.order[S.part]
     st.success(f"Part {S.part + 1} of 2 is done. Thank you.")
+    if not S.get("stored", True):
+        st.warning(f"Your answers could not be saved online. Please tell the study team your "
+                   f"code ({S.pid}) and the time.")
     st.subheader(f"Your result: {PART_NAMES[method]}")
     show_result(S.results[method])
     st.subheader("Next step")
