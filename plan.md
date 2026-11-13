@@ -9,7 +9,7 @@ The file uses simple, short sentences. Section 10 explains the words that we use
 | Date | What happens |
 |---|---|
 | Thu Nov 12 | Preyansh reviews the belief engine. Siya decides the corrections design. Siya and Somaditya set up the backstories together. |
-| Fri Nov 13 | Somaditya starts the full experiment run. Preyansh sends the ablation plan. |
+| Fri Nov 13 | Preyansh sends the ablation plan (done). Backstories on (done). Somaditya starts the full experiment run tonight (about 10 hours). |
 | Sat Nov 14 | Preyansh's live chat is ready. Siya can start the classmate study. |
 | Mon Nov 16 | All results are ready for writing. |
 | Tue Nov 17 | Each person sends a draft of their Milestone 3 sections. |
@@ -223,7 +223,9 @@ An ablation is a test that removes or changes one part of the system to measure 
 **Done when:** `ablations.md` is on `main`.
 **You need:** P1 done.
 
-### P3. Build the live chat for real people (Sat Nov 14)
+### P3. Build the live chat for real people (Sat Nov 14) — BUILT, NOT ON MAIN YET
+
+**Status Nov 13:** the live chat and the study web app are on the branch `preyansh/live-chat` (4 commits). The branch merges into `main` with no conflicts. Next: Preyansh merges it into `main`, hosts the web app, and sends the link and access code to Siya for the form.
 
 Siya needs this for the classmate study. We also need it for the final demo.
 
@@ -419,9 +421,11 @@ A judge model checks if the AI model reads answers correctly. We must know if we
 | Somaditya: merge the engine, start the full run | Engine review (P1) | Preyansh | done (Nov 12) |
 | Somaditya: add corrections | Corrections decision (S2) | Siya | done (Nov 13) |
 | Siya: persona checks 2, 3, 5 | Backstories set up (S1) | Siya and Somaditya | done (Nov 13) |
-| Somaditya: final list of methods for the full run | Ablation plan (P2) | Preyansh | Nov 13 |
-| Somaditya: report the faithfulness test | 50 hand labels (L1) | Preyansh and Siya | Nov 13 |
-| Siya: classmate study | Live chat (P3) | Preyansh | Nov 14 |
+| Somaditya: final list of methods for the full run | Ablation plan (P2) | Preyansh | done (Nov 13) |
+| Somaditya: report the faithfulness test | 50 hand labels (L1) | Preyansh and Siya | done (Nov 13) |
+| Siya: classmate study | Web app merged, hosted, link sent (P3) | Preyansh | Nov 14 |
+| Everyone: persona check 6 score | Three columns in `guesses.csv` | Siya, Preyansh, Somaditya | Nov 16 |
+| Somaditya: run the style-swap users | `personas_style_swap.json` (S6) | Siya | Nov 15 |
 | Siya: persona check 6 | 20 conversations | Somaditya | done (Nov 11) |
 | Everyone: Milestone 3 numbers | Full-run results | Somaditya | Nov 16 |
 
