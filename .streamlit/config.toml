@@ -1,0 +1,10 @@
+# Study web app (web_app.py)
+[client]
+toolbarMode = "viewer"     # hide the Deploy button and developer menu from participants
+showErrorDetails = false   # do not show stack traces to participants
+
+[browser]
+gatherUsageStats = false   # no usage data sent to Streamlit
+
+[server]
+headless = true
