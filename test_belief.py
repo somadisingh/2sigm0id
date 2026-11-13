@@ -123,6 +123,44 @@ def test_soft_evidence():
     assert abs(m(never) - 0.5) < 1e-6
 
 
+def test_never_had_a_loss_is_contradicted_by_a_loss_story():
+    """U015: "never had a big loss", then "I sold a lot at the bottom" must be flagged."""
+    b = B.Belief()
+    assert b.observe_no_past_loss(turn=0) == []
+    assert b.observe_score("behavioral", 0.2, "past", turn=4) == [0]
+    c = B.Belief()
+    c.observe_score("behavioral", 0.7, "past", turn=0)
+    assert c.observe_no_past_loss(turn=3) == [0]
+
+
+def test_spoken_choice_uses_the_spoken_update():
+    """D chooses questions with the same answer model it updates with (Preyansh's review):
+    updating on a spoken reading gives the same belief as the row the choice model uses."""
+    item = ITEMS["WIL01"]
+    a, b = B.Belief(channel="spoken"), B.Belief(channel="spoken")
+    r = 14   # reading 0.70
+    a.observe_score("willingness", float(B.READINGS[r]), "stated")
+    b.update(("dim", "willingness"), b.model(item)[r])
+    assert np.allclose(a.dim["willingness"], b.dim["willingness"])
+    f = B.Belief(channel="form")
+    assert f.model(item).shape[0] == len(B.scored_options(item))   # forms still use options
+
+
+def test_settled_is_not_sticky():
+    """A band can be settled, then become uncertain after a contradiction."""
+    b = B.Belief()
+    for fact, v in (("horizon_yrs", 30), ("emergency_fund_months", 12), ("income_stability", 1.0),
+                    ("debt_to_income", 0.0), ("dependents", 0)):
+        b.observe_fact(fact, v, v)
+    for _ in range(4):
+        b.observe_option(ITEMS["BEH11"], 1)
+    rest = [i for i in POOL if i["dimension"] == "behavioral" and i["id"] != "BEH11"][:6]
+    assert b.choose(rest, left=3)[1]["settled"]
+    for _ in range(4):
+        b.observe_option(ITEMS["BEH11"], 4)   # now says "buy" four times
+    assert not b.choose(rest, left=3)[1]["settled"]
+
+
 def test_small_differences_are_not_contradictions():
     b = B.Belief()
     b.observe_fact("emergency_fund_months", 4, 4, turn=0)

@@ -84,7 +84,40 @@ With the old scale, retrieval cut the willingness error by 0.038 and the behavio
 
 **The judge needs a check too.** We ran the judge (Nemotron 3.5 Super) on the same 150 readings two times with the same settings. The two runs agreed on only 85% of the readings. With thinking off, the judge marked 25% of the readings as unsupported, and most of these marks were wrong (for example, "I have no dependents" read as 0 dependents). With thinking on, it marked 11%, and many marks were still wrong. So the faithfulness numbers are not final. Before we report them, two team members must label 50 readings by hand, and we report how often the judge agrees with them. `check_extractor.py` now uses thinking by default. The hand-labeling sheet is `pilot/label_readings.csv`.
 
+**First hand labels (Preyansh, Nov 12, 49 readings; `pilot/label_readings_preyansh.csv`).** The judge with thinking agreed with him on 84% of the readings. It was too lenient 6 times (it said "supported" where he said "no") and too strict 2 times. With thinking off, the judge agreed on only 69% to 71%, mostly because it was too strict. Half of the sheet comes from readings that the judge doubted, so 84% is not the judge's accuracy on all readings. Most of his "no" labels say the same thing as the judge's pattern below: the answer does not say what the person would actually do. Siya's labels will show how often two people agree.
+
 One pattern holds in every judge run. Behavior readings that the extractor takes from an answer to a different question ("volunteered") are the least supported: the judge doubted 36% (D) and 47% (DR) of them. Readings about the question's own topic look sound (1% for willingness, 6–10% for facts). A possible fix is to count volunteered readings as vague evidence. We test this only after the hand labels confirm the pattern.
+
+## Changes after Preyansh's review (Nov 12)
+
+Preyansh approved the engine (task P1) with these changes. The tests now number 12.
+
+1. **More simulated futures for the stop rule: 400 instead of 100.** We took 12 states from the 100-user run where the band was close to the 5% stop line. We judged each state with 20 random seeds. With 100 futures, the stop decision changed with the seed in 11 of the 12 states. With 400, it changed in 8, and the noise of the estimate is half as large (about ±1 point at 5%). Close to a threshold, some seed effect always stays. A question choice now takes about 100 ms.
+2. **D chooses questions with the same answer model that it updates with.** Before, D chose questions as if each spoken answer were a form answer, but it updated with the spoken settings. Now one formula (`spoken_likelihood`) does both, for a reading on a 0-to-1 grid of 21 points. A test checks that the update and the choice model give the same belief. Form answers keep the option model. With the fitted settings, one spoken reading puts 63% of the belief within ±0.1 of the reading, and one form answer 51%.
+3. **"Settled" can reset.** Before, once the band was settled, the engine stayed in "sharpen" mode, even after a contradiction. Now it decides again before each question. `would_stop_at` still records the first stop point.
+4. **Extractor.** "stable and high" is now an income answer. The extractor can record "never had a big loss", and a later loss story then counts as a contradiction (the U015 case). The answer options shown to the extractor now use the same 0.1-to-0.9 scale as its instructions.
+5. **Spoken settings: starting values, with a new order.** Preyansh asked to use starting values for real people, because the fitted spoken values come from AI test users who are very consistent. The first starting guess made a past action the strongest spoken evidence (spread 0.15). With change 2, D then chose past-loss questions again and again, and its behavior error doubled (20-user check below). Both pilot fits show that past actions are not the strongest evidence. So the spoken starting values are now the fitted form values: stated 0.15, imagined 0.15, past 0.20, lapse 0.10. The refit did not adopt the fitted spoken values (left-out pilot users: D 0.083 with the starting values, 0.087 fitted). The experiment, the live chat and the classmate study all use these starting values. The form settings stay fitted.
+6. **Pilot check after the changes.** The extractor's willingness error went from 0.115 to 0.106 and its behavior error from 0.085 to 0.083. Facts read correctly went from 90% to 86%: two answers like "pretty steady, I'm an engineer" are now read as "stable", not "very stable". These answers fit both levels.
+
+7. **When D asks a question again.** A money-fact question can be asked again, up to 3 times in all; a second statement protects the estimate against a vague or false answer. The past-loss question (BEH02) is asked again only after a vague answer (once) or a flagged contradiction, because people repeat the same story, and the engine would count the repeat as new evidence.
+
+D0 stays in the experiment as the main baseline. MAX_ASKS_PER_FACT = 3 stays.
+
+**20-user checks of D after the review** (the same 20 test users, 4 per band, budget 10, one run each, about $0.25 each):
+
+| D version | avg error | capacity | willingness | behavior | band exact | re-asks |
+|---|---|---|---|---|---|---|
+| before the review (Nov 11) | 0.115 | 0.132 | 0.119 | 0.094 | 45% | 33 |
+| review changes, past = strongest spoken evidence | 0.145 | 0.139 | 0.109 | 0.186 | 60% | 51 (28 of BEH02) |
+| + re-ask only when unclear | 0.171 | 0.193 | 0.133 | 0.186 | 45% | 18 |
+| + new spoken starting values | 0.132 | 0.215 | 0.096 | 0.087 | 60% | 17 |
+| + vague answers re-asked once | 0.131 | 0.208 | 0.093 | 0.092 | 55% | 15 |
+| **+ money facts re-askable (final)** | **0.113** | 0.180 | **0.081** | **0.078** | 55% | 31 (0 of BEH02) |
+| C, adaptive form (Nov 11) | 0.100 | 0.101 | 0.112 | 0.088 | 75% | – |
+
+Final D against D before the review, paired on these 20 users: −0.002 (95% range −0.024 to +0.024). Two runs of nearly the same D differed by 0.035 per user on average, so 20 users can only show large changes. Re-scoring each run's recorded evidence with other settings changed the avg error by at most 0.015, so the differences between rows come from which questions D asked.
+
+**Open problem: D's capacity.** D estimates willingness and behavior better than every other method on these 20 users, but its capacity error (0.180) is worse than C's (0.101). D's fact readings come from speech (86% to 90% read right on the pilot users), and only spoken methods get injected contradictions about facts. This is the first item for the failure analysis after the full run.
 
 ## Run on all 100 test users (Nov 11, budget 10, one run each)
 
@@ -144,7 +177,7 @@ This run used the starting settings and the old test-user wording (before the le
 
 `python pilot.py fit` fits the evidence settings on the 10 pilot users and saves them in `pilot/fitted.json`. `belief.py` loads that file when it exists. Each result record stores the settings it used (`engine_settings`). The 100 test users are never used for fitting. A fitted part is adopted only if it lowered the error on pilot users that it was not fitted on (leave one out). Full table: `pilot/fit.md`.
 
-These are the settings after the leak fix (Nov 11). The pilot answers were rebuilt for this fit.
+These are the settings after Preyansh's review (Nov 12). The table shows the fit after the leak fix (Nov 11); the spoken row changed after the review, see the note below the table.
 
 | Setting | Starting guess | Fitted | Left-out avg error, before → after | Decision |
 |---|---|---|---|---|
@@ -153,6 +186,8 @@ These are the settings after the leak fix (Nov 11). The pilot answers were rebui
 | Spoken readings: spread for stated / imagined / past | 0.20 / 0.25 / 0.15 | 0.10 / 0.05 / 0.10 | D: 0.107 → 0.089 | adopted |
 | Spoken readings: lapse | 0.10 | 0.20 | (as above) | adopted |
 | Spoken fact readings that miss the true value | 0.10 | 0.104 | (as above) | adopted |
+
+**After the review (Nov 12):** with D's new choice model, the refit gave spoken spreads 0.125 / 0.075 / 0.10 and lapse 0.10. They did no better on left-out pilot users (D 0.087 against 0.086 with the starting values), so they are **not adopted**. D now uses the starting spoken settings (0.20 / 0.25 / 0.15, lapse 0.10). The form settings are still adopted. Source: `pilot/fit.md`, `pilot/fitted.json`.
 | Fixed-form questions for A and B, chosen on the pilot users | bank priority | see `pilot/fit.md` | A: 0.099 → 0.108 (worse) | not adopted |
 
 Findings:

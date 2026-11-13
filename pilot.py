@@ -421,14 +421,13 @@ def replay(pid, rows, pilots, budget, form_ids=None, spoken=None):
     (D without clarifying questions)."""
     ans = {r["item"]: r["choice"] for r in rows if r["persona_id"] == pid}
     pool = M.engine_pool(M.load_bank())
-    b, settled = BE.Belief(), False
+    b = BE.Belief(channel="spoken" if spoken is not None else "form")
     for k in range(budget):
         if form_ids:
             item = ITEMS[form_ids[k]]
         else:
-            item, info = b.choose([i for i in pool if i["id"] in ans and i["id"] not in b.asked],
-                                  budget - k, settled, seed=k)
-            settled = info["settled"]
+            item, _ = b.choose([i for i in pool if i["id"] in ans and i["id"] not in b.asked],
+                               budget - k, seed=k)
         b.asked.add(item["id"])
         if spoken is not None:
             M.apply_evidence(b, spoken[(pid, item["id"])], k)

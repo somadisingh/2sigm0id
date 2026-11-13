@@ -163,6 +163,8 @@ def _mock_reply(messages, top_logprobs=0):
         for d in ("willingness", "behavioral"):
             if random.random() < 0.5:
                 ev[d] = {"score": round(random.random(), 2), "clear": True, "kind": "past"}
+        if random.random() < 0.1:
+            ev["past_loss"] = "none"
         text = json.dumps(ev) if random.random() > 0.05 else "not json"
     elif "check one answer from an interview" in system:   # check_personas.py's judge
         m = re.search(r'Answer: "(.*?)"\nStatement', last, re.S)

@@ -31,6 +31,7 @@ from prompts import band
 DIMS = ("capacity", "willingness", "behavioral")
 GRID = np.linspace(0, 1, 101)                      # willingness and behavioral values
 GRID_BAND = np.array([band(x) for x in GRID])      # band of each grid value (1-5)
+READINGS = np.linspace(0, 1, 21)                   # possible spoken readings of a score
 
 # Money facts and the values each can take. Income holds capacity.py's income sub-score.
 FACT_GRIDS = {
@@ -52,7 +53,10 @@ FACTS = tuple(FACT_GRIDS)
 # saves them in pilot/fitted.json, which this module loads when it exists.
 SIGMA = {"stated": 0.20, "hypothetical": 0.25, "past": 0.15}          # form answers
 LAPSE = 0.10
-SPOKEN_SIGMA = {"stated": 0.20, "hypothetical": 0.25, "past": 0.15}   # spoken answers
+# Spoken starting guesses = the strengths fitted on form answers (Nov 12). The first guess
+# made a past action the strongest evidence (0.15); both pilot fits showed it is not, and
+# with that guess D kept choosing past-loss questions and its behavior error doubled.
+SPOKEN_SIGMA = {"stated": 0.15, "hypothetical": 0.15, "past": 0.20}   # spoken answers
 SPOKEN_LAPSE = 0.10
 FACT_MISS = 0.10   # share of spoken fact readings whose range misses the true value
 VAGUE_FACTOR = 2.0
@@ -87,11 +91,15 @@ if FITTED_PATH.exists():
 
 STOP_CHANCE = 0.05     # stop when the final band has under this chance of changing
 N_SAMPLES = 2000       # fact samples for the capacity distribution
-N_ROLLOUTS = 100       # simulated futures for the stop rule
+# Simulated futures for the stop rule. With 100, the stop decision for a state near the 5%
+# line often flipped with the random seed (Preyansh's review); 400 halves the noise of the
+# estimate (about +-1 point at 5%) for about 60 ms per question choice.
+N_ROLLOUTS = 400
 MAX_ASKS_PER_FACT = 3  # D may re-ask a fact to clarify it, up to this many times in all
 
 # Two statements of a fact contradict each other when they are further apart than this
 # (or 30% of the larger value). Income and past-loss scores use 0.5 on their 0-1 scale.
+NO_LOSS = -1.0   # past-loss statement "never had a big loss"
 CONFLICT_GAP = {"horizon_yrs": 2, "emergency_fund_months": 1, "debt_to_income": 0.05,
                 "dependents": 0.5}
 
@@ -123,13 +131,22 @@ def item_target(item):
     return ("dim", item["dimension"])
 
 
-def option_model(item):
+def option_model(item, channel="form"):
     """P(option | true value) for each option and grid value, shape (options, grid).
     Options with a null score ("it's never happened to me") carry no information and are
-    left out, so the rows follow scored_options(item)."""
+    left out, so the rows follow scored_options(item).
+    channel "spoken" predicts what method D's extractor will read, with the spoken settings:
+    for a score, the reading itself on READINGS (one spoken reading can be much sharper than
+    the spacing of the bank's options); for a fact, the bank's ranges with the spoken miss
+    rate. Choosing questions must use the same strength as the update. The rows of a spoken
+    score model are readings, not options, so form answers use channel "form"."""
     kind, name = item_target(item)
     opts = scored_options(item)
     n = len(opts)
+    spoken = channel == "spoken"
+    lapse = (SPOKEN_LAPSE if kind == "dim" else FACT_MISS) if spoken else LAPSE
+    if kind == "dim" and spoken:
+        return spoken_likelihood(READINGS[:, None], SPOKEN_SIGMA[evidence_kind(item)], lapse)
     if kind == "dim":
         sigma = SIGMA[evidence_kind(item)]
         s = np.array([o["score"] for o in opts])[:, None]
@@ -145,7 +162,16 @@ def option_model(item):
                                for o in opts], float)
         col = inside.sum(axis=0)
         p = np.where(col > 0, inside / np.maximum(col, 1), 1 / n)
-    return (1 - LAPSE) * p + LAPSE / n
+    return (1 - lapse) * p + lapse / n
+
+
+def spoken_likelihood(reading, sigma, lapse):
+    """P(the extractor reads `reading` | true score) over GRID: a normal spread around the
+    true score, cut to the 0-1 scale, plus a share `lapse` of stray readings. Used both to
+    update on a spoken reading and to predict readings when choosing questions."""
+    g = lambda r: np.exp(-(r - GRID) ** 2 / (2 * sigma ** 2))  # noqa: E731
+    z = g(READINGS[:, None]).sum(axis=0)   # cut to the scale: normalize over the readings
+    return (1 - lapse) * g(reading) / z + lapse / len(READINGS)
 
 
 def scored_options(item):
@@ -164,7 +190,8 @@ def _normal(p):
 class Belief:
     """One person's profile as probability distributions. Copy it to try out an answer."""
 
-    def __init__(self, seed=0):
+    def __init__(self, seed=0, channel="form"):
+        self.channel = channel   # how answers arrive: "form" (A, B, C, DP) or "spoken" (D, DR)
         self.dim = {d: np.full(len(GRID), 1 / len(GRID)) for d in ("willingness", "behavioral")}
         self.fact = {f: np.full(len(g), 1 / len(g)) for f, g in FACT_GRIDS.items()}
         # fixed random numbers: the same belief always gives the same capacity samples
@@ -178,12 +205,16 @@ class Belief:
         b.dim = {k: v.copy() for k, v in self.dim.items()}
         b.fact = {k: v.copy() for k, v in self.fact.items()}
         b.u, b.said, b.asked, b._models = self.u, list(self.said), set(self.asked), self._models
+        b.channel = self.channel
         return b
 
-    def model(self, item):
-        if item["id"] not in self._models:
-            self._models[item["id"]] = option_model(item)
-        return self._models[item["id"]]
+    def model(self, item, channel=None):
+        """The answer model for choosing questions (this belief's channel), or for a given
+        channel. Form answers are always read with the "form" model."""
+        key = (item["id"], channel or self.channel)
+        if key not in self._models:
+            self._models[key] = option_model(item, key[1])
+        return self._models[key]
 
     # ------------------------------------------------------------ evidence in
 
@@ -199,7 +230,7 @@ class Belief:
         if target is None or opt is None or opt["score"] is None:
             return
         row = scored_options(item).index(opt)
-        self.update(target, self.model(item)[row])
+        self.update(target, self.model(item, "form")[row])
 
     def observe_soft(self, item, q, turn=None):
         """Soft evidence: q = the probability of each of the item's options (all options, in
@@ -211,7 +242,7 @@ class Belief:
         scored = [i for i, o in enumerate(item["options"]) if o["score"] is not None]
         q = np.asarray(q, float)
         null = q.sum() - q[scored].sum()   # "never happened": no information
-        self.update(target, q[scored] @ self.model(item) + null / len(scored))
+        self.update(target, q[scored] @ self.model(item, "form") + null / len(scored))
         top = scored[int(np.argmax(q[scored]))]
         if q[top] < 0.6:
             return []
@@ -240,11 +271,15 @@ class Belief:
     def observe_score(self, dim, score, kind, vague=False, turn=None):
         """A spoken attitude (willingness) or behavior, scored 0-1 by the extractor."""
         sigma = SPOKEN_SIGMA[kind] * (VAGUE_FACTOR if vague else 1)
-        g = np.exp(-(score - GRID) ** 2 / (2 * sigma ** 2))
-        self.update(("dim", dim), (1 - SPOKEN_LAPSE) * g + SPOKEN_LAPSE / 5)
+        self.update(("dim", dim), spoken_likelihood(score, sigma, SPOKEN_LAPSE))
         if dim == "behavioral" and kind == "past":
             return self._conflicts("past_loss_reaction", score, score, vague, turn)
         return []
+
+    def observe_no_past_loss(self, turn=None):
+        """The person says they never had a big investment loss. This says nothing about
+        their behavior score, but a later "I sold" (or an earlier one) contradicts it."""
+        return self._conflicts("past_loss_reaction", NO_LOSS, NO_LOSS, False, turn)
 
     def _conflicts(self, fact, low, high, vague, turn):
         """Earlier clear statements of the same fact that this one contradicts. Flagged only
@@ -257,6 +292,10 @@ class Belief:
         limit = 0.5   # income sub-score or past-loss score
         found = []
         for lo, hi, t in earlier:
+            if fact == "past_loss_reaction" and NO_LOSS in (low, lo):
+                if (low == NO_LOSS) != (lo == NO_LOSS):   # "never had a loss" vs a loss story
+                    found.append(t)
+                continue
             if fact in CONFLICT_GAP:
                 limit = max(CONFLICT_GAP[fact], 0.3 * max(high, hi))
             if max(low - hi, lo - high) > limit:
@@ -381,7 +420,7 @@ class Belief:
             changed += int(np.argmax(b.final_pmf(b.band_pmfs()))) != now
         return changed / N_ROLLOUTS
 
-    def choose(self, candidates, left, settled=False, seed=0):
+    def choose(self, candidates, left, seed=0):
         """Pick the next item among `candidates` with `left` questions still to ask.
 
         Until the band is settled, pick the item with the most expected information about
@@ -394,7 +433,8 @@ class Belief:
         ranked = sorted(candidates, key=lambda it: -scores[it["id"]]["gain"])
         plan = list({it["id"]: it for it in ranked}.values())[:left]
         p_change = self.change_chance(plan, seed)
-        settled = settled or p_change < STOP_CHANCE
+        # fresh every turn: a later contradiction can make a settled band uncertain again
+        settled = p_change < STOP_CHANCE
         key = "var_cut" if settled else "gain"
         best = max(candidates, key=lambda it: scores[it["id"]][key])
         return best, {"phase": "sharpen" if settled else "settle band",

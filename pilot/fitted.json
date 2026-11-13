@@ -5,13 +5,6 @@
   "past": 0.2
  },
  "lapse": 0.1,
- "spoken_sigma": {
-  "hypothetical": 0.05,
-  "past": 0.1,
-  "stated": 0.1
- },
- "spoken_lapse": 0.2,
- "fact_miss": 0.104,
- "fitted_on": "10 pilot users: 290 form answers, 207 spoken readings",
- "date": "2026-11-11"
+ "fitted_on": "10 pilot users: 290 form answers, 213 spoken readings",
+ "date": "2026-11-12"
 }

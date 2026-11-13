@@ -58,7 +58,8 @@ Use only what the person said. Never guess.
 Money facts. Include one only if the answer states or clearly implies it:
 - horizon_yrs: years until they need most of this money
 - emergency_fund_months: months of essential expenses their savings could cover
-- income_stability: one of "unstable", "partly commission-based", "stable", "very stable"
+- income_stability: one of "unstable", "partly commission-based", "stable", "very stable", \
+"stable and high"
 - debt_to_income: share of monthly income that goes to debt payments, from 0 to 1
 - dependents: number of people who depend on their income
 Give each number as a range [low, high] that covers what they said: "about 5 years" -> [4, 6], \
@@ -77,6 +78,7 @@ growth and accepts big losses.
 everything and waits. 0.9 = invests more. kind: "past" if it describes something that \
 actually happened, "hypothetical" if it is what they think they would do.
 If the question lists answer options with scores, use them as anchors.
+past_loss: "none" if they say they have never had a big investment loss. Leave it out otherwise.
 
 clear: false if the answer is vague, hedged or noncommittal on that point.
 
@@ -84,7 +86,8 @@ Reply with ONE JSON object and nothing else, leaving out anything the answer doe
 {"facts": {"horizon_yrs": {"range": [low, high], "clear": true}, \
 "income_stability": {"value": "stable", "clear": true}},
  "willingness": {"score": 0.6, "clear": true},
- "behavioral": {"score": 0.3, "kind": "past", "clear": true}}"""
+ "behavioral": {"score": 0.3, "kind": "past", "clear": true},
+ "past_loss": "none"}"""
 EXTRACT_MESSAGE = "{examples}Question: {question}\n{anchors}Their answer: \"{answer}\""
 # Method DP: GLM picks the option that matches the answer; we read its token probabilities.
 OPTION_SYSTEM = ("You read a person's spoken answer to a question and pick the multiple-choice "
@@ -112,7 +115,7 @@ FACT_TEXT = {
 D_METHODS = ("D", "DR", "DP")
 FORM_METHODS = ("A", "B", "C", "C0") + D_METHODS
 _POOL, _TEMPERATURE = None, None
-NO_EVIDENCE = {"facts": {}, "willingness": None, "behavioral": None}
+NO_EVIDENCE = {"facts": {}, "willingness": None, "behavioral": None, "no_past_loss": False}
 
 
 def load_bank():
@@ -186,7 +189,8 @@ def clean_evidence(obj):
     """Keep only well-formed evidence from the extractor's reply; None if unusable."""
     if not isinstance(obj, dict):
         return None
-    ev = {"facts": {}, "willingness": None, "behavioral": None}
+    ev = {"facts": {}, "willingness": None, "behavioral": None,
+          "no_past_loss": str(obj.get("past_loss", "")).strip().lower() == "none"}
     facts = obj.get("facts") if isinstance(obj.get("facts"), dict) else {}
     for f, v in facts.items():
         if f not in BE.FACT_GRIDS or not isinstance(v, dict):
@@ -275,8 +279,9 @@ def extract(llm, key, setting, question, item, answer, examples=""):
     examples: retrieved labeled answers for method DR (retrieval.examples_block)."""
     anchors = ""
     if item["dimension"] != "capacity":
+        # bank scores run 0-1; the extractor's scale runs 0.1-0.9, so map them onto it
         anchors = "Answer options and their scores: " + "; ".join(
-            f"{o['label']} ({o['score']})" for o in BE.scored_options(item)) + "\n"
+            f"{o['label']} ({0.1 + 0.8 * o['score']:.2f})" for o in BE.scored_options(item)) + "\n"
     msgs = [{"role": "system", "content": EXTRACT_SYSTEM},
             {"role": "user", "content": EXTRACT_MESSAGE.format(examples=examples, question=question,
                                                                anchors=anchors, answer=answer)}]
@@ -307,13 +312,42 @@ def apply_evidence(belief, ev, turn):
         hits = belief.observe_score("behavioral", b["score"], b["kind"], not b["clear"], turn)
         if hits:
             flags.append(f"contradiction: past loss reaction differs from the answer to question {hits[0] + 1}")
+    if ev.get("no_past_loss"):
+        hits = belief.observe_no_past_loss(turn)
+        if hits:
+            flags.append(f"contradiction: says they never had a big loss, unlike the answer to question {hits[0] + 1}")
     return flags
+
+
+FACT_ITEM = {"horizon_yrs": "CAP01", "emergency_fund_months": "CAP02", "income_stability": "CAP03",
+             "debt_to_income": "CAP04", "dependents": "CAP05", "past_loss_reaction": "BEH02"}
+
+
+def update_unclear(unclear, item, ev, flags, pool):
+    """D re-asks a fact item only while it is unclear. "vague": its own answer gave no clear
+    reading (re-asked once). "conflict": a contradiction about that fact was flagged, in
+    this answer or any other (re-asked up to MAX_ASKS_PER_FACT times in all)."""
+    fact = item.get("fact")
+    if fact:
+        got = ((ev["behavioral"] if ev["behavioral"] and ev["behavioral"]["kind"] == "past" else None)
+               if fact == "past_loss_reaction" else ev["facts"].get(fact))
+        clear = bool(got and got.get("clear", True)) or (fact == "past_loss_reaction" and ev.get("no_past_loss"))
+        if clear:
+            unclear.pop(item["id"], None)
+        elif unclear.get(item["id"]) != "conflict":
+            unclear[item["id"]] = "vague"
+    for f in flags:
+        if f.startswith("contradiction:"):
+            topic = f.split(":", 1)[1].split()[0]
+            target = FACT_ITEM.get(topic) or ("BEH02" if "past loss" in f or "never had a big loss" in f else None)
+            if target:
+                unclear[target] = "conflict"
 
 
 def mentions(turn, fact):
     ev = turn.get("evidence") or {}
     if fact == "past_loss_reaction":
-        return (ev.get("behavioral") or {}).get("kind") == "past"
+        return (ev.get("behavioral") or {}).get("kind") == "past" or bool(ev.get("no_past_loss"))
     return fact in ev.get("facts", {})
 
 
@@ -354,11 +388,12 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
     fixed = short_form(bank, budget) if method in ("A", "B") else None
     spoken = method in ("B",) + D_METHODS
-    belief = BE.Belief()
+    belief = BE.Belief(channel="spoken" if method in ("D", "DR") else "form")
     answers, turns, u_calls, m_calls = [], [], [], []
     asks = {}
+    unclear = {}   # D: fact item -> "vague" (no clear reading) or "conflict" (contradicted)
     said = set()
-    settled, would_stop_at, early_stop = False, None, False
+    would_stop_at, early_stop = None, False
     t0 = time.monotonic()
 
     for k in range(budget):
@@ -370,11 +405,16 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             item = next_adaptive_item(bank, answers, {a["id"] for a in answers})
         else:
             cands = [i for i in pool if i["id"] not in asks]
-            if method in D_METHODS:   # a conversation can come back to a fact to clarify it
-                cands += [i for i in pool if i.get("fact") and 0 < asks.get(i["id"], 0) < BE.MAX_ASKS_PER_FACT]
-            item, info = belief.choose(cands, budget - k, settled, seed=k)
-            if info["settled"] and not settled:
-                settled, would_stop_at = True, k
+            if method in D_METHODS:   # a conversation can come back to a fact to check it.
+                # Money facts: up to MAX_ASKS_PER_FACT asks; a second statement guards the
+                # estimate against vague or false answers. The past-loss question: only when
+                # unclear, because people repeat the same story (Nov 12, 20-user checks).
+                cands += [i for i in pool if 0 < asks.get(i["id"], 0) < (
+                    BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or unclear.get(i["id"]) == "conflict"
+                    else 2 if unclear.get(i["id"]) == "vague" else 0)]
+            item, info = belief.choose(cands, budget - k, seed=k)
+            if info["settled"] and would_stop_at is None:
+                would_stop_at = k   # the first time the band was settled
                 if not full_budget:
                     early_stop = True
                     break
@@ -438,6 +478,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             evidence, calls = extract(llm, mapper, m_setting, question, item, answer, examples)
             step_calls += calls
             flags = apply_evidence(belief, evidence, k)
+            update_unclear(unclear, item, evidence, flags, pool)
         else:
             choice = pick_option(answer, n)
             if choice is None:  # one nudge, then count it as unanswered

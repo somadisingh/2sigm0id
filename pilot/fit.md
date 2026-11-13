@@ -1,4 +1,4 @@
-# Pilot fit (2026-11-11)
+# Pilot fit (2026-11-12)
 
 Fitted on the 10 pilot users only. The 100 test users were not used. A fitted part is adopted only if it lowered the error on pilot users it was not fitted on.
 
@@ -10,16 +10,16 @@ Fitted on the 10 pilot users only. The 100 test users were not used. A fitted pa
 | form spread, hypothetical | 0.25 | 0.15 |
 | form spread, past | 0.15 | 0.2 |
 | form lapse | 0.1 | 0.1 |
-| spoken spread, stated (105 readings) | 0.2 | 0.1 |
-| spoken spread, hypothetical (91 readings) | 0.25 | 0.05 |
-| spoken spread, past (11 readings) | 0.15 | 0.1 |
-| spoken lapse | 0.1 | 0.2 |
-| spoken fact miss rate | 0.1 | 0.104 |
+| spoken spread, stated (108 readings) | 0.15 | 0.125 |
+| spoken spread, hypothetical (95 readings) | 0.15 | 0.075 |
+| spoken spread, past (10 readings) | 0.2 | 0.1 |
+| spoken lapse | 0.1 | 0.1 |
+| spoken fact miss rate | 0.1 | 0.152 |
 
 A smaller spread means stronger evidence. Form answers: log-likelihood -242.4 with the starting guesses, -235.0 fitted (higher is better).
 
 - Form settings: **adopted**.
-- Spoken settings: **adopted**.
+- Spoken settings: **not adopted**.
 - Chosen fixed-form questions: **not adopted**.
 
 ## Leave-one-out check (fit on 9 pilot users, score the 10th, 10 times)
@@ -29,10 +29,10 @@ A smaller spread means stronger evidence. Form answers: log-likelihood -242.4 wi
 | A, default form, starting settings | 0.126 (50%) | 0.095 (70%) | 0.080 (70%) | 0.100 |
 | A, default form, fitted settings | 0.123 (60%) | 0.095 (70%) | 0.080 (70%) | 0.099 |
 | A, chosen form, fitted settings | 0.118 (50%) | 0.111 (50%) | 0.094 (70%) | 0.108 |
-| C, starting settings | 0.126 (50%) | 0.090 (70%) | 0.073 (80%) | 0.096 |
-| C, fitted settings | 0.115 (50%) | 0.078 (80%) | 0.079 (60%) | 0.091 |
-| D, starting settings | 0.119 (70%) | 0.111 (70%) | 0.091 (80%) | 0.107 |
-| D, fitted settings | 0.124 (50%) | 0.087 (60%) | 0.057 (80%) | 0.089 |
+| C, starting settings | 0.126 (50%) | 0.090 (70%) | 0.075 (80%) | 0.097 |
+| C, fitted settings | 0.115 (50%) | 0.083 (80%) | 0.076 (70%) | 0.091 |
+| D, starting settings | 0.106 (80%) | 0.075 (80%) | 0.069 (80%) | 0.083 |
+| D, fitted settings | 0.113 (70%) | 0.075 (90%) | 0.073 (70%) | 0.087 |
 
 Avg error over the three scores (band exact in brackets), from recorded answers, with no new API calls. D here reads the recorded spoken answers without clarifying questions. The pilot answers have no injected contradictions. 10 users: treat differences under about 0.02 as noise.
 
