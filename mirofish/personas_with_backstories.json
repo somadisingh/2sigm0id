@@ -36,6 +36,7 @@
       "flip_prob": 0.0,
       "vague_rate": 0.05,
       "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
       "acquiescence": 0.05,
       "refuses_numbers": false
     },
@@ -92,6 +93,7 @@
       "flip_prob": 0.0,
       "vague_rate": 0.05,
       "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
       "acquiescence": 0.1,
       "refuses_numbers": false
     },
@@ -148,6 +150,7 @@
       "flip_prob": 0.0,
       "vague_rate": 0.15,
       "contradiction_rate": 0.0,
+      "correction_rate": 0.05,
       "acquiescence": 0.1,
       "refuses_numbers": false
     },
@@ -203,6 +206,7 @@
       "flip_prob": 0.0,
       "vague_rate": 0.0,
       "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
       "acquiescence": 0.0,
       "refuses_numbers": true
     },
@@ -258,6 +262,7 @@
       "flip_prob": 0.25,
       "vague_rate": 0.4,
       "contradiction_rate": 0.15,
+      "correction_rate": 0.1,
       "acquiescence": 0.2,
       "refuses_numbers": false
     },

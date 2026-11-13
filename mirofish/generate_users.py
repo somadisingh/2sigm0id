@@ -192,13 +192,13 @@ def style_for(rng, lit, age):
 def noise_for(rng, level):
     if level == "clean":
         return {"flip_prob": 0.0, "vague_rate": rng.choice([0.0, 0.05]), "contradiction_rate": 0.0,
-                "acquiescence": rng.choice([0.0, 0.05]), "refuses_numbers": False}
+                "correction_rate": 0.0, "acquiescence": rng.choice([0.0, 0.05]), "refuses_numbers": False}
     if level == "moderate":
         return {"flip_prob": rng.choice([0.0, 0.1]), "vague_rate": rng.choice([0.1, 0.15, 0.2]),
-                "contradiction_rate": rng.choice([0.05, 0.1]), "acquiescence": rng.choice([0.05, 0.1, 0.15]),
+                "contradiction_rate": rng.choice([0.05, 0.1]), "correction_rate": 0.05, "acquiescence": rng.choice([0.05, 0.1, 0.15]),
                 "refuses_numbers": rng.random() < 0.15}
     return {"flip_prob": rng.choice([0.2, 0.25, 0.3]), "vague_rate": rng.choice([0.3, 0.4, 0.5]),
-            "contradiction_rate": rng.choice([0.15, 0.2, 0.3]), "acquiescence": rng.choice([0.15, 0.2, 0.3]),
+            "contradiction_rate": rng.choice([0.15, 0.2, 0.3]), "correction_rate": 0.10, "acquiescence": rng.choice([0.15, 0.2, 0.3]),
             "refuses_numbers": rng.random() < 0.3}
 
 

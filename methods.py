@@ -394,6 +394,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     asks = {}
     unclear = {}   # D: fact item -> "vague" (no clear reading) or "conflict" (contradicted)
     said = set()
+    pending_fix = None   # injected correction: the wrong statement waiting for its fix next turn
     would_stop_at, early_stop = None, False
     t0 = time.monotonic()
 
@@ -427,7 +428,22 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
 
         noise = draw_noise(rng, persona, k)
         target = None
+        correction = None
         if spoken:
+            # injected correction (task S2): a wrong statement, fixed on the next turn. Its own
+            # random stream, so the schedule above is unchanged. Never on the same turn as a
+            # contradiction; the wrong statement and the fix are given clearly (no vague/flip).
+            if pending_fix:
+                correction = {**pending_fix, "part": "fix"}
+            else:
+                fact = P.plan_correction(persona, repeat, k, [item["fact"]] if item.get("fact") else [],
+                                         said, budget, pending_fix)
+                if fact:
+                    correction = {"part": "wrong", "fact": fact, "turn": k,
+                                  "wrong": P.wrong_fact(persona, fact), "right": P.right_fact(persona, fact)}
+            if correction:
+                noise = [n for n in noise if n not in ("contradiction", "vague", "flip")]
+                noise.append("correction_" + correction["part"])
             # spoken interview: same noise rules as method D0, including targeted contradictions
             if "contradiction" in noise:
                 if said:
@@ -439,7 +455,8 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             question = item["spoken"]
             if reask:
                 question, step_calls = clarify(llm, mapper, m_setting, item, turns)
-            note = P.private_note(noise, target["wrong"] if target else None)
+            wrong = target["wrong"] if target else correction["wrong"] if correction else None
+            note = P.private_note(noise, wrong, correction["right"] if correction else None)
         else:
             # a form has no follow-ups, so contradictions and agreeing-along don't apply
             noise = [n for n in noise if n in FORM_NOISE]
@@ -488,8 +505,12 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
                 u_calls.append(call_log(r2, retry=True))
                 u_msgs.append({"role": "assistant", "content": strip_think(r2["text"]) or "(no answer)"})
                 choice = pick_option(r2["text"], n)
-        if spoken and not {"vague", "flip", "contradiction"} & set(noise) and item.get("fact"):
+        if spoken and not {"vague", "flip", "contradiction", "correction_wrong"} & set(noise) and item.get("fact"):
             said.add(item["fact"])
+        if correction and correction["part"] == "fix":
+            said.add(correction["fact"])   # the true value has now been stated
+        pending_fix = {k2: v for k2, v in correction.items() if k2 != "part"} \
+            if correction and correction["part"] == "wrong" else None
 
         score = item["options"][choice - 1]["score"] if choice else None
         if method not in D_METHODS:
@@ -502,7 +523,8 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         # the extractor and, when it re-asks a fact, the clarifying question
         turns.append({"q": question, "item": item["id"], "reask": reask, "a": answer,
                       "option": choice, "score": score, "evidence": evidence, "noise": noise,
-                      "contradiction_target": target, "profile_before": profile_before,
+                      "contradiction_target": target, "correction": correction,
+                      "profile_before": profile_before,
                       "flags_after": flags, "engine": info, "engine_secs": engine_secs,
                       "system_latency": round(sum(c["latency"] for c in step_calls), 3),
                       "system_calls": len(step_calls)})

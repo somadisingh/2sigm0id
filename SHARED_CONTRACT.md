@@ -40,7 +40,7 @@ We pick the true profile first, then an LLM plays that person. Each synthetic us
 | Finances | horizon in years, emergency fund in months, income stability, debt-to-income, dependents, investable amount, goal |
 | Experience | financial literacy, past reaction to a loss (none, sold, held) |
 | Speaking style | verbosity, vocabulary, hedging |
-| Noise | flip probability, vague-answer rate, contradiction rate, agreeing-with-anything tendency, refuses to give numbers |
+| Noise | flip probability, vague-answer rate, contradiction rate, correction rate (a wrong answer fixed on the next turn; spoken methods only: 0 / 0.05 / 0.10 for clean / moderate / heavy users), agreeing-with-anything tendency, refuses to give numbers |
 
 Rules for running them:
 

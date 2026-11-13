@@ -1,5 +1,8 @@
 """Prompts for the interviewer, the simulated user and the persona checks."""
 
+import random
+import zlib
+
 import config as C
 
 INTERVIEWER_SYSTEM = """You are a friendly onboarding interviewer for beginner investors. \
@@ -193,6 +196,12 @@ NOISE_NOTES = {
                       "your answer naturally, without pointing out that it changed."),
     "flip": "For this one answer, lean the opposite way from how you really feel.",
     "acquiescence": "If the question hints at an answer, just go along with it.",
+    # injected correction (task S2): a wrong answer now, the true value on the next turn
+    "correction_wrong": ("For this answer, get one thing wrong: {wrong}. Say it plainly, as if you "
+                         "believe it. You will correct it later."),
+    "correction_fix": ("Before you answer this question, correct a mistake you made earlier: {right}. "
+                       "Say it naturally, for example 'Actually, I got something wrong earlier...', "
+                       "then answer the question."),
 }
 
 # A fact counts as "already said" once the interviewer asked about it (keywords in the
@@ -241,12 +250,49 @@ def wrong_fact(p, fact):
             "none": "say you once lived through a big crash and sold"}[e["past_loss_reaction"]]
 
 
-def private_note(noise_kinds, wrong=None):
+def right_fact(p, fact):
+    """The persona's TRUE value for one fact, worded as the fix in an injected correction."""
+    f, e = p["finances"], p["experience"]
+    if fact == "horizon_yrs":
+        return f"you'll actually need the money in about {f['horizon_yrs']} years"
+    if fact == "emergency_fund_months":
+        m = f["emergency_fund_months"]
+        return ("you actually have less than a month of expenses saved" if m < 1
+                else "you actually have about a month of expenses saved" if m == 1
+                else f"you actually have about {m:g} months of expenses saved")
+    if fact == "dependents":
+        d = f["dependents"]
+        return ("actually nobody depends on you financially" if d == 0
+                else f"actually {d} {'person depends' if d == 1 else 'people depend'} on you financially")
+    if fact == "debt_to_income":
+        return f"your debt payments actually take about {round(f['debt_to_income'] * 100)}% of your income"
+    if fact == "income_stability":
+        return f"your income is actually {f['income_stability']}"
+    return {"held": "you actually held on the last time your investments fell a lot",
+            "sold": "you actually sold in a panic the last time your investments fell a lot",
+            "none": "you've actually never been through a big investment loss"}[e["past_loss_reaction"]]
+
+
+def private_note(noise_kinds, wrong=None, right=None):
     if not noise_kinds:
         return ""
-    notes = [NOISE_NOTES[k].format(wrong=wrong) if k == "contradiction" else NOISE_NOTES[k]
-             for k in noise_kinds]
+    notes = [NOISE_NOTES[k].format(wrong=wrong, right=right) for k in noise_kinds]
     return "\n\n[Private note: " + " ".join(notes) + "]"
+
+
+def plan_correction(persona, repeat, turn, facts, said, budget, pending):
+    """Injected correction (task S2), decided on its own random stream so the main noise
+    schedule stays identical across runs. On a question about a fact not yet stated, with
+    the persona's correction_rate, the answer gets that fact wrong; the next turn fixes it.
+    Returns the fact to get wrong, or None."""
+    rate = persona["noise"].get("correction_rate", 0)
+    if not rate or pending or turn >= budget - 1:   # need a later turn for the fix
+        return None
+    open_facts = sorted(set(facts) - set(said))
+    if not open_facts:
+        return None
+    rng = random.Random(zlib.crc32(f"{persona['id']}|{repeat}|{turn}|correction".encode()))
+    return rng.choice(open_facts) if rng.random() < rate else None
 
 
 # ---------------------------------------------------------------- persona checks (stage 2)

@@ -167,6 +167,7 @@ def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat,
     last_valid, asked, invalid_turns, early_stop = None, 0, 0, False
     would_stop_at, nudged_at = None, None
     said = set()  # persona facts the user has already stated clearly
+    pending_fix = None  # injected correction waiting for its fix on the next turn (task S2)
     t_start = time.monotonic()
 
     while True:
@@ -207,6 +208,18 @@ def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat,
 
         noise = draw_noise(rng, persona, asked)
         target = None
+        # injected correction (task S2): same rules as methods.run_form
+        if pending_fix:
+            correction = {**pending_fix, "part": "fix"}
+        else:
+            fact = P.plan_correction(persona, repeat, asked, P.facts_asked(out["question"]),
+                                     said, budget, pending_fix)
+            correction = ({"part": "wrong", "fact": fact, "turn": asked,
+                           "wrong": P.wrong_fact(persona, fact), "right": P.right_fact(persona, fact)}
+                          if fact else None)
+        if correction:
+            noise = [n for n in noise if n not in ("contradiction", "vague", "flip")]
+            noise.append("correction_" + correction["part"])
         if "contradiction" in noise:
             if said:  # separate rng so the main noise schedule stays identical across runs
                 fact_rng = random.Random(zlib.crc32(f"{persona['id']}|{repeat}|{asked}".encode()))
@@ -214,18 +227,23 @@ def run_interview(llm, interviewer, i_setting, user, u_setting, persona, repeat,
                 target = {"fact": fact, "wrong": P.wrong_fact(persona, fact)}
             else:
                 noise.remove("contradiction")  # nothing stated yet that could be contradicted
-        wrong = target["wrong"] if target else None
-        u_msgs.append({"role": "user", "content": out["question"] + P.private_note(noise, wrong)})
+        wrong = target["wrong"] if target else correction["wrong"] if correction else None
+        right = correction["right"] if correction else None
+        u_msgs.append({"role": "user", "content": out["question"] + P.private_note(noise, wrong, right)})
         ur = llm.chat(user, u_msgs, u_setting, C.USER_MAX_TOKENS, C.USER_TEMPERATURE)
         u_calls.append(_call_log(ur))
         answer = strip_think(ur["text"]) or "(no answer)"
         u_msgs[-1]["content"] = out["question"]  # don't keep private notes in the history
         u_msgs.append({"role": "assistant", "content": answer})
         asked += 1
-        if not {"vague", "flip", "contradiction"} & set(noise):
+        if not {"vague", "flip", "contradiction", "correction_wrong"} & set(noise):
             said |= P.facts_asked(out["question"])
+        if correction and correction["part"] == "fix":
+            said.add(correction["fact"])   # the true value has now been stated
+        pending_fix = ({k: v for k, v in correction.items() if k != "part"}
+                       if correction and correction["part"] == "wrong" else None)
         turns.append({"q": out["question"], "a": answer, "noise": noise,
-                      "contradiction_target": target,
+                      "contradiction_target": target, "correction": correction,
                       "profile_before": out["profile"], "confidence_before": out["confidence"]})
         left = budget - asked
         msg = P.ANSWER_MESSAGE.format(answer=answer, left=left)

@@ -120,7 +120,8 @@ def summarize(recs):
     s["contradiction_caught"] = mean([has_flag(t.get("flags_after"), "contradiction")
                                       for t in contra_turns]) if contra_turns else None
     clean = [r for r in ok if r["persona"]["noise"]["contradiction_rate"] == 0
-             and r["persona"]["noise"]["flip_prob"] == 0]
+             and r["persona"]["noise"]["flip_prob"] == 0
+             and r["persona"]["noise"].get("correction_rate", 0) == 0]   # a correction's fix is a real change
     s["false_contra_per_interview"] = mean([
         sum(has_flag(t.get("flags_after"), "contradiction") for t in r["turns"]) for r in clean]) if clean else None
 
@@ -142,6 +143,29 @@ def summarize(recs):
     s["contra_targeted"] = len(recovered)
     s["contra_pulled"] = mean(pulled)
     s["contra_recovered"] = mean(recovered) if recovered else None
+
+    # Injected corrections (task S2): a wrong statement, then the true value on the next turn.
+    # "accepted": by the end, the estimate isn't further from the truth than it was before
+    # the wrong statement (same rule as "recovered"). "noticed": the system flagged the change
+    # right after the fix (D family only).
+    accepted, noticed = [], []
+    for r in scored:
+        turns = r["turns"]
+        for i, t in enumerate(turns):
+            c = t.get("correction")
+            if not c or c.get("part") != "wrong" or not t.get("profile_before"):
+                continue
+            fix = next((j for j in range(i + 1, len(turns))
+                        if (turns[j].get("correction") or {}).get("part") == "fix"), None)
+            if fix is None:   # the run ended before the fix
+                continue
+            dim = "behavioral" if c["fact"] == "past_loss_reaction" else "capacity"
+            truth, before = r["truth"][dim], t["profile_before"][dim]
+            accepted.append(abs(r["final_profile"][dim] - truth) <= abs(before - truth) + 0.05)
+            noticed.append(has_flag(turns[fix].get("flags_after"), "contradiction"))
+    s["corrections"] = len(accepted)
+    s["correction_accepted"] = mean(accepted) if accepted else None
+    s["correction_noticed"] = mean(noticed) if noticed else None
 
     s["questions"] = mean([r["questions_asked"] for r in ok])
     # main experiment: D keeps asking to the full budget; this is where it would have stopped
@@ -388,8 +412,8 @@ def main():
         q_cols = [("method and budget", None), ("runs", None), ("avg error", None), ("95% range", None),
                   ("capacity", None), ("willingness", None), ("behavior", None),
                   ("band exact", None), ("within 1", None), ("mismatch caught", None),
-                  ("contradiction caught", None), ("recovered", None), ("would stop", None),
-                  ("errors", None)]
+                  ("contradiction caught", None), ("recovered", None), ("correction accepted", None),
+                  ("would stop", None), ("errors", None)]
 
         def would_stop(s):
             if s["would_stop_share"] is None:
@@ -405,6 +429,7 @@ def main():
                    fmt(s["mismatch_caught"], "pct") if k[0] in ("C",) + FLAGGING else "-",
                    f"{fmt(s['contradiction_caught'], 'pct')} of {s['contradiction_turns']}" if k[0] in FLAGGING else "-",
                    f"{fmt(s['contra_recovered'], 'pct')} of {s['contra_targeted']}" if k[0] in ("B",) + FLAGGING else "-",
+                   f"{fmt(s['correction_accepted'], 'pct')} of {s['corrections']}" if k[0] in ("B",) + FLAGGING else "-",
                    would_stop(s) if k[0] in ENGINE_CHOOSES else "-",
                    str(s["errors"] + s["no_profile"])] for k, s in ((k, summaries[k]) for k in order)]
         c_cols = [("method and budget", None), ("questions", None), ("LLM calls", None),
