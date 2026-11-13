@@ -134,6 +134,10 @@ This is a preview, not the full run. Details: `BELIEF_ENGINE.md`, section "Run o
 - **Fix (Nov 11).** The AI model now scores what the person claims about their attitude, and puts actions under behavior. After the fix, D's avg error went from 0.129 to 0.116. For "says aggressive, would panic-sell" users, the willingness error went from −0.19 to −0.05. D is now a little better than A and a little worse than C, but these differences are not clear yet. We found the problem on the same 100 users that the full run uses, so Milestone 3 must say this.
 - Siya's persona check 2 (task S3) and Preyansh's review (task P1) must look at this. "Can't afford it" users still get a willingness that is too low (−0.12).
 
+### After Preyansh's review (Nov 12)
+
+We made all review changes and checked D on 20 test users. D's avg error is the same as before the review (0.113 against 0.115). D now reads willingness and behavior better than every other method on these 20 users. But **D's capacity is worse than C's** (0.180 against 0.101). D reads money facts from speech, and only the spoken methods get false facts injected. This is the first problem for the failure analysis after the full run.
+
 ## 5. What Somaditya does now
 
 ### Phase 1: Nov 11 to Nov 13 (before the full run)
@@ -145,7 +149,7 @@ This is a preview, not the full run. Details: `BELIEF_ENGINE.md`, section "Run o
 5. Fit the evidence strengths of the belief engine on the pilot users. Choose the fixed-form questions on the pilot users. (Done Nov 11. The fitted evidence strengths are in use. The fixed-form questions chosen on the pilot users were worse for a left-out pilot user, so A and B keep the default questions.)
 6. Add injected corrections, after Siya's decision (task S2).
 7. Run a quick check of Muse Spark Open as a test-user model. Then rotate three test-user models across the three repeats.
-8. Merge the belief engine into `main`, after Preyansh's review (task P1).
+8. Merge the belief engine into `main`, after Preyansh's review (task P1). (Review done Nov 12. All changes made on `belief-engine`.)
 
 ### Phase 2: Nov 13 to Nov 14
 
@@ -159,7 +163,20 @@ This is a preview, not the full run. Details: `BELIEF_ENGINE.md`, section "Run o
 
 ## 6. Work for Preyansh
 
-### P1. Review the belief engine (Thu Nov 12, first priority)
+### P1. Review the belief engine (Thu Nov 12, first priority) — DONE
+
+**Done Nov 12.** Preyansh approved the engine with six changes. Somaditya made all of them on branch `belief-engine`. Details: `BELIEF_ENGINE.md`, section "Changes after Preyansh's review". The evidence values in use now:
+
+| Evidence | Form answer | Spoken answer (method D) |
+|---|---|---|
+| Stated feeling (willingness) | 0.15 | 0.15 |
+| Imagined situation (behavior) | 0.15 | 0.15 |
+| Past action (behavior) | 0.20 | 0.20 |
+| Chance that an answer is off | 0.10 | 0.10 |
+
+A smaller number means stronger evidence. The form values are fitted on the pilot users. The spoken values are the starting values. They are the same for the experiment, the live chat and the classmate study. The fitted spoken values (0.075 to 0.125) come from AI test users that are too consistent, so we do not use them. Past actions are the weakest evidence for our test users, not the strongest.
+
+The steps below were the review steps.
 
 The full run cannot start before this review.
 
@@ -321,6 +338,8 @@ This test shows if the way a person talks changes their result.
 
 ### L1. Label 50 readings by hand (Preyansh and Siya, each person alone, by Fri Nov 13, about 20 minutes)
 
+**Preyansh: done Nov 12.** The judge model (with thinking) agrees with him on 84% of 49 readings. **Siya: still to do.** Her labels show how often two people agree.
+
 A judge model checks if the AI model reads answers correctly. We must know if we can trust this judge. So we compare the judge with people. Each of you labels the same 50 readings without help, so that we can also see how often two people agree.
 
 1. Open the file: https://github.com/somadisingh/2sigm0id/blob/belief-engine/pilot/label_readings.csv
@@ -340,7 +359,7 @@ A judge model checks if the AI model reads answers correctly. We must know if we
 
 | Who waits | For what | From | Needed by |
 |---|---|---|---|
-| Somaditya: merge the engine, start the full run | Engine review (P1) | Preyansh | Nov 12 |
+| Somaditya: merge the engine, start the full run | Engine review (P1) | Preyansh | done (Nov 12) |
 | Somaditya: add corrections | Corrections decision (S2) | Siya | Nov 12 |
 | Siya: persona checks 2, 3, 5 | Backstories set up (S1) | Siya and Somaditya | Nov 12 |
 | Somaditya: final list of methods for the full run | Ablation plan (P2) | Preyansh | Nov 13 |
