@@ -108,7 +108,7 @@ Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. 
 
 ## Live chat (real people)
 
-`live_chat.py` lets a real person answer method D's questions in the terminal, for the classmate study and the demo. It runs the same steps as method D in `run_form`; the person's typed answer replaces the AI test user, and no noise is injected.
+`live_chat.py` lets a real person answer method D's questions in the terminal, for testing and the demo. The classmate study uses the web app below; both share `live_session.py`. It runs the same steps as method D in `run_form`; the person's typed answer replaces the AI test user, and no noise is injected.
 
 ```bash
 python live_chat.py --participant P01                # method D, 10 questions
@@ -118,6 +118,32 @@ python live_chat.py --participant test --mock        # no API key, random readin
 ```
 
 At the end it shows the three scores, the final band and the band probabilities. It gives no investment advice. Each session is saved to `live_sessions/<participant>_<method>_<time>.json` after every answer, including the band before and after each answer and whether the answer was a re-ask (ablation test 3). `live_sessions/` is in `.gitignore`: the repo is public, so use participant IDs, never names, and share the files privately.
+
+## Web app (classmate study)
+
+`web_app.py` runs the classmate study (task S5) in the browser. Each classmate logs in with a participant ID and an access code, does the interview (D) and the form (A) in the order from `study_order.json`, and sees both results only after both parts. It then points them to Siya's survey with their ID. Answers are saved to `live_sessions/` on the laptop that runs the app.
+
+Setup (once, on the laptop that hosts the study):
+
+```bash
+pip install -r requirements.txt -r requirements-web.txt
+brew install cloudflared
+```
+
+In `.env`, next to `BASETEN_API_KEY`, set `STUDY_ACCESS_CODE` (a code you send with the link) and `STUDY_FORM_URL` (the survey link).
+
+Run the app and share it (two terminals; keep both open during the study):
+
+```bash
+streamlit run web_app.py
+cloudflared tunnel --url http://localhost:8501
+```
+
+`cloudflared` prints a link like `https://<random-words>.trycloudflare.com`. Send that link and the access code to the classmates. The link changes each time `cloudflared` starts, and it works only while your laptop is on and both commands run.
+
+- **Participant IDs:** give P01, P02, ... in sign-up order. Don't skip or reuse one. `study_order.json` (seed in `study_order.py`) gives each pair one A-first and one D-first person. A finished ID can't log in again.
+- **Refresh:** a refresh loses the current part. The answers so far stay saved; the person logs in again with the same ID and starts over.
+- **Test without a key:** `LIVE_MOCK=1 streamlit run web_app.py` (access code `test`), and `python test_web_app.py` for a headless run through both parts.
 
 ## Question bank
 
