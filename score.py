@@ -139,6 +139,23 @@ def summarize(recs):
                      else r["final_profile"][dim])
             pulled.append(abs(after - truth) - abs(before - truth))
             recovered.append(abs(r["final_profile"][dim] - truth) <= abs(before - truth) + 0.05)
+    # Planned corrections (noise "correction"): a wrong value first, the true value on the next
+    # turn. Accepted = the final estimate is back near where it was before the mistake.
+    accepted, noticed = [], []
+    for r in scored:
+        for i, t in enumerate(r["turns"]):
+            c = t.get("correction")
+            if not c or c.get("phase") != "wrong" or not t.get("profile_before"):
+                continue
+            dim = "behavioral" if c["fact"] == "past_loss_reaction" else "capacity"
+            truth = r["truth"][dim]
+            accepted.append(abs(r["final_profile"][dim] - truth)
+                            <= abs(t["profile_before"][dim] - truth) + 0.05)
+            nxt = r["turns"][i + 1] if i + 1 < len(r["turns"]) else {}
+            noticed.append(has_flag(nxt.get("flags_after"), "contradiction"))
+    s["corrections"] = len(accepted)
+    s["correction_accepted"] = mean(accepted) if accepted else None
+    s["correction_noticed"] = mean(noticed) if noticed else None
     s["contra_targeted"] = len(recovered)
     s["contra_pulled"] = mean(pulled)
     s["contra_recovered"] = mean(recovered) if recovered else None
@@ -184,7 +201,7 @@ def fmt(v, kind):
 
 
 def table(rows, cols):
-    widths = [max(len(h), *(len(r[i]) for r in rows)) for i, (h, _) in enumerate(cols)]
+    widths = [max([len(h)] + [len(r[i]) for r in rows]) for i, (h, _) in enumerate(cols)]
     line = "  ".join(h.ljust(w) for (h, _), w in zip(cols, widths))
     out = [line, "-" * len(line)]
     out += ["  ".join(c.ljust(w) for c, w in zip(r, widths)) for r in rows]
@@ -261,6 +278,8 @@ def paired_table(groups, order, label, base="A"):
         rows.append([label(k), str(len(diffs)), f"{mean(diffs):+.3f}",
                      "-" if lo is None else f"{lo:+.3f} to {hi:+.3f}",
                      f"{100 * mean(band_diffs):+.0f} points"])
+    if not rows:
+        return f"PAIRED AGAINST {base}: no {base} runs in this file to pair with."
     cols = [("method and budget", None), ("pairs", None), (f"avg error vs {base}", None),
             ("95% range", None), ("band exact vs " + base, None)]
     return (f"PAIRED AGAINST {base} (same test users; negative error = better than {base}; "
@@ -388,8 +407,8 @@ def main():
         q_cols = [("method and budget", None), ("runs", None), ("avg error", None), ("95% range", None),
                   ("capacity", None), ("willingness", None), ("behavior", None),
                   ("band exact", None), ("within 1", None), ("mismatch caught", None),
-                  ("contradiction caught", None), ("recovered", None), ("would stop", None),
-                  ("errors", None)]
+                  ("contradiction caught", None), ("recovered", None), ("correction accepted", None),
+                  ("would stop", None), ("errors", None)]
 
         def would_stop(s):
             if s["would_stop_share"] is None:
@@ -405,6 +424,7 @@ def main():
                    fmt(s["mismatch_caught"], "pct") if k[0] in ("C",) + FLAGGING else "-",
                    f"{fmt(s['contradiction_caught'], 'pct')} of {s['contradiction_turns']}" if k[0] in FLAGGING else "-",
                    f"{fmt(s['contra_recovered'], 'pct')} of {s['contra_targeted']}" if k[0] in ("B",) + FLAGGING else "-",
+                   f"{fmt(s['correction_accepted'], 'pct')} of {s['corrections']}" if k[0] in ("B",) + FLAGGING else "-",
                    would_stop(s) if k[0] in ENGINE_CHOOSES else "-",
                    str(s["errors"] + s["no_profile"])] for k, s in ((k, summaries[k]) for k in order)]
         c_cols = [("method and budget", None), ("questions", None), ("LLM calls", None),

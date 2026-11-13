@@ -1,5 +1,8 @@
 """Prompts for the interviewer, the simulated user and the persona checks."""
 
+import random
+import zlib
+
 import config as C
 
 INTERVIEWER_SYSTEM = """You are a friendly onboarding interviewer for beginner investors. \
@@ -193,7 +196,16 @@ NOISE_NOTES = {
                       "your answer naturally, without pointing out that it changed."),
     "flip": "For this one answer, lean the opposite way from how you really feel.",
     "acquiescence": "If the question hints at an answer, just go along with it.",
+    "correction": ("For this answer, give a wrong value by mistake: {wrong}. Do not hint that "
+                   "it is a mistake."),
+    "correction_fix": ("In this answer, also correct a mistake you made just before about {fact}: "
+                       "say that what you said was wrong, and give the true value."),
 }
+# How a test user refers to a fact when it corrects itself.
+FACT_WORDS = {"horizon_yrs": "when you need the money", "emergency_fund_months": "your emergency savings",
+              "income_stability": "how steady your income is", "debt_to_income": "your debt payments",
+              "dependents": "how many people depend on you",
+              "past_loss_reaction": "what you did in your last big investment loss"}
 
 # A fact counts as "already said" once the interviewer asked about it (keywords in the
 # question) and the answer wasn't itself noisy. Contradictions only target those facts,
@@ -241,12 +253,30 @@ def wrong_fact(p, fact):
             "none": "say you once lived through a big crash and sold"}[e["past_loss_reaction"]]
 
 
-def private_note(noise_kinds, wrong=None):
+def private_note(noise_kinds, wrong=None, fix_fact=None):
+    """wrong: the planned wrong value (contradiction or correction); fix_fact: the fact that a
+    "correction_fix" note corrects."""
     if not noise_kinds:
         return ""
-    notes = [NOISE_NOTES[k].format(wrong=wrong) if k == "contradiction" else NOISE_NOTES[k]
-             for k in noise_kinds]
+    notes = [NOISE_NOTES[k].format(wrong=wrong) if k in ("contradiction", "correction")
+             else NOISE_NOTES[k].format(fact=FACT_WORDS[fix_fact]) if k == "correction_fix"
+             else NOISE_NOTES[k] for k in noise_kinds]
     return "\n\n[Private note: " + " ".join(notes) + "]"
+
+
+def draw_correction(p, repeat, turn, budget, question_facts, said, noise):
+    """A planned correction (Siya, Nov 13): the test user gives a wrong value the first time
+    a fact comes up, and corrects it on the next turn. Drawn on its own seeded schedule, so the
+    rest of the noise schedule does not change. Only on a clean turn that asks about a fact
+    not stated yet, and only when a next turn exists. Returns the fact or None."""
+    rate = p["noise"].get("correction_rate", 0)
+    if not rate or noise or turn >= budget - 1:
+        return None
+    rng = random.Random(zlib.crc32(f"{p['id']}|{repeat}|{turn}|correction".encode()))
+    if rng.random() >= rate:
+        return None
+    fresh = sorted(f for f in question_facts if f not in said and f in FACT_WORDS)
+    return rng.choice(fresh) if fresh else None
 
 
 # ---------------------------------------------------------------- persona checks (stage 2)
