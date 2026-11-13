@@ -151,6 +151,13 @@ We made all review changes and checked D on 20 test users. D's avg error is the 
 7. Run a quick check of Muse Spark Open as a test-user model. Then rotate three test-user models across the three repeats.
 8. Merge the belief engine into `main`, after Preyansh's review (task P1). (Done Nov 12: the engine is on `main`.)
 
+### Waiting to-dos (decided Nov 13, after the full run starts)
+
+These two generative AI parts are agreed but wait until the main work is done. Both get a dated entry in `ablations.md` before their results are reported.
+
+- **The AI model writes each question.** The belief engine still chooses what to ask. The AI model words the question from the conversation so far, so the interview feels like a conversation. We compare it with D (bank wording) on the same users. We also check if the written questions hint at an answer, which the "acquiescence" noise would then show.
+- **Embedding retrieval.** Replace the keyword search in `retrieval.py` with an embedding model (a model that turns text into numbers that capture its meaning). Test it on the 290 labeled pilot answers, with no new interviews. This needs a model download (a few hundred MB).
+
 ### Phase 2: Nov 13 to Nov 14
 
 9. Run the full experiment: 100 test users, the methods in Preyansh's ablation plan, budgets 5, 10 and 15, three repeats. Estimated cost: $70 to $100.
@@ -272,7 +279,9 @@ You asked to control the MiroFish part. So we do this step together.
 **Done when:** the test users use the backstories, and you agree with the wording.
 **You need:** nothing from others.
 
-### S2. Decide the injected corrections (Thu Nov 12)
+### S2. Decide the injected corrections (Thu Nov 12) — DONE
+
+**Done Nov 13.** Siya chose a `correction_rate` in each user's noise block: 0 for clean, 0.05 for moderate and 0.10 for heavy users. Somaditya built it: the test user gives a wrong value the first time a fact comes up and corrects it on the next turn. The scorer reports "correction accepted" next to "contradiction caught". In a check on 20 users, the test users made the planned mistake and then corrected it clearly ("Oh wait, I messed up earlier…").
 
 Now every injected contradiction is a false statement. A real person also corrects earlier mistakes. In an "injected correction", the test user first gives a wrong value and later gives the true value.
 
@@ -358,7 +367,7 @@ This test shows if the way a person talks changes their result.
 
 ### L1. Label 50 readings by hand (Preyansh and Siya, each person alone, by Fri Nov 13, about 20 minutes)
 
-**Preyansh: done Nov 12.** The judge model (with thinking) agrees with him on 84% of 49 readings. **Siya: still to do.** Her labels show how often two people agree.
+**Done (Preyansh Nov 12, Siya Nov 13).** Siya and Preyansh agree with each other on 78% of the readings. On the readings where they both agree, the judge model (with thinking) gives the same answer in 37 of 38 cases. So we can trust the judge on clear cases.
 
 A judge model checks if the AI model reads answers correctly. We must know if we can trust this judge. So we compare the judge with people. Each of you labels the same 50 readings without help, so that we can also see how often two people agree.
 
@@ -380,7 +389,7 @@ A judge model checks if the AI model reads answers correctly. We must know if we
 | Who waits | For what | From | Needed by |
 |---|---|---|---|
 | Somaditya: merge the engine, start the full run | Engine review (P1) | Preyansh | done (Nov 12) |
-| Somaditya: add corrections | Corrections decision (S2) | Siya | Nov 12 |
+| Somaditya: add corrections | Corrections decision (S2) | Siya | done (Nov 13) |
 | Siya: persona checks 2, 3, 5 | Backstories set up (S1) | Siya and Somaditya | Nov 12 |
 | Somaditya: final list of methods for the full run | Ablation plan (P2) | Preyansh | Nov 13 |
 | Somaditya: report the faithfulness test | 50 hand labels (L1) | Preyansh and Siya | Nov 13 |

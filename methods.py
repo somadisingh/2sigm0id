@@ -394,6 +394,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     asks = {}
     unclear = {}   # D: fact item -> "vague" (no clear reading) or "conflict" (contradicted)
     said = set()
+    pending_fix = None   # a planned mistake to correct on the next turn
     would_stop_at, early_stop = None, False
     t0 = time.monotonic()
 
@@ -426,9 +427,12 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         step_calls = []
 
         noise = draw_noise(rng, persona, k)
-        target = None
+        target, correction = None, None
         if spoken:
             # spoken interview: same noise rules as method D0, including targeted contradictions
+            if pending_fix:   # the user corrects the planned mistake of the last turn
+                noise = [n for n in noise if n not in ("contradiction", "vague")] + ["correction_fix"]
+                correction = {"fact": pending_fix, "phase": "fix"}
             if "contradiction" in noise:
                 if said:
                     fact_rng = random.Random(zlib.crc32(f"{persona['id']}|{repeat}|{k}".encode()))
@@ -436,10 +440,18 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
                     target = {"fact": fact, "wrong": P.wrong_fact(persona, fact)}
                 else:
                     noise.remove("contradiction")
+            fact = P.draw_correction(persona, repeat, k, budget, [item["fact"]] if item.get("fact") else [],
+                                     said, noise)
+            if fact:   # a planned mistake now, corrected on the next turn
+                noise = ["correction"]
+                correction = {"fact": fact, "phase": "wrong", "wrong": P.wrong_fact(persona, fact)}
+            pending_fix = fact
             question = item["spoken"]
             if reask:
                 question, step_calls = clarify(llm, mapper, m_setting, item, turns)
-            note = P.private_note(noise, target["wrong"] if target else None)
+            wrong = target["wrong"] if target else (correction or {}).get("wrong")
+            fix_fact = correction["fact"] if correction and correction["phase"] == "fix" else None
+            note = P.private_note(noise, wrong, fix_fact)
         else:
             # a form has no follow-ups, so contradictions and agreeing-along don't apply
             noise = [n for n in noise if n in FORM_NOISE]
@@ -488,8 +500,10 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
                 u_calls.append(call_log(r2, retry=True))
                 u_msgs.append({"role": "assistant", "content": strip_think(r2["text"]) or "(no answer)"})
                 choice = pick_option(r2["text"], n)
-        if spoken and not {"vague", "flip", "contradiction"} & set(noise) and item.get("fact"):
+        if spoken and not {"vague", "flip", "contradiction", "correction"} & set(noise) and item.get("fact"):
             said.add(item["fact"])
+        if correction and correction["phase"] == "fix":
+            said.add(correction["fact"])   # now stated truthfully
 
         score = item["options"][choice - 1]["score"] if choice else None
         if method not in D_METHODS:
@@ -502,7 +516,8 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         # the extractor and, when it re-asks a fact, the clarifying question
         turns.append({"q": question, "item": item["id"], "reask": reask, "a": answer,
                       "option": choice, "score": score, "evidence": evidence, "noise": noise,
-                      "contradiction_target": target, "profile_before": profile_before,
+                      "contradiction_target": target, "correction": correction,
+                      "profile_before": profile_before,
                       "flags_after": flags, "engine": info, "engine_secs": engine_secs,
                       "system_latency": round(sum(c["latency"] for c in step_calls), 3),
                       "system_calls": len(step_calls)})
