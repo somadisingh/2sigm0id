@@ -71,6 +71,7 @@ Runs all four methods on the same test users, with the same noise schedule and t
 | C, adaptive form | The belief engine (`belief.py`) picks each next question from the bank: the one that tells it most about the final band. |
 | D, adaptive interviewer | Our system. The belief engine picks each question and may re-ask a fact to clarify it. The person answers in their own words. GLM 5.3 turns each answer into evidence and words the clarifying questions. |
 | DR, DP | Two versions of D with one generative AI part each. DR (retrieval): before reading an answer, GLM sees 3 similar labeled answers from the pilot users. DP (token probabilities): GLM picks the matching option, and its calibrated probability for each option is the evidence. |
+| DN | D without clarifying questions: each question is asked only once. For ablation test 3 in `ablations.md`. |
 | C0, D0 | The earlier versions, kept for comparison. C0 uses a hand-made rule. D0 is GLM 5.3 with prompt v1 doing everything. Run them with `--methods C0 D0`. |
 
 A, B, C and D all score answers with the belief engine, so they differ only in how they choose questions and read answers. `BELIEF_ENGINE.md` explains the engine, the stop rule and the sources. `python test_belief.py` checks it, including the professor's example (no API calls).
