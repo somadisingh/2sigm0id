@@ -7,3 +7,6 @@ results/*.png
 pilot/*_mock.jsonl
 results/*.md
 results/*.json
+
+# live chat sessions: real people's answers, never commit (the repo is public)
+live_sessions/
