@@ -82,7 +82,7 @@ python run_bakeoff.py experiment --methods A D --budgets 10 --repeats 1 --limit 
 python score.py results/experiment.jsonl --by-persona
 ```
 
-The experiment uses Siya's 100 test users (`mirofish/personas_100_with_backstories.json`). Add `--limit 10` for a quick run on 10 of them, 2 per final band, or `--personas personas.json` for the 5 old ones. The runner refuses a file that contains pilot users. The backstories reach the test users only when `USE_BACKSTORIES` in `config.py` is on. It stays off until Siya and Somaditya agree on the wording (plan.md, task S1).
+The experiment uses Siya's 100 test users (`mirofish/personas_100_with_backstories.json`). Add `--limit 10` for a quick run on 10 of them, 2 per final band, or `--personas personas.json` for the 5 old ones. The runner refuses a file that contains pilot users. The backstories reach the test users when `USE_BACKSTORIES` in `config.py` is on (on since Nov 13; the risk sentences were rewritten by `rewrite_backstories.py`, see plan.md, task S1).
 
 Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. Contradictions and corrections are injected only in the spoken methods (B, the D variants and D0), since a form has no follow-ups. A correction (Siya's design, Nov 13) is a planned mistake: the test user gives a wrong value the first time a fact comes up, and corrects it on the next turn. Each user's `noise` block has a `correction_rate`: 0 for clean users, 0.05 for moderate, 0.10 for heavy. Corrections use their own seeded schedule, so the rest of the noise schedule does not change. The scorer's "correction accepted" column shows how often the final estimate came back to where it was before the mistake.
 

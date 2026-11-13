@@ -143,9 +143,9 @@ We made all review changes and checked D on 20 test users. D's avg error is the 
 ### Phase 1: Nov 11 to Nov 13 (before the full run)
 
 1. Finish the three generative AI parts in section 3 and test each one on the pilot users.
-2. With Siya: add the backstories to the test-user instructions (section 7, task S1).
+2. With Siya: add the backstories to the test-user instructions (section 7, task S1). (Done Nov 13: on, with the risk sentences rewritten.)
 3. Remove the "20% in a month" leak. (Done Nov 11.)
-4. Build persona checks 1 and 4. (Done Nov 11. Run them again after S1, because the backstories change the answers.)
+4. Build persona checks 1 and 4. (Done Nov 11. Check 1 run again on Nov 13 with the backstories on: 92 of 100. Check 4 runs again on the full-run results.)
 5. Fit the evidence strengths of the belief engine on the pilot users. Choose the fixed-form questions on the pilot users. (Done Nov 11. The fitted evidence strengths are in use. The fixed-form questions chosen on the pilot users were worse for a left-out pilot user, so A and B keep the default questions.)
 6. Add injected corrections, after Siya's decision (task S2).
 7. Run a quick check of Muse Spark Open as a test-user model. Then rotate three test-user models across the three repeats.
@@ -268,9 +268,30 @@ Method DN (D without re-asks) for test 3 is on `main`.
 
 ## 7. Work for Siya
 
-### S1. Set up the backstories with Somaditya (Thu Nov 12)
+### S1. Set up the backstories with Somaditya (Thu Nov 12) — DONE
 
-You asked to control the MiroFish part. So we do this step together.
+**Done Nov 13. Somaditya made the decision. The backstories are on (`USE_BACKSTORIES = True` in `config.py`).** Reason: a person's money situation (debt, dependents, job) shapes how they invest, and the backstories make the test users sound like real people.
+
+What changed in `mirofish/personas_100_with_backstories.json` (Siya, please read):
+- **The risk sentences in all 100 backstories are rewritten.** The old stories used a few fixed sentences for each band. For example, "gets out fast and loses sleep" was in almost every behavior-band-1 story, "sees a bargain and adds more" was in 17 band-5 stories, and "wants maximum growth and insists losses don't scare" was in 23 stories. The users sounded alike, and a fixed sentence for each band is a clue that the extractor can learn. `rewrite_backstories.py` asked GLM 5.3 to rewrite only the parts about risk, market drops, past losses and investing knowledge. Each user got a different concrete habit (for example, "moved everything to a savings account", "checks the app all day and sells when it turns red", "raises the monthly contribution when prices fall"). Mismatch users got a short reason (for example, coworkers who talk big, or "at my age, I would rather keep what I have"). Users with no past loss say only what they *would* do.
+- **The old story of each user is kept** in `profile.backstory_v1`. The true scores did not change.
+- **U042 has a new mismatch label:** "says moderate, would panic-sell" (was "says aggressive, would panic-sell"). Her willingness is 0.52 (band 3), and her story says she is in the middle. The scores are still 2 bands apart, so she is still a mismatch user.
+
+Checks (`persona_checks/backstory_rewrite.md`, `persona_checks/check1_facts.md`):
+
+| | old stories | new stories |
+|---|---|---|
+| Persona check 1: users with all six facts right (backstories on) | 88 of 100 | 92 of 100 |
+| A blind reader (GLM 5.3) finds the behavior band exactly | 61 of 100 | 72 of 100 |
+| ... finds the willingness band within 1 | 100 of 100 | 100 of 100 |
+| 5-word phrases that are in 5 or more stories | 414 | 295 |
+| Stories with "sleep" / "panic" | 12 / 14 | 0 / 0 |
+
+With backstories off, persona check 1 was 89 of 100. The first rewrite made users with no past loss say "held" (81 of 100), because their stories told of small past dips. The second rewrite fixed this.
+
+Still open: the test-user instructions in `prompts.py` (`BEHAVIORAL_TEXT`) still say "you panic … and lose sleep over it" for behavior band 1. These instructions win over the backstory. Somaditya decides before the full run if this sentence changes.
+
+The original steps:
 
 1. Meet with Somaditya (call or chat).
 2. Decide where the backstory goes in the test-user instructions. The proposal: after the money facts, with the rule "If the backstory and the facts disagree, the facts are correct".
@@ -390,7 +411,7 @@ A judge model checks if the AI model reads answers correctly. We must know if we
 |---|---|---|---|
 | Somaditya: merge the engine, start the full run | Engine review (P1) | Preyansh | done (Nov 12) |
 | Somaditya: add corrections | Corrections decision (S2) | Siya | done (Nov 13) |
-| Siya: persona checks 2, 3, 5 | Backstories set up (S1) | Siya and Somaditya | Nov 12 |
+| Siya: persona checks 2, 3, 5 | Backstories set up (S1) | Siya and Somaditya | done (Nov 13) |
 | Somaditya: final list of methods for the full run | Ablation plan (P2) | Preyansh | Nov 13 |
 | Somaditya: report the faithfulness test | 50 hand labels (L1) | Preyansh and Siya | Nov 13 |
 | Siya: classmate study | Live chat (P3) | Preyansh | Nov 14 |
