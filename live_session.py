@@ -72,9 +72,12 @@ class _Session:
         b = self.belief
         profile = b.profile()
         pmf = b.final_pmf(b.band_pmfs())
+        bands = {d: band(v) for d, v in profile.items()}
+        # the lowest of the three bands, as the app says and as score.py scores the experiment
+        # (the most likely band of pmf can differ from it; pmf stays as "how sure")
         self.data.update({"final_profile": profile,
-                          "final_bands": {d: band(v) for d, v in profile.items()},
-                          "final_band": int(np.argmax(pmf)) + 1,
+                          "final_bands": bands,
+                          "final_band": min(bands.values()),
                           "band_probs": [round(float(x), 3) for x in pmf],
                           "mismatch": b.mismatch(), "finished": True,
                           "ended": datetime.now().isoformat(timespec="seconds")})
