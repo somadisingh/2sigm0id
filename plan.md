@@ -10,7 +10,7 @@ The file uses simple, short sentences. Section 10 explains the words that we use
 |---|---|
 | Thu Nov 12 | Preyansh reviews the belief engine. Siya decides the corrections design. Siya and Somaditya set up the backstories together. |
 | Fri Nov 13 | Preyansh sends the ablation plan (done). Backstories on (done). Somaditya starts the full experiment run tonight (about 18 hours, about $77). |
-| Sat Nov 14 | Preyansh's live chat is ready. Siya can start the classmate study. |
+| Sat Nov 14 | Full run done and scored (section 5a). Preyansh's live chat is ready. Siya can start the classmate study. |
 | Mon Nov 16 | All results are ready for writing. |
 | Tue Nov 17 | Each person sends a draft of their Milestone 3 sections. |
 | Thu Nov 19 | Milestone 3 is due. |
@@ -162,13 +162,51 @@ These two generative AI parts are agreed but wait until the main work is done. B
 
 9. Run the full experiment: 100 test users, the methods in Preyansh's ablation plan, budgets 5, 10 and 15, three repeats. Estimated cost: $70 to $100.
    - **Before the run (Nov 13):** every record now saves its setup (backstories on or off, a hash of the persona file and of the test-user instructions, the models, the engine settings, the git commit). A resume into a file made with another setup is refused. A test on 10 users with all 8 methods and all budgets ran first (`results/experiment_pretest.jsonl`): 240 interviews, no errors, $2.58. The full run is 30 times this test, so about $77.
-   - **Full run started Nov 13 evening:** file `results/experiment_full.jsonl`, 7,200 interviews, 12 in parallel (each model stays under 120 requests per minute), methods in random order so that every method meets the same load. Expected time: about 18 hours, so the results are ready on Sat Nov 14.
+   - **Full run started Nov 13 evening:** file `results/experiment_full.jsonl`, 7,200 interviews, 12 in parallel (each model stays under 120 requests per minute), methods in random order so that every method meets the same load.
+   - **Full run DONE (Sat Nov 14 morning).** It took about 10 hours. 64 interviews (0.9%) failed with an API "400" error. All 64 were in methods that call the interviewer model (D, DR, DP, B, DN). We ran the 64 again with the same setup, and all of them passed. So the run has all 7,200 interviews and no errors. Total cost: $77.33. The results are in section 5a.
    - **Decided Nov 13:** D's capacity problem is not fixed before the run. It is the first item of the failure analysis. A fix after the run would need a new run of D, DR, DP and DN.
 10. Give Siya 20 conversations for persona check 6. (Done Nov 11: `persona_checks/human_read/`.)
 
+### 5a. Full-run results (scored Nov 14)
+
+100 test users, 3 repeats, so 300 interviews for each method and budget. Avg error is the mean distance from the true scores (lower is better). Full tables: `results/full_score.txt` (made by `python score.py results/experiment_full.jsonl --by-group`). The results files are not in git, so ask Somaditya for them.
+
+**Avg error for each method and budget**
+
+| Method | 5 questions | 10 questions | 15 questions |
+|---|---|---|---|
+| A, fixed form | **0.125** | 0.113 | 0.090 |
+| B, scripted interview | 0.151 | 0.131 | 0.112 |
+| C, adaptive form | 0.129 | **0.103** | **0.086** |
+| D, adaptive interviewer | 0.138 | 0.115 | 0.106 |
+| DR, D + retrieval | 0.134 | 0.114 | 0.108 |
+| DP, D + token probabilities | 0.180 | 0.139 | 0.123 |
+| DN, D with no re-asks | 0.140 | 0.122 | 0.123 |
+| D0, AI model only | 0.128 | 0.137 | 0.160 |
+
+**What we found**
+
+1. **C is the best method.** C is best at 10 and 15 questions. At 10 questions, C is the only method that is better than A by more than chance (−0.011 error, 95% range −0.018 to −0.004, and 22 points more exact bands).
+2. **D is equal to A at 10 questions, and worse at 5 and 15.** DR gives almost the same results as D. So retrieval does not help.
+3. **D's problem is capacity.** At 15 questions, D's capacity error is 0.140. A's is 0.082 and C's is 0.096. D reads willingness about as well as A (0.101 against 0.090) and reads behavior better than A (0.078 against 0.097). The failure analysis starts here, as decided on Nov 13.
+4. **D and DR are best on clean users and worst on heavy-noise users.** At 15 questions:
+
+   | Users | D and DR | A | C |
+   |---|---|---|---|
+   | Clean answers | **0.062** | 0.085 | 0.077 |
+   | Heavy noise | 0.167 to 0.173 | 0.100 | 0.099 |
+
+   The AI interviewer reads clear speech well. Noisy answers make it fail, but the forms are almost not affected.
+5. **D0 gets worse with more questions** (0.128, then 0.137, then 0.160). The AI model alone loses track in long conversations. This supports the belief engine as the part that keeps the count.
+6. **DP is the weakest at 5 questions** (0.180). It catches very few contradictions (5% to 9%), but other D methods catch 44% to 87%.
+7. **B is worse than A at all budgets.** A conversation with fixed questions does not help by itself.
+8. **Cost:** A and C cost nothing for the system (no AI calls). D costs about $0.013 for each 10-question interview. D0 costs about $0.027. DP is the cheapest AI method (about $0.003). The cost-against-error chart is `results/experiment_full_cost_vs_error.png`.
+
+**Still to do with these results:** the 8 ablation tests in `ablations.md`, persona check 4 on these results, leaving out the users that fail 2 or more of Siya's checks (S3), and the failure analysis.
+
 ### Phase 3: Nov 14 to Nov 17
 
-11. Score the results and make the charts.
+11. Score the results and make the charts. (Scored Nov 14, section 5a. The ablation tests and the charts for Milestone 3 are next.)
 12. Write the Milestone 3 sections on results, cost and speed, and failure analysis.
 
 ## 6. Work for Preyansh
@@ -430,7 +468,7 @@ A judge model checks if the AI model reads answers correctly. We must know if we
 | Everyone: persona check 6 score | Three columns in `guesses.csv` | Siya, Preyansh, Somaditya | Nov 16 |
 | Somaditya: run the style-swap users | `personas_style_swap.json` (S6) | Siya | Nov 15 |
 | Siya: persona check 6 | 20 conversations | Somaditya | done (Nov 11) |
-| Everyone: Milestone 3 numbers | Full-run results | Somaditya | Nov 16 |
+| Everyone: Milestone 3 numbers | Full-run results | Somaditya | done (Nov 14, section 5a) |
 
 ## 10. Words we use
 
