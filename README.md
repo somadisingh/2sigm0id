@@ -106,6 +106,54 @@ Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. 
 
 `score.py` also saves `<name>_cost_vs_error.png`: avg error against system $ and system seconds per profile, one point per method and budget. It needs `matplotlib`, which `requirements.txt` now installs.
 
+## Live chat (real people)
+
+`live_chat.py` lets a real person answer method D's questions in the terminal, for testing and the demo. The classmate study uses the web app below; both share `live_session.py`. It runs the same steps as method D in `run_form`; the person's typed answer replaces the AI test user, and no noise is injected.
+
+```bash
+python live_chat.py --participant P01                # method D, 10 questions
+python live_chat.py --participant P01 --method A     # the fixed form, scored by the same engine
+python live_chat.py --participant demo --stop-early  # end at the stop point (demo only)
+python live_chat.py --participant test --mock        # no API key, random readings
+```
+
+At the end it shows the three scores, the final band and the band probabilities. It gives no investment advice. Each session is saved to `live_sessions/<participant>_<method>_<time>.json` after every answer, including the band before and after each answer and whether the answer was a re-ask (ablation test 3). `live_sessions/` is in `.gitignore`: the repo is public, so use participant IDs, never names, and share the files privately.
+
+## Web app (classmate study)
+
+`web_app.py` runs the two parts of the classmate study (task S5). Siya's Google Form runs the study and links here for "Interview 1" and "Interview 2". Each classmate logs in with their participant code and the access code and does the standard form (A) and the adaptive interviewer (D). **Odd codes (P01, P03, ...) do the form first; even codes do the interviewer first**, as the form says. After each part the app shows that part's result, and the person goes back to the form to rate it. A person who closes the page after part 1 logs in again and continues with part 2. A code that finished both parts can't log in again. Answers are saved to `live_sessions/` (gitignored) on the machine that runs the app.
+
+Setup (once, on the machine that hosts the study):
+
+```bash
+pip install -r requirements.txt
+```
+
+In `.env`, next to `BASETEN_API_KEY`, set `STUDY_ACCESS_CODE`: a code that the form gives with the link.
+
+```bash
+streamlit run web_app.py
+```
+
+**Hosting on Streamlit Community Cloud** (always on, so classmates can join any time):
+
+1. Create an empty **private** GitHub repo for the answers, for example `<you>/risk-study-data`. The app refuses a public one.
+2. Create a fine-grained GitHub token (Settings → Developer settings → Fine-grained tokens) with access to that repo only and the permission "Contents: Read and write".
+3. On share.streamlit.io, sign in with GitHub and create an app: this repo, the branch with the app, main file `web_app.py`. Under "Advanced settings", choose Python 3.12 and paste these secrets:
+   ```toml
+   BASETEN_API_KEY = "..."
+   STUDY_ACCESS_CODE = "..."
+   SESSION_REPO = "<you>/risk-study-data"
+   SESSION_REPO_TOKEN = "..."
+   SESSION_STORE_REQUIRED = "1"
+   ```
+4. Put the app link and the access code in the study form.
+
+Every answer is saved to `sessions/` in the private repo (`session_store.py`), so a restart loses nothing. With `SESSION_STORE_REQUIRED=1` the app does not start without a working private repo. If the app has been unused for a while, Streamlit puts it to sleep; the first visitor clicks the button to wake it. Open the link once a day during the study.
+
+- **Refresh:** a refresh during a part restarts that part. Finished parts are kept.
+- **Test without a key:** `LIVE_MOCK=1 streamlit run web_app.py` (access code `test`), `python test_web_app.py` for a headless run through both parts, and `python test_session_store.py` for the private-repo saving.
+
 ## Question bank
 
 `question_bank.json` holds the 35 shared questions for methods A, B and C: 11 on capacity, 12 on willingness, 12 on behavior. `question_bank.md` is a readable copy. Run `python check_question_bank.py --write-md` after editing the JSON; it checks the format and regenerates the readable copy. The default short forms are placeholders until a pilot picks the most informative questions.

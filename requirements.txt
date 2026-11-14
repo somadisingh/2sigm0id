@@ -1,3 +1,4 @@
 openai>=1.40
 matplotlib>=3.8
 numpy>=1.26
+streamlit>=1.67   # web app for the classmate study (web_app.py)
