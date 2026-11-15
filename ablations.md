@@ -111,6 +111,7 @@ A, B, C, D, D0, DR, DP, and the new D without re-asks (test 3). C0 is not needed
 
 - **Nov 14, test 7 (Somaditya).** The plan says the fitted spoken strengths are very strong (spread 0.05 to 0.10). That was the Nov 11 fit. The Nov 12 refit did not adopt the spoken settings (`pilot/fit.md`: they did not lower the error on left-out pilot users). So the full run used the fitted form values and the *starting* spoken values. A replay with the starting values cannot change D, DR or DN. So for D, DR and DN we replay with the fitted spoken values that were not adopted (`pilot/fit.md`). For A, B, C and DP we replay with the starting form values, as planned. The question of the test does not change.
 - **Nov 14, test 8 (Somaditya).** Not run. `N_ROLLOUTS` was set to 400 in the Nov 12 review, before the run, so the plan says that this test is not needed.
+- **Nov 15, test 5 (Somaditya, written after the run).** The prediction for D gives a reason that was out of date before the run: it says the stop rule simulates D's answers with the weaker form model. Since the Nov 12 review, D's belief uses its own spoken answer model to choose questions and to stop (`channel="spoken"` in `belief.py`). This entry should have been made before the run (plan task P2b); we make it now, after we saw the results. We keep the prediction ("D: more than 5%") as it was written, but we withdraw its reason. So D's result below holds as a number, but it does not support that reason. Plan P2b also listed tests 7 and 8; they are the two Nov 14 entries above.
 
 ## Results (full run, scored Nov 14)
 
@@ -125,7 +126,7 @@ File: `results/experiment_full.jsonl` (7,200 runs, no errors). Script: `python a
 | 3. Re-asks (D − DN) | No | Re-asks clearly help at 10 and 15, more at 15. The gain is on clean and moderate users, not heavy-noise users. They do not hurt at 5. |
 | 4a. Retrieval (DR − D) | Yes | No clear difference at any budget. DR costs 25% more. |
 | 4b. Token probabilities (DP − D) | Yes at 10 | DP is clearly worse at all budgets. It costs 77% less. |
-| 5. Stop rule | C no, D yes | After the stop point, C's band changes in 8% of runs at 10 and 14% at 15 (promise: under 5%). D: 7% to 12%. |
+| 5. Stop rule | C no, D yes (number only, reason withdrawn) | After the stop point, C's band changes in 8% of runs at 10 and 14% at 15 (promise: under 5%). D: 7% to 12%. |
 | 6. Capacity formula (D − D0) | No | D0's own capacity estimate is clearly better at 5 and 10. D is better only at 15. |
 | 7. Evidence strengths | Mostly | The order of the methods does not change at 10 and 15. At 5, C moves from 2nd to 4th. All changes are under 0.008. |
 | 8. Stop-point stability | Not run | See "Changes". |
@@ -183,7 +184,7 @@ The profile at the stop point (`would_stop_at`) against the profile at the end o
 | D, 10 | 196 of 300 (q7.3) | 7.1% | 60% / 60% | 0.127 / 0.115 | 2.7 |
 | D, 15 | 247 of 300 (q9.5) | 10.5% | 68% / 67% | 0.123 / 0.106 | 5.5 |
 
-Prediction: C 5% or fewer; D more than 5%; both lose 1 to 5 points of band exact; both save about a third of the questions. **Result:** D held. C did not: its band changes after the stop point in 8% of runs at 10 and 14% at 15, so the "under 5%" promise fails for C too. At 15, C loses 9 points of band exact by stopping. The questions saved are a third to a half of the budget. The avg error is always higher at the stop point (by 0.004 to 0.038). This goes into the failure analysis: the stop rule is too confident.
+Prediction: C 5% or fewer; D more than 5%; both lose 1 to 5 points of band exact; both save about a third of the questions. **Result:** D's number held (7% to 12%), but its written reason no longer applies (see "Changes", Nov 15). C did not hold: its band changes after the stop point in 8% of runs at 10 and 14% at 15, so the "under 5%" promise fails for C too. At 15, C loses 9 points of band exact by stopping. The questions saved are a third to a half of the budget. The avg error is always higher at the stop point (by 0.004 to 0.038). Both methods miss the promise, so the cause is the stop rule itself, not D's answer model. This goes into the failure analysis: the stop rule is too confident.
 
 ### 6. What the capacity formula adds (D − D0, capacity only)
 
