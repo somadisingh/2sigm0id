@@ -10,6 +10,8 @@ import json
 import re
 from pathlib import Path
 
+MIRO = Path(__file__).resolve().parent.parent  # the mirofish/ folder
+
 C = {
 # ----------------------------------------------------------------------------- batch 1
 "Ben Morales": ("Dentist who wants his retirement savings to grow as fast as possible.",
@@ -137,10 +139,10 @@ C = {
 
 
 def main():
-    users = {u["profile"]["name"]: u for u in json.loads(Path("/home/claude/users100/personas_100.json").read_text())}
+    users = {u["profile"]["name"]: u for u in json.loads((MIRO / "personas_100.json").read_text())}
     agents = {a["name"]: a for f in ("fileA.json", "fileB.json") for a in json.loads(Path(f).read_text())}
     batches = {1: [], 2: []}
-    for i, f in enumerate(sorted(Path("/home/claude/users100/seeds").glob("seed_batch_0[12].md")), 1):
+    for i, f in enumerate(sorted((MIRO / "seeds").glob("seed_batch_0[12].md")), 1):
         for n in re.findall(r"^## (.+)$", f.read_text(), re.M):
             bio, story, topics = C[n]
             u, a = users[n], agents[n]

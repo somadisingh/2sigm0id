@@ -53,7 +53,7 @@ def main():
                 text = text.replace(old, new)
                 status = "changed"
             else:
-                status = "NOT FOUND (MiroFish may have changed; tell Claude)"
+                status = "NOT FOUND (MiroFish may have changed; check this file by hand)"
                 problems += 1
             print(f"{rel}: {status}: {old[:60]}")
         path.write_text(text, encoding="utf-8")

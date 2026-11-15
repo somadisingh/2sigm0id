@@ -11,8 +11,9 @@ import re
 import sys
 from pathlib import Path
 
-USERS = "/home/claude/users100/personas_100.json"
-SEEDS = "/home/claude/users100/seeds"
+MIRO = Path(__file__).resolve().parent.parent  # the mirofish/ folder
+USERS = MIRO / "personas_100.json"
+SEEDS = MIRO / "seeds"
 IN = {3: "in_14616841.json", 4: "in_479158bd.json", 5: "in_15dddeca.json"}
 
 PRON = {"he": ("He", "he", "his", "him", "s"), "she": ("She", "she", "her", "her", "s"),
