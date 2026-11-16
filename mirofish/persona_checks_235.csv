@@ -1,0 +1,101 @@
+id,final_band,mismatch_type,true_will_band,true_beh_band,c2_will_avg,c2_will_band,c2_beh_avg,c2_beh_band,unclear_answers,check2,c3_same_of_8,check3,c5_models,c5_bands,c5_all_same,check5,fails,exclude
+S1-clean-moderate,3,none,3,3,0.55,3,0.6,4,0,pass,8,pass,3,"3,4 / 3,3 / 3,3",False,pass,0,False
+S2-says-aggressive-panics,2,"says aggressive, would panic-sell",5,2,0.9,5,0.4,2,0,pass,8,pass,2,"5,2 / 5,2",True,pass,0,False
+S3-eager-cant-afford,2,"says aggressive, can't afford it",4,4,0.8,5,0.7,4,0,pass,7,pass,2,"5,4 / 5,4",True,pass,0,False
+S4-able-but-cautious,1,"can afford risk, prefers caution",1,2,0.1,1,0.25,2,0,pass,8,pass,2,"1,2 / 1,2",True,pass,0,False
+S5-vague-contradictory,2,none,3,3,0.5,3,0.6,4,0,pass,7,pass,2,"3,4 / 3,3",False,pass,0,False
+U006-b5-match-clean,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U007-b4-match-clean,4,none,4,5,0.85,5,0.9,5,0,pass,7,pass,2,"5,5 / 5,5",True,pass,0,False
+U008-b3-panic-heavy,3,"says aggressive, would panic-sell",5,3,0.85,5,0.5,3,0,pass,7,pass,2,"5,3 / 4,3",False,pass,0,False
+U009-b2-match-moderate,2,none,2,2,0.3,2,0.3,2,0,pass,8,pass,2,"2,2 / 2,2",True,pass,0,False
+U010-b3-panic-heavy,3,"says aggressive, would panic-sell",5,3,0.85,5,0.55,3,0,pass,6,pass,2,"5,3 / 5,3",True,pass,0,False
+U011-b2-match-clean,2,none,2,3,0.45,3,0.6,4,0,pass,8,pass,3,"3,4 / 3,3 / 2,3",False,pass,0,False
+U012-b1-match-heavy,1,none,1,1,0.1,1,0.25,2,0,pass,6,pass,2,"1,2 / 1,1",False,pass,0,False
+U013-b1-match-clean,1,none,2,1,0.15,1,0.3,2,0,pass,5,pass,2,"1,2 / 2,2",False,pass,0,False
+U014-b3-cantafford-heavy,3,"says aggressive, can't afford it",5,4,0.85,5,0.7,4,0,pass,7,pass,2,"5,4 / 5,4",True,pass,0,False
+U015-b5-match-moderate,5,none,5,5,0.8,5,0.9,5,0,pass,7,pass,2,"5,5 / 5,5",True,pass,0,False
+U016-b3-cautious-moderate,3,"can afford risk, prefers caution",3,5,0.55,3,0.9,5,0,pass,8,pass,2,"3,5 / 4,5",False,pass,0,False
+U017-b3-panic-clean,3,"says aggressive, would panic-sell",5,3,0.85,5,0.6,4,0,pass,4,FAIL,2,"5,4 / 4,3",False,pass,1,False
+U018-b5-match-heavy,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U019-b5-match-moderate,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U020-b3-cautious-heavy,3,"can afford risk, prefers caution",3,5,0.55,3,0.85,5,0,pass,7,pass,2,"3,5 / 3,5",True,pass,0,False
+U021-b4-match-moderate,4,none,4,5,0.8,5,0.9,5,0,pass,7,pass,3,"5,5 / 3,5 / 5,5",False,FAIL,1,False
+U022-b1-panic-moderate,1,"says aggressive, would panic-sell",4,1,0.8,5,0.15,1,0,pass,6,pass,2,"5,1 / 4,1",False,pass,0,False
+U023-b1-panic-clean,1,"says aggressive, would panic-sell",4,1,0.7,4,0.15,1,0,pass,6,pass,2,"4,1 / 5,1",False,pass,0,False
+U024-b5-match-moderate,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U025-b4-match-heavy,4,none,4,4,0.7,4,0.7,4,0,pass,6,pass,2,"4,4 / 4,4",True,pass,0,False
+U026-b3-cantafford-heavy,3,"says aggressive, can't afford it",5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U027-b1-cantafford-moderate,1,"says aggressive, can't afford it",5,2,0.9,5,0.4,2,0,pass,7,pass,2,"5,2 / 5,2",True,pass,0,False
+U028-b2-cantafford-moderate,2,"says aggressive, can't afford it",5,4,0.9,5,0.7,4,0,pass,5,pass,2,"5,4 / 5,4",True,pass,0,False
+U029-b3-match-moderate,3,none,3,3,0.55,3,0.55,3,0,pass,7,pass,2,"3,3 / 3,3",True,pass,0,False
+U030-b4-match-clean,4,none,5,4,0.9,5,0.7,4,0,pass,6,pass,2,"5,4 / 5,4",True,pass,0,False
+U031-b4-match-clean,4,none,4,4,0.8,5,0.7,4,0,pass,7,pass,3,"5,4 / 4,4 / 5,4",False,pass,0,False
+U032-b5-match-clean,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U033-b3-match-moderate,3,none,4,3,0.8,5,0.55,3,0,pass,8,pass,2,"5,3 / 5,3",True,pass,0,False
+U034-b1-cautious-clean,1,"can afford risk, prefers caution",1,2,0.1,1,0.3,2,0,pass,8,pass,2,"1,2 / 1,2",True,pass,0,False
+U035-b4-match-heavy,4,none,4,4,0.8,5,0.7,4,0,pass,7,pass,2,"5,4 / 4,4",False,pass,0,False
+U036-b2-panic-moderate,2,"says aggressive, would panic-sell",4,2,0.9,5,0.4,2,0,pass,3,FAIL,2,"5,2 / 4,2",False,pass,1,False
+U037-b5-match-heavy,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U038-b3-cantafford-heavy,3,"says aggressive, can't afford it",5,4,0.9,5,0.7,4,0,pass,8,pass,2,"5,4 / 5,4",True,pass,0,False
+U039-b2-match-heavy,2,none,2,3,0.35,2,0.5,3,0,pass,7,pass,2,"2,3 / 3,3",False,pass,0,False
+U040-b4-match-clean,4,none,5,4,0.9,5,0.8,5,0,pass,6,pass,2,"5,5 / 5,4",False,pass,0,False
+U041-b5-match-moderate,5,none,5,5,0.7,4,0.9,5,0,pass,7,pass,3,"4,5 / 5,5 / 5,5",False,pass,0,False
+U042-b1-panic-heavy,1,"says moderate, would panic-sell",3,1,0.5,3,0.35,2,0,pass,6,pass,2,"3,2 / 3,1",False,pass,0,False
+U043-b5-match-clean,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U044-b5-match-heavy,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U045-b4-match-heavy,4,none,4,4,0.8,5,0.7,4,0,pass,6,pass,2,"5,4 / 4,4",False,pass,0,False
+U046-b2-panic-heavy,2,"says aggressive, would panic-sell",5,2,0.9,5,0.4,2,0,pass,8,pass,2,"5,2 / 5,2",True,pass,0,False
+U047-b3-cautious-moderate,3,"can afford risk, prefers caution",3,3,0.5,3,0.5,3,0,pass,8,pass,2,"3,3 / 3,3",True,pass,0,False
+U048-b4-match-moderate,4,none,4,5,0.85,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U049-b5-match-moderate,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U050-b1-cantafford-heavy,1,"says aggressive, can't afford it",5,3,0.9,5,0.55,3,0,pass,6,pass,2,"5,3 / 5,3",True,pass,0,False
+U051-b1-match-heavy,1,none,1,1,0.1,1,0.15,1,0,pass,8,pass,3,"1,1 / 1,1 / 1,1",True,pass,0,False
+U052-b1-match-moderate,1,none,2,1,0.25,2,0.15,1,0,pass,8,pass,2,"2,1 / 2,2",False,pass,0,False
+U053-b5-match-heavy,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U054-b5-match-moderate,5,none,5,5,0.5,3,0.9,5,0,FAIL,6,pass,2,"3,5 / 5,5",False,FAIL,2,True
+U055-b3-match-moderate,3,none,3,3,0.5,3,0.5,3,0,pass,8,pass,2,"3,3 / 3,3",True,pass,0,False
+U056-b3-match-clean,3,none,4,4,0.85,5,0.7,4,0,pass,7,pass,2,"5,4 / 5,4",True,pass,0,False
+U057-b4-match-heavy,4,none,4,4,0.75,4,0.7,4,0,pass,7,pass,2,"4,4 / 4,4",True,pass,0,False
+U058-b1-cantafford-moderate,1,"says aggressive, can't afford it",4,3,0.75,4,0.55,3,0,pass,6,pass,2,"4,3 / 4,3",True,pass,0,False
+U059-b2-cantafford-clean,2,"says aggressive, can't afford it",5,3,0.85,5,0.55,3,0,pass,7,pass,2,"5,3 / 5,3",True,pass,0,False
+U060-b2-match-heavy,2,none,2,2,0.3,2,0.3,2,0,pass,8,pass,2,"2,2 / 3,2",False,pass,0,False
+U061-b4-match-clean,4,none,5,4,0.9,5,0.7,4,0,pass,8,pass,3,"5,4 / 5,4 / 5,4",True,pass,0,False
+U062-b5-match-moderate,5,none,5,5,0.9,5,0.9,5,0,pass,7,pass,2,"5,5 / 5,5",True,pass,0,False
+U063-b1-match-clean,1,none,2,1,0.3,2,0.3,2,0,pass,8,pass,2,"2,2 / 3,2",False,pass,0,False
+U064-b2-match-moderate,2,none,2,2,0.3,2,0.3,2,0,pass,8,pass,2,"2,2 / 2,2",True,pass,0,False
+U065-b1-match-clean,1,none,1,2,0.2,2,0.3,2,0,pass,7,pass,2,"2,2 / 2,2",True,pass,0,False
+U066-b2-cautious-clean,2,"can afford risk, prefers caution",2,4,0.45,3,0.7,4,0,pass,7,pass,2,"3,4 / 3,4",True,pass,0,False
+U067-b3-match-clean,3,none,3,3,0.55,3,0.6,4,0,pass,8,pass,2,"3,4 / 3,3",False,pass,0,False
+U068-b4-match-clean,4,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U069-b4-match-heavy,4,none,4,5,0.85,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U070-b4-match-heavy,4,none,5,4,0.9,5,0.7,4,0,pass,8,pass,2,"5,4 / 5,4",True,pass,0,False
+U071-b2-match-clean,2,none,2,2,0.3,2,0.3,2,0,pass,8,pass,3,"2,2 / 2,2 / 2,2",True,pass,0,False
+U072-b2-panic-clean,2,"says aggressive, would panic-sell",5,2,0.9,5,0.4,2,0,pass,8,pass,2,"5,2 / 5,2",True,pass,0,False
+U073-b3-panic-heavy,3,"says aggressive, would panic-sell",5,3,0.85,5,0.55,3,0,pass,8,pass,2,"5,3 / 5,3",True,pass,0,False
+U074-b5-match-clean,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U075-b3-cantafford-clean,3,"says aggressive, can't afford it",5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U076-b5-match-clean,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U077-b1-panic-moderate,1,"says aggressive, would panic-sell",5,1,0.9,5,0.15,1,0,pass,7,pass,2,"5,1 / 5,1",True,pass,0,False
+U078-b3-match-moderate,3,none,3,4,0.5,3,0.7,4,0,pass,7,pass,2,"3,4 / 3,4",True,pass,0,False
+U079-b4-match-clean,4,none,4,4,0.8,5,0.7,4,0,pass,8,pass,2,"5,4 / 5,4",True,pass,0,False
+U080-b3-match-heavy,3,none,4,3,0.75,4,0.55,3,0,pass,6,pass,2,"4,3 / 4,3",True,pass,0,False
+U081-b2-match-moderate,2,none,2,3,0.45,3,0.6,4,0,pass,7,pass,3,"3,4 / 3,3 / 3,3",False,pass,0,False
+U082-b3-match-heavy,3,none,3,3,0.55,3,0.6,4,0,pass,8,pass,2,"3,4 / 3,3",False,pass,0,False
+U083-b2-cautious-moderate,2,"can afford risk, prefers caution",2,4,0.55,3,0.7,4,0,pass,6,pass,2,"3,4 / 4,4",False,pass,0,False
+U084-b2-cautious-clean,2,"can afford risk, prefers caution",2,4,0.5,3,0.7,4,0,pass,6,pass,2,"3,4 / 3,4",True,pass,0,False
+U085-b1-match-clean,1,none,2,1,0.35,2,0.2,2,0,pass,7,pass,2,"2,2 / 2,1",False,pass,0,False
+U086-b4-match-heavy,4,none,4,4,0.8,5,0.7,4,0,pass,8,pass,2,"5,4 / 5,4",True,pass,0,False
+U087-b2-panic-clean,2,"says aggressive, would panic-sell",4,2,0.85,5,0.3,2,0,pass,7,pass,2,"5,2 / 4,2",False,pass,0,False
+U088-b4-match-clean,4,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U089-b5-match-moderate,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U090-b1-match-moderate,1,none,1,1,0.1,1,0.15,1,0,pass,7,pass,2,"1,1 / 1,1",True,pass,0,False
+U091-b1-cantafford-heavy,1,"says aggressive, can't afford it",5,2,0.9,5,0.4,2,0,pass,6,pass,3,"5,2 / 5,2 / 5,2",True,pass,0,False
+U092-b5-match-clean,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U093-b4-match-moderate,4,none,4,5,0.85,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U094-b2-cantafford-moderate,2,"says aggressive, can't afford it",5,2,0.9,5,0.25,2,0,pass,8,pass,2,"5,2 / 5,2",True,pass,0,False
+U095-b5-match-heavy,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U096-b4-match-heavy,4,none,4,5,0.85,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U097-b1-cautious-clean,1,"can afford risk, prefers caution",1,1,0.15,1,0.1,1,0,pass,6,pass,2,"1,1 / 2,1",False,pass,0,False
+U098-b4-match-heavy,4,none,5,4,0.9,5,0.75,4,0,pass,7,pass,2,"5,4 / 5,4",True,pass,0,False
+U099-b5-match-moderate,5,none,5,5,0.9,5,0.9,5,0,pass,8,pass,2,"5,5 / 5,5",True,pass,0,False
+U100-b1-cautious-moderate,1,"can afford risk, prefers caution",1,1,0.1,1,0.2,2,0,pass,7,pass,2,"1,2 / 1,1",False,pass,0,False
