@@ -145,7 +145,7 @@ We made all review changes and checked D on 20 test users. D's avg error is the 
 1. Finish the three generative AI parts in section 3 and test each one on the pilot users.
 2. With Siya: add the backstories to the test-user instructions (section 7, task S1). (Done Nov 13: on, with the risk sentences rewritten.)
 3. Remove the "20% in a month" leak. (Done Nov 11.)
-4. Build persona checks 1 and 4. (Done Nov 11. Check 1 run again on Nov 13 with the backstories on: 92 of 100. Check 4 runs again on the full-run results.)
+4. Build persona checks 1 and 4. (Done Nov 11. Check 1 run again on Nov 13 with the backstories on: 92 of 100. Check 4 ran again on the full run on Nov 16, without U054: `persona_checks/check4_noise.md`. Injected contradictions state the wrong value in 95% to 96% of turns (judge false alarms 1% to 4%); vague form answers pick a middle option in 71% of turns (41% on clean answers); flip form answers lean away from the truth in only 27% (3% on clean answers).)
 5. Fit the evidence strengths of the belief engine on the pilot users. Choose the fixed-form questions on the pilot users. (Done Nov 11. The fitted evidence strengths are in use. The fixed-form questions chosen on the pilot users were worse for a left-out pilot user, so A and B keep the default questions.)
 6. Add injected corrections, after Siya's decision (task S2).
 7. Run a quick check of Muse Spark Open as a test-user model. Then rotate three test-user models across the three repeats.
