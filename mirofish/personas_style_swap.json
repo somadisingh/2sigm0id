@@ -1,0 +1,1134 @@
+[
+  {
+    "id": "U023-b1-panic-clean-swap",
+    "seed": 323,
+    "ground_truth": {
+      "capacity": 0.125,
+      "willingness": 0.68,
+      "behavioral": 0.15,
+      "final_band": 1,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 36,
+      "occupation": "warehouse temp worker",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 1,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.52,
+      "dependents": 0,
+      "investable_amount": 3000,
+      "goal": "starting a small business"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Emily Anderson",
+      "bio": "Warehouse temp worker with big plans and almost no cushion.",
+      "backstory": "Emily Anderson is a 36-year-old warehouse temp worker who lives alone. Her income is unpredictable, debt payments take more than half of it, and she has about two weeks of expenses saved. She has $3,000 she wants to grow to start a small business within about a year. She says she is happy to take real risk for higher growth. But in a past downturn she sold everything out of fear, and whenever her own money has a bad week she stops her contributions and pulls the money out. She knows a moderate amount about investing and cares about workers' financial security. She likes the idea of being a bold investor more than the reality of watching her savings shrink.",
+      "backstory_v1": "Emily Anderson is a 36-year-old warehouse temp worker who lives alone. Her income is unpredictable, debt payments take more than half of it, and she has about two weeks of expenses saved. She has $3,000 she wants to grow to start a small business within about a year. She says she is comfortable taking real risk for a bigger payoff. But in a past downturn she sold in a panic, and when her own money starts falling she gets out fast. She knows a moderate amount about investing and cares about workers' financial security.",
+      "source": "mirofish (edited)",
+      "mbti": "INFJ",
+      "interested_topics": [
+        "small business",
+        "worker rights",
+        "debt management",
+        "saving money"
+      ],
+      "style_swap_of": "U023-b1-panic-clean"
+    }
+  },
+  {
+    "id": "U065-b1-match-clean-swap",
+    "seed": 365,
+    "ground_truth": {
+      "capacity": 0.35,
+      "willingness": 0.15,
+      "behavioral": 0.28,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 41,
+      "occupation": "hairstylist",
+      "household": "single parent, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 0.5,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.18,
+      "dependents": 1,
+      "investable_amount": 6000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Kenji Chen",
+      "bio": "Hairstylist and single parent saving for early retirement.",
+      "backstory": "Kenji Chen is a 41-year-old hairstylist. They are a single parent of one young child. Their income is partly commission-based, debt payments take about 18% of it, and they have about two weeks of expenses saved. They want to invest $6,000 for early retirement savings, needing it in about 12 years. They know a moderate amount about investing. They are very cautious, preferring to earn a little rather than risk losing anything. They have never been through a big investment loss, but if their balance dropped sharply, they would call a close friend to talk it over, then sell a good chunk to feel safer. They have worked at the same small salon for more than a decade and describe themselves as 'stylist, parent, money learner'.",
+      "backstory_v1": "Kenji Chen is a 41-year-old hairstylist. They are a single parent of one young child. Their income is partly commission-based, debt payments take about 18% of it, and they have about two weeks of expenses saved. They want to invest $6,000 for early retirement savings, needing it in about 12 years. They know a moderate amount about investing. They avoid risk and would rather earn little than lose anything. They have never been through a big investment loss, and they say that watching their own balance shrink makes them anxious, and they tend to cut their losses. They have worked at the same small salon for more than a decade and describe themselves as 'stylist, parent, money learner'.",
+      "source": "mirofish (edited)",
+      "mbti": "ISFJ",
+      "interested_topics": [
+        "hairstyling",
+        "parenting",
+        "early retirement"
+      ],
+      "style_swap_of": "U065-b1-match-clean"
+    }
+  },
+  {
+    "id": "U100-b1-cautious-moderate-swap",
+    "seed": 400,
+    "ground_truth": {
+      "capacity": 0.925,
+      "willingness": 0.09,
+      "behavioral": 0.07,
+      "final_band": 1,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 49,
+      "occupation": "postal service supervisor",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 12,
+      "income_stability": "very stable",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 116000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "sold"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "correction_rate": 0.05,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Yara James",
+      "bio": "Postal service supervisor planning for retirement.",
+      "backstory": "Yara James is a 49-year-old postal service supervisor. She is single and lives alone. Her income is very stable, she has almost no debt, and she has about a year of expenses saved. She wants to invest $116,000 for retirement, needing it in about 15 years. She knows a moderate amount about investing. Even though she could afford losses, she says she would rather earn almost nothing than risk losing a dollar. She keeps most of her money in cash and CDs, because even a modest drop in her accounts turns her stomach. During the last big downturn she sold everything out of fear. She watched her uncle lose his savings in the market years ago and never forgot it. She has worked for the postal service for more than two decades and values stability.",
+      "backstory_v1": "Yara James is a 49-year-old postal service supervisor. She is single and lives alone. Her income is very stable, she has almost no debt, and she has about a year of expenses saved. She wants to invest $116,000 for retirement, needing it in about 15 years. She knows a moderate amount about investing. Even though she could afford losses, she avoids risk and would rather earn little than lose anything. In a past downturn she sold in a panic and still thinks about it; when her own money is falling, she gets out fast and loses sleep. She has worked for the postal service for more than two decades and values stability.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "postal service",
+        "retirement planning",
+        "personal finance"
+      ],
+      "style_swap_of": "U100-b1-cautious-moderate"
+    }
+  },
+  {
+    "id": "U012-b1-match-heavy-swap",
+    "seed": 312,
+    "ground_truth": {
+      "capacity": 0.309,
+      "willingness": 0.08,
+      "behavioral": 0.13,
+      "final_band": 1,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 38,
+      "occupation": "medical lab technician",
+      "household": "supports an elderly parent"
+    },
+    "finances": {
+      "horizon_yrs": 6,
+      "emergency_fund_months": 0.5,
+      "income_stability": "stable",
+      "debt_to_income": 0.41,
+      "dependents": 1,
+      "investable_amount": 21000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.2,
+      "correction_rate": 0.1,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Elijah Okafor",
+      "bio": "Medical lab technician supporting an elderly parent on a tight budget.",
+      "backstory": "Elijah Okafor is a 38-year-old medical laboratory technician at a mid-sized hospital who supports an elderly parent. His income is steady, but debt payments take about 41% of it, and he has only about two weeks of expenses saved. He wants to invest $21,000 toward a bigger home in about 6 years. He reads fund documents end to end and can explain expense ratios and diversification without notes. He tells anyone who asks that he would rather earn very little than risk losing a cent. He has never been through a big loss, but if his own holdings fell, he would sell at the first dip, then buy back later at a higher price. He is calm, precise and factual.",
+      "backstory_v1": "Elijah Okafor is a 38-year-old medical laboratory technician at a mid-sized hospital who supports an elderly parent. His income is steady, but debt payments take about 41% of it, and he has only about two weeks of expenses saved. He wants to invest $21,000 toward a bigger home in about 6 years. He knows a lot about how investing works and has never been through a big loss, but he avoids risk and would rather earn little than lose anything. If his own money were falling, he would get out fast and lose sleep over it. He is calm, precise and factual.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "lab science",
+        "healthcare work",
+        "debt management",
+        "caring for family"
+      ],
+      "style_swap_of": "U012-b1-match-heavy"
+    }
+  },
+  {
+    "id": "U059-b2-cantafford-clean-swap",
+    "seed": 359,
+    "ground_truth": {
+      "capacity": 0.316,
+      "willingness": 0.95,
+      "behavioral": 0.49,
+      "final_band": 2,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 55,
+      "occupation": "event bartender",
+      "household": "married, three teenage children"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 1,
+      "income_stability": "unstable",
+      "debt_to_income": 0.16,
+      "dependents": 3,
+      "investable_amount": 3000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.0,
+      "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Zoe Kaur",
+      "bio": "Event bartender planning for retirement and future grandkids.",
+      "backstory": "Zoe Kaur is a 55-year-old event bartender. She is married with three teenage children. Her income is unpredictable, debt payments take about 16% of it, and she has about a month of expenses saved. She wants to invest $3,000 for retirement and helping grandkids, needing it in about 12 years. She knows a lot about investing. She talks a big game, pushing for the highest possible growth and claiming a falling market wouldn't rattle her at all. She has never been through a big investment loss, but she admits that if her own holdings dropped hard, she'd feel uneasy and would probably trim one position to feel in control, leaving the rest alone. At 55 with almost nothing saved, she feels she has to take big swings to catch up. She is warm and funny, likes to say 'another shift, another dollar', and backs her opinions with numbers.",
+      "backstory_v1": "Zoe Kaur is a 55-year-old event bartender. She is married with three teenage children. Her income is unpredictable, debt payments take about 16% of it, and she has about a month of expenses saved. She wants to invest $3,000 for retirement and helping grandkids, needing it in about 12 years. She knows a lot about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, but she says that when markets turn rough, she feels uneasy and might trim a little, but mostly sits tight. She is warm and funny, likes to say 'another shift, another dollar', and backs her opinions with numbers.",
+      "source": "mirofish (edited)",
+      "mbti": "ISFJ",
+      "interested_topics": [
+        "bartending",
+        "event work",
+        "retirement planning",
+        "family"
+      ],
+      "style_swap_of": "U059-b2-cantafford-clean"
+    }
+  },
+  {
+    "id": "U084-b2-cautious-clean-swap",
+    "seed": 384,
+    "ground_truth": {
+      "capacity": 0.886,
+      "willingness": 0.32,
+      "behavioral": 0.66,
+      "final_band": 2,
+      "mismatch_type": "can afford risk, prefers caution"
+    },
+    "demographics": {
+      "age": 39,
+      "occupation": "corporate attorney",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 9,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.07,
+      "dependents": 1,
+      "investable_amount": 100000,
+      "goal": "retirement and kids' college"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Ines Green",
+      "bio": "Corporate attorney saving for retirement and her child's college.",
+      "backstory": "Ines Green is a 39-year-old corporate attorney. She is married with one young child. Her income is high and steady, she has little debt, and she has about 9 months of expenses saved. She wants to invest $100,000 for retirement and kids' college, needing it in about 25 years. She knows a lot about investing. She calls herself fairly cautious: small ups and downs are fine with her, but big swings leave her uneasy. She has never been through a big investment loss, but says that if her own portfolio fell hard, she would keep everything invested and wait, the way her father's holdings recovered years ago after his own rough patch. Watching a relative lose money in her twenties taught her that caution. She thinks in terms of 'strategic planning' and 'legacy building'.",
+      "backstory_v1": "Ines Green is a 39-year-old corporate attorney. She is married with one young child. Her income is high and steady, she has little debt, and she has about 9 months of expenses saved. She wants to invest $100,000 for retirement and kids' college, needing it in about 25 years. She knows a lot about investing. Even though she could afford losses, she is fairly cautious and gets uneasy with big swings. She has never been through a big investment loss, and she says that when markets turn rough, she stays calm and waits it out. She thinks in terms of 'strategic planning' and 'legacy building'.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "law",
+        "retirement planning",
+        "college savings"
+      ],
+      "style_swap_of": "U084-b2-cautious-clean"
+    }
+  },
+  {
+    "id": "U009-b2-match-moderate-swap",
+    "seed": 309,
+    "ground_truth": {
+      "capacity": 0.292,
+      "willingness": 0.29,
+      "behavioral": 0.31,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 33,
+      "occupation": "event bartender",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 2,
+      "income_stability": "unstable",
+      "debt_to_income": 0.41,
+      "dependents": 0,
+      "investable_amount": 1000,
+      "goal": "a house down payment"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.1,
+      "correction_rate": 0.05,
+      "acquiescence": 0.1,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Nadia Zhang",
+      "bio": "Event bartender with an uneven income, slowly building a safety net.",
+      "backstory": "Nadia Zhang is a 33-year-old event bartender who lives with her partner. Her income rises and falls with event bookings, and student loan and credit card payments take about 41% of it. She has about two months of expenses saved. She wants to put $1,000 toward a house down payment in about 10 years. She calls herself fairly cautious: small ups and downs are fine, but big swings make her uneasy. She has never invested before and knows little about it. If her own investments lost a lot of value, she would talk it over with her partner, then sell a good chunk to feel safer. She is warm and funny and likes to say 'another shift, another story'.",
+      "backstory_v1": "Nadia Zhang is a 33-year-old event bartender who lives with her partner. Her income rises and falls with event bookings, and student loan and credit card payments take about 41% of it. She has about two months of expenses saved. She wants to put $1,000 toward a house down payment in about 10 years. She is fairly cautious and gets uneasy with big swings; watching her balance shrink makes her anxious, and she tends to cut her losses. She has never invested before and knows little about it. She is warm and funny and likes to say 'another shift, another story'.",
+      "source": "mirofish (edited)",
+      "mbti": "ESFP",
+      "interested_topics": [
+        "bartending",
+        "event work",
+        "budgeting",
+        "paying down debt"
+      ],
+      "style_swap_of": "U009-b2-match-moderate"
+    }
+  },
+  {
+    "id": "U039-b2-match-heavy-swap",
+    "seed": 339,
+    "ground_truth": {
+      "capacity": 0.252,
+      "willingness": 0.25,
+      "behavioral": 0.49,
+      "final_band": 2,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 55,
+      "occupation": "musician who plays weddings",
+      "household": "married, one teenage child; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 8,
+      "emergency_fund_months": 0.5,
+      "income_stability": "unstable",
+      "debt_to_income": 0.21,
+      "dependents": 2,
+      "investable_amount": 3000,
+      "goal": "retirement and helping grandkids"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.3,
+      "correction_rate": 0.1,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Kai Silva",
+      "bio": "Veteran wedding musician supporting a family on gig income.",
+      "backstory": "Kai Silva is a 55-year-old musician who has played weddings for more than 30 years. Kai is married with one teenage child, and Kai's spouse doesn't work, so two people depend on that income, which rises and falls with bookings. Debt payments take about 21% of it, and there are about two weeks of expenses saved. Kai wants to invest $3,000 for retirement and to help future grandkids, needing it in about 8 years. Kai is fairly cautious, fine with small ups and downs but uneasy when things swing wildly. Kai has never faced a big investment loss; if one came, Kai would pause new contributions for a while but sell almost nothing. Kai knows little about investing. Kai is heartfelt and uses musical metaphors.",
+      "backstory_v1": "Kai Silva is a 55-year-old musician who has played weddings for more than 30 years. Kai is married with one teenage child, and Kai's spouse doesn't work, so two people depend on that income, which rises and falls with bookings. Debt payments take about 21% of it, and there are about two weeks of expenses saved. Kai wants to invest $3,000 for retirement and to help future grandkids, needing it in about 8 years. Kai is fairly cautious and gets uneasy with big swings, might trim a little in a rough market, knows little about investing, and has never been through a big loss. Kai is heartfelt and uses musical metaphors.",
+      "source": "mirofish (edited)",
+      "mbti": "ISFP",
+      "interested_topics": [
+        "wedding music",
+        "live performance",
+        "family life",
+        "retirement planning"
+      ],
+      "style_swap_of": "U039-b2-match-heavy"
+    }
+  },
+  {
+    "id": "U017-b3-panic-clean-swap",
+    "seed": 317,
+    "ground_truth": {
+      "capacity": 0.938,
+      "willingness": 0.88,
+      "behavioral": 0.54,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 48,
+      "occupation": "senior software engineer",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 9,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.0,
+      "dependents": 0,
+      "investable_amount": 225000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Paul Khan",
+      "bio": "Senior engineer who talks bold about growth but has never seen a crash with real money.",
+      "backstory": "Paul Khan is a 48-year-old senior software engineer. He has been married for 15 years, has no children, earns a high, steady income, has no debt and about nine months of expenses saved. He wants to invest $225,000 to grow his wealth over about 25 years. He knows a lot about investing and talks confidently about chasing the highest growth, saying drops never bother him. He likes the idea of being a bold investor more than the reality: if his own money fell sharply, he would feel uneasy and pause new contributions for a while, but sell almost nothing. He is analytical, systematic and data-driven.",
+      "backstory_v1": "Paul Khan is a 48-year-old senior software engineer. He has been married for 15 years, has no children, earns a high, steady income, has no debt and about nine months of expenses saved. He wants to invest $225,000 to grow his wealth over about 25 years. He knows a lot about investing and talks confidently about wanting maximum growth, citing historical returns. But he has never been through a big loss with his own money, and when markets turn rough he feels uneasy and might trim some holdings. He is analytical, systematic and data-driven.",
+      "source": "mirofish (edited)",
+      "mbti": "INTJ",
+      "interested_topics": [
+        "software engineering",
+        "system architecture",
+        "index funds",
+        "long-term investing"
+      ],
+      "style_swap_of": "U017-b3-panic-clean"
+    }
+  },
+  {
+    "id": "U033-b3-match-moderate-swap",
+    "seed": 333,
+    "ground_truth": {
+      "capacity": 0.502,
+      "willingness": 0.73,
+      "behavioral": 0.5,
+      "final_band": 3,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 53,
+      "occupation": "software developer",
+      "household": "single parent, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 12,
+      "emergency_fund_months": 2,
+      "income_stability": "stable",
+      "debt_to_income": 0.21,
+      "dependents": 1,
+      "investable_amount": 53000,
+      "goal": "early retirement savings"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.1,
+      "correction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": true
+    },
+    "profile": {
+      "name": "Yuki Ortiz",
+      "bio": "Veteran software developer and single parent saving for early retirement.",
+      "backstory": "Yuki Ortiz is a 53-year-old software developer with about 28 years in the industry and a single parent of one teenager. Their salary is steady, debt payments take about 21% of it, and they have about two months of expenses saved. They want to invest $53,000 toward early retirement in about 12 years. They read annual reports for fun and can explain options pricing to coworkers. They say they're happy taking real risk for higher growth. If their portfolio took a big hit, they would feel uneasy, trim one position, and leave the rest alone. They are decisive and organized.",
+      "backstory_v1": "Yuki Ortiz is a 53-year-old software developer with about 28 years in the industry and a single parent of one teenager. Their salary is steady, debt payments take about 21% of it, and they have about two months of expenses saved. They want to invest $53,000 toward early retirement in about 12 years. They know a lot about investing and have never been through a big loss. They are comfortable taking real risk for higher growth, but when markets turn rough they feel uneasy and might trim a little. They are decisive and organized.",
+      "source": "mirofish (edited)",
+      "mbti": "ENTJ",
+      "interested_topics": [
+        "software development",
+        "cloud computing",
+        "retirement planning",
+        "single parenting"
+      ],
+      "style_swap_of": "U033-b3-match-moderate"
+    }
+  },
+  {
+    "id": "U026-b3-cantafford-heavy-swap",
+    "seed": 326,
+    "ground_truth": {
+      "capacity": 0.455,
+      "willingness": 0.95,
+      "behavioral": 0.91,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, can't afford it"
+    },
+    "demographics": {
+      "age": 40,
+      "occupation": "hairstylist",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 10,
+      "emergency_fund_months": 2,
+      "income_stability": "partly commission-based",
+      "debt_to_income": 0.14,
+      "dependents": 0,
+      "investable_amount": 15000,
+      "goal": "a bigger home"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.3,
+      "vague_rate": 0.4,
+      "contradiction_rate": 0.15,
+      "correction_rate": 0.1,
+      "acquiescence": 0.3,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Andre Reed",
+      "bio": "Hairstylist with commission income and big growth ambitions.",
+      "backstory": "Andre Reed is a 40-year-old hairstylist with more than 20 years behind the chair. He is married with no children. His income is partly commission-based, debt payments take about 14% of it, and he has about two months of expenses saved. He wants to invest $15,000 toward a bigger home in about 10 years. He knows little about investing but says he wants the highest possible growth and claims drops never bother him; when his own funds fall, he bumps up his monthly contribution to buy low. In a past downturn he held on. He figures with so little saved, big swings are his only way to catch up. He is warm and witty and tells stories from the salon floor.",
+      "backstory_v1": "Andre Reed is a 40-year-old hairstylist with more than 20 years behind the chair. He is married with no children. His income is partly commission-based, debt payments take about 14% of it, and he has about two months of expenses saved. He wants to invest $15,000 toward a bigger home in about 10 years. He knows little about investing but wants maximum growth; in a past downturn he held on, and he says a drop would be a chance to buy more. He is warm and witty and tells stories from the salon floor.",
+      "source": "mirofish (edited)",
+      "mbti": "ISFJ",
+      "interested_topics": [
+        "hairstyling",
+        "salon business",
+        "home improvement",
+        "saving on irregular income"
+      ],
+      "style_swap_of": "U026-b3-cantafford-heavy"
+    }
+  },
+  {
+    "id": "U073-b3-panic-heavy-swap",
+    "seed": 373,
+    "ground_truth": {
+      "capacity": 0.754,
+      "willingness": 0.85,
+      "behavioral": 0.46,
+      "final_band": 3,
+      "mismatch_type": "says aggressive, would panic-sell"
+    },
+    "demographics": {
+      "age": 47,
+      "occupation": "registered nurse",
+      "household": "married, one teenage child"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 6,
+      "income_stability": "stable",
+      "debt_to_income": 0.08,
+      "dependents": 1,
+      "investable_amount": 24000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.15,
+      "correction_rate": 0.1,
+      "acquiescence": 0.2,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Nora Perez",
+      "bio": "Registered nurse and mom of a teenager.",
+      "backstory": "Nora Perez is a 47-year-old registered nurse. She is married with one teenage child. Her salary is steady, she has little debt, and she has about 6 months of expenses saved. She wants to invest $24,000 toward financial independence, needing it in about 20 years. She knows a lot about investing. She talks like the boldest investor in the break room, saying she wants the highest possible growth and that big losses would never rattle her. She has never actually been through a big investment loss. She admits that if her own holdings fell hard, she would probably trim one position to feel in control and leave the rest alone, watching the account daily like a patient on a monitor. She has worked in hospitals for more than two decades and likes to say 'Treat your savings like a vital sign'.",
+      "backstory_v1": "Nora Perez is a 47-year-old registered nurse. She is married with one teenage child. Her salary is steady, she has little debt, and she has about 6 months of expenses saved. She wants to invest $24,000 toward financial independence, needing it in about 20 years. She knows a lot about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, but she says that when markets turn rough, she feels uneasy and might trim a little, but mostly sits tight. She has worked in hospitals for more than two decades and likes to say 'Treat your savings like a vital sign'.",
+      "source": "mirofish (edited)",
+      "mbti": "ISFJ",
+      "interested_topics": [
+        "nursing",
+        "financial independence",
+        "parenting"
+      ],
+      "style_swap_of": "U073-b3-panic-heavy"
+    }
+  },
+  {
+    "id": "U061-b4-match-clean-swap",
+    "seed": 361,
+    "ground_truth": {
+      "capacity": 0.684,
+      "willingness": 0.95,
+      "behavioral": 0.69,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 35,
+      "occupation": "registered nurse",
+      "household": "married, one young child; spouse not working"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 4,
+      "income_stability": "stable",
+      "debt_to_income": 0.09,
+      "dependents": 2,
+      "investable_amount": 29000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
+      "acquiescence": 0.0,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Erin Brooks",
+      "bio": "Registered nurse and sole earner for a family of three.",
+      "backstory": "Erin Brooks is a 35-year-old registered nurse. She is married with one young child, and her spouse does not work. Her salary is steady, she has little debt, and she has about 4 months of expenses saved. She wants to invest $29,000 toward financial independence, needing it in about 30 years. She reads investing articles and understands the basics of funds and diversification, though she's no expert. She tells friends she wants the boldest growth possible and that downturns don't faze her one bit. When her own holdings slid badly, she read every gloomy headline over coffee and then left the account untouched. In a past slump she simply rode it down and back up. Her spouse stays home with their young daughter, so she is the family's only earner.",
+      "backstory_v1": "Erin Brooks is a 35-year-old registered nurse. She is married with one young child, and her spouse does not work. Her salary is steady, she has little debt, and she has about 4 months of expenses saved. She wants to invest $29,000 toward financial independence, needing it in about 30 years. She knows a moderate amount about investing. She wants maximum growth and insists losses don't scare her. In a past downturn she held on, and when markets turn rough, she stays calm and waits it out. Her spouse stays home with their young daughter, so she is the family's only earner.",
+      "source": "mirofish (edited)",
+      "mbti": "ISFJ",
+      "interested_topics": [
+        "nursing",
+        "parenting",
+        "financial independence"
+      ],
+      "style_swap_of": "U061-b4-match-clean"
+    }
+  },
+  {
+    "id": "U048-b4-match-moderate-swap",
+    "seed": 348,
+    "ground_truth": {
+      "capacity": 0.671,
+      "willingness": 0.66,
+      "behavioral": 0.86,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 33,
+      "occupation": "data analyst",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 4,
+      "income_stability": "stable",
+      "debt_to_income": 0.19,
+      "dependents": 1,
+      "investable_amount": 11000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.1,
+      "vague_rate": 0.15,
+      "contradiction_rate": 0.05,
+      "correction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Marcus Williams",
+      "bio": "Data analyst and young dad saving for retirement.",
+      "backstory": "Marcus Williams is a 33-year-old data analyst. He is married with one young child. His salary is steady, debt payments take about 19% of it, and he has about 4 months of expenses saved. He wants to invest $11,000 for retirement, needing it in about 30 years. He reads fund prospectuses for relaxation and explains expense ratios to coworkers. He tells friends he's happy taking real risk for higher growth. He keeps some cash set aside on purpose so he can buy more whenever prices fall. He has never been through a big investment loss, but he says that if one came, he would put that waiting cash to work right away. His favorite lines are 'Let's look at the numbers' and 'Your future self will thank you', and he builds budget templates for fun.",
+      "backstory_v1": "Marcus Williams is a 33-year-old data analyst. He is married with one young child. His salary is steady, debt payments take about 19% of it, and he has about 4 months of expenses saved. He wants to invest $11,000 for retirement, needing it in about 30 years. He knows a lot about investing. He is comfortable taking real risk for higher growth. He has never been through a big investment loss, and he says that when markets fall, he sees a bargain and adds more. His favorite lines are 'Let's look at the numbers' and 'Your future self will thank you', and he builds budget templates for fun.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "data analysis",
+        "retirement planning",
+        "parenting",
+        "budgeting"
+      ],
+      "style_swap_of": "U048-b4-match-moderate"
+    }
+  },
+  {
+    "id": "U086-b4-match-heavy-swap",
+    "seed": 386,
+    "ground_truth": {
+      "capacity": 0.699,
+      "willingness": 0.72,
+      "behavioral": 0.68,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 45,
+      "occupation": "UX designer",
+      "household": "married, two teenage children"
+    },
+    "finances": {
+      "horizon_yrs": 20,
+      "emergency_fund_months": 6,
+      "income_stability": "stable",
+      "debt_to_income": 0.16,
+      "dependents": 2,
+      "investable_amount": 20000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.2,
+      "vague_rate": 0.3,
+      "contradiction_rate": 0.3,
+      "correction_rate": 0.1,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Aisha Lee",
+      "bio": "UX designer and parent of two teens saving for retirement.",
+      "backstory": "Aisha Lee is a 45-year-old UX designer. They are married with two teenage children. Their salary is steady, debt payments take about 16% of it, and they have about 6 months of expenses saved. They want to invest $20,000 for retirement, needing it in about 20 years. They can explain what index funds and bonds do, but they'd never call themselves an expert. They say they're happy to take real risk for higher growth. In the last big downturn they held every position. When their own holdings sink, they stop opening the brokerage app until the news quiets down. They have designed digital products for years and care about the people behind the screens.",
+      "backstory_v1": "Aisha Lee is a 45-year-old UX designer. They are married with two teenage children. Their salary is steady, debt payments take about 16% of it, and they have about 6 months of expenses saved. They want to invest $20,000 for retirement, needing it in about 20 years. They know a moderate amount about investing. They are comfortable taking real risk for higher growth. In a past downturn they held on, and when markets turn rough, they stay calm and wait it out. They have designed digital products for years and care about the people behind the screens.",
+      "source": "mirofish (edited)",
+      "mbti": "ENFJ",
+      "interested_topics": [
+        "UX design",
+        "retirement planning",
+        "parenting"
+      ],
+      "style_swap_of": "U086-b4-match-heavy"
+    }
+  },
+  {
+    "id": "U070-b4-match-heavy-swap",
+    "seed": 370,
+    "ground_truth": {
+      "capacity": 0.716,
+      "willingness": 0.89,
+      "behavioral": 0.7,
+      "final_band": 4,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 26,
+      "occupation": "civil engineer",
+      "household": "married, one young child"
+    },
+    "finances": {
+      "horizon_yrs": 25,
+      "emergency_fund_months": 3,
+      "income_stability": "very stable",
+      "debt_to_income": 0.19,
+      "dependents": 1,
+      "investable_amount": 25000,
+      "goal": "financial independence"
+    },
+    "experience": {
+      "fin_literacy": "medium",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "long",
+      "vocabulary": "technical",
+      "hedging": "low"
+    },
+    "noise": {
+      "flip_prob": 0.25,
+      "vague_rate": 0.5,
+      "contradiction_rate": 0.2,
+      "correction_rate": 0.1,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Fatima Price",
+      "bio": "Young civil engineer and mom aiming for financial independence.",
+      "backstory": "Fatima Price is a 26-year-old civil engineer. She is married with one young child. Her income is very stable, debt payments take about 19% of it, and she has about 3 months of expenses saved. She wants to invest $25,000 toward financial independence, needing it in about 25 years. She knows a moderate amount about investing. She wants the highest possible growth and insists drops in her account would never bother her. She has never been through a big investment loss. She says that if her investments fell sharply, she would read every gloomy headline at breakfast, then leave the account untouched and get on with her day. She is a licensed civil engineer with a passion for sustainable, community-focused design.",
+      "backstory_v1": "Fatima Price is a 26-year-old civil engineer. She is married with one young child. Her income is very stable, debt payments take about 19% of it, and she has about 3 months of expenses saved. She wants to invest $25,000 toward financial independence, needing it in about 25 years. She knows a moderate amount about investing. She wants maximum growth and insists losses don't scare her. She has never been through a big investment loss, and she says that when markets turn rough, she stays calm and waits it out. She is a licensed civil engineer with a passion for sustainable, community-focused design.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "civil engineering",
+        "sustainable design",
+        "parenting"
+      ],
+      "style_swap_of": "U070-b4-match-heavy"
+    }
+  },
+  {
+    "id": "U006-b5-match-clean-swap",
+    "seed": 306,
+    "ground_truth": {
+      "capacity": 0.989,
+      "willingness": 0.85,
+      "behavioral": 0.94,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 29,
+      "occupation": "dentist",
+      "household": "single, lives alone"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 24,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.03,
+      "dependents": 0,
+      "investable_amount": 97000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "none"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Ben Morales",
+      "bio": "Dentist who wants his retirement savings to grow as fast as possible.",
+      "backstory": "Ben Morales is a 29-year-old dentist at a modern urban clinic. He is single, lives alone, has a high, steady income, almost no debt and about two years of expenses in savings. He wants to invest $97,000 for retirement, roughly 30 years away. He knows little about investing and has never been through a market crash, yet he insists he wants the highest growth and claims big losses wouldn't bother him. He keeps some cash on the side on purpose so he could buy more if prices ever fell sharply. He is warm and evidence-minded at work and wants the same plain explanations about money.",
+      "backstory_v1": "Ben Morales is a 29-year-old dentist at a modern urban clinic. He is single, lives alone, has a high, steady income, almost no debt and about two years of expenses in savings. He wants to invest $97,000 for retirement, roughly 30 years away. Although he knows little about investing and has never been through a market crash, he wants maximum growth and insists losses don't scare him; he says a big drop would just be a chance to buy more. He is warm and evidence-minded at work and wants the same plain explanations about money.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "dentistry",
+        "retirement planning",
+        "personal finance",
+        "healthy living"
+      ],
+      "style_swap_of": "U006-b5-match-clean"
+    }
+  },
+  {
+    "id": "U043-b5-match-clean-swap",
+    "seed": 343,
+    "ground_truth": {
+      "capacity": 0.891,
+      "willingness": 0.94,
+      "behavioral": 0.92,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 50,
+      "occupation": "dentist",
+      "household": "married, no children"
+    },
+    "finances": {
+      "horizon_yrs": 15,
+      "emergency_fund_months": 12,
+      "income_stability": "stable and high",
+      "debt_to_income": 0.09,
+      "dependents": 0,
+      "investable_amount": 174000,
+      "goal": "retirement"
+    },
+    "experience": {
+      "fin_literacy": "high",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "plain",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.05,
+      "contradiction_rate": 0.0,
+      "correction_rate": 0.0,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Anika Lopez",
+      "bio": "Dentist and practice owner with a strong appetite for growth.",
+      "backstory": "Anika Lopez is a 50-year-old dentist who owns her own practice in a suburban area. She is married with no children, earns a high income, has low debt and about a year of expenses saved. She wants to invest $174,000 for retirement in about 15 years. She reads fund prospectuses for fun and trades ideas with her financial-adjacent brother-in-law; she tells friends a downturn is simply a sale on good funds and that paper losses never rattle her. When her own accounts tumble, she logs in and buys more of whatever fell hardest. In a past downturn she held every position. She is warm and professional and likes to say 'prevention is key'.",
+      "backstory_v1": "Anika Lopez is a 50-year-old dentist who owns her own practice in a suburban area. She is married with no children, earns a high income, has low debt and about a year of expenses saved. She wants to invest $174,000 for retirement in about 15 years. She knows a lot about investing and wants maximum growth; in a past downturn she held on, and she sees a falling market as a chance to add more. She is warm and professional and likes to say 'prevention is key'.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "dentistry",
+        "patient education",
+        "retirement planning",
+        "community health"
+      ],
+      "style_swap_of": "U043-b5-match-clean"
+    }
+  },
+  {
+    "id": "U024-b5-match-moderate-swap",
+    "seed": 324,
+    "ground_truth": {
+      "capacity": 0.981,
+      "willingness": 0.9,
+      "behavioral": 0.85,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 37,
+      "occupation": "civil engineer",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 30,
+      "emergency_fund_months": 24,
+      "income_stability": "very stable",
+      "debt_to_income": 0.05,
+      "dependents": 0,
+      "investable_amount": 32000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.1,
+      "contradiction_rate": 0.05,
+      "correction_rate": 0.05,
+      "acquiescence": 0.15,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Aaliyah Wright",
+      "bio": "Civil engineer with a long horizon and a steady hand.",
+      "backstory": "Aaliyah Wright is a 37-year-old civil engineer who lives with her partner. Her income is very stable, debt is low, and she has about two years of expenses saved. She wants to invest $32,000 to grow her wealth over about 30 years. She knows little about investing but talks big, saying she wants the biggest gains possible and that losing money wouldn't bother her at all. In a past downturn she held on. When her own funds drop, she treats it like a store sale and buys more. She is careful and analytical in her work and likes sustainable design.",
+      "backstory_v1": "Aaliyah Wright is a 37-year-old civil engineer who lives with her partner. Her income is very stable, debt is low, and she has about two years of expenses saved. She wants to invest $32,000 to grow her wealth over about 30 years. She knows little about investing but wants maximum growth. In a past downturn she held on, and she says that when markets fall she sees a bargain and adds more. She is careful and analytical in her work and likes sustainable design.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "civil engineering",
+        "sustainable design",
+        "long-term investing",
+        "personal finance"
+      ],
+      "style_swap_of": "U024-b5-match-moderate"
+    }
+  },
+  {
+    "id": "U054-b5-match-moderate-swap",
+    "seed": 354,
+    "ground_truth": {
+      "capacity": 0.992,
+      "willingness": 0.85,
+      "behavioral": 0.88,
+      "final_band": 5,
+      "mismatch_type": "none"
+    },
+    "demographics": {
+      "age": 32,
+      "occupation": "civil engineer",
+      "household": "lives with a partner"
+    },
+    "finances": {
+      "horizon_yrs": 35,
+      "emergency_fund_months": 12,
+      "income_stability": "very stable",
+      "debt_to_income": 0.02,
+      "dependents": 0,
+      "investable_amount": 62000,
+      "goal": "growing long-term wealth"
+    },
+    "experience": {
+      "fin_literacy": "low",
+      "past_loss_reaction": "held"
+    },
+    "style": {
+      "verbosity": "short",
+      "vocabulary": "technical",
+      "hedging": "high"
+    },
+    "noise": {
+      "flip_prob": 0.0,
+      "vague_rate": 0.2,
+      "contradiction_rate": 0.05,
+      "correction_rate": 0.05,
+      "acquiescence": 0.05,
+      "refuses_numbers": false
+    },
+    "profile": {
+      "name": "Emeka Santos",
+      "bio": "Civil engineer investing for the long run.",
+      "backstory": "Emeka Santos is a 32-year-old civil engineer. He lives with a partner. His income is very stable, he has almost no debt, and he has about a year of expenses saved. He wants to invest $62,000 to grow his wealth over the long term, needing it in about 35 years. He admits he barely knows an index fund from a mutual fund, but he wants the biggest possible gains and swears a falling account balance wouldn't rattle him. During the last big downturn, he simply left his holdings untouched. When prices slide, he treats it like a clearance sale at the hardware store and buys more shares with whatever cash he can spare. He is practical and plain-spoken and likes long-term projects at work and at home.",
+      "backstory_v1": "Emeka Santos is a 32-year-old civil engineer. He lives with a partner. His income is very stable, he has almost no debt, and he has about a year of expenses saved. He wants to invest $62,000 to grow his wealth over the long term, needing it in about 35 years. He knows little about investing. He wants maximum growth and insists losses don't scare him. In a past downturn he held on, and when markets fall, he sees a bargain and adds more. He is practical and plain-spoken and likes long-term projects at work and at home.",
+      "source": "mirofish (edited)",
+      "mbti": "ISTJ",
+      "interested_topics": [
+        "civil engineering",
+        "long-term investing",
+        "personal finance"
+      ],
+      "style_swap_of": "U054-b5-match-moderate"
+    }
+  }
+]
