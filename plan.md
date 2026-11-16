@@ -365,6 +365,8 @@ Now every injected contradiction is a false statement. A real person also correc
 
 ### S3. Build persona checks 2, 3 and 5 (Fri Nov 13 to Sun Nov 15)
 
+**Done Nov 15 (Siya, merged into `main` Nov 16).** `mirofish/persona_checks_235.md`: check 2 fails 1 of 100 users, check 3 fails 2, check 5 fails 2. One user fails 2 or more checks: U054-b5-match-moderate. Rescored without U054 (Nov 16): no method's avg error changes by more than 0.001, and the order of the methods does not change.
+
 Do these checks after S1, because the backstories change how the test users answer.
 
 How to build them:
@@ -393,6 +395,8 @@ How to build them:
 
 ### S4. Run persona check 6: people read conversations (by Mon Nov 16)
 
+**Done Nov 16.** All three readers. `persona_checks/check6_human_read.md`: final band exact 75% (Somaditya), 50% (Siya), 50% (Preyansh); method D 60%. Within 1 band: 90% to 95% for the readers, 100% for method D. All readers and method D miss C13, C19 and C20; none of these users fails Siya's checks.
+
 The 20 conversations are ready (Nov 11). They are real runs of method D with 20 of the 100 test users, 4 for each true final band. We removed the true profiles.
 
 1. Open the reading sheet: https://github.com/somadisingh/2sigm0id/blob/main/persona_checks/human_read/conversations.md
@@ -417,6 +421,8 @@ The 20 conversations are ready (Nov 11). They are real runs of method D with 20 
 **You need:** the live chat from Preyansh (P3, Nov 14). The fixed form can be your Google Form with the questions from `question_bank.md`.
 
 ### S6. Make the style-swap test users (Sun Nov 15)
+
+**Done Nov 15 (Siya); run Nov 16 (Somaditya).** 20 users, 180 method D interviews, $2.58. No clear effect of talking style on D's error at any budget. Results: `persona_checks/style_swap.md`.
 
 1. Choose 20 test users.
 2. Make a copy of each user. Change only the `style` block (for example, short and plain becomes long and technical). Keep the true profile the same.
