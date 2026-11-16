@@ -371,7 +371,8 @@ def score_human_read():
     ex = st.mean(k["method_D_band"] == k["true_final_band"] for k in key.values())
     w1 = st.mean(abs(k["method_D_band"] - k["true_final_band"]) <= 1 for k in key.values())
     lines.append(f"| method D (the system) | {len(key)} | {ex:.0%} | {w1:.0%} |")
-    full = [i for i in key if all(i in g for g in guesses.values())]
+    readers = [w for w in readers if guesses[w]]  # skip readers who have not filled in their column
+    full = [i for i in key if all(i in guesses[w] for w in readers)]
     if len(readers) > 1 and full:
         agree = st.mean(len({guesses[w][i] for w in readers}) == 1 for i in full)
         lines += ["", f"All readers gave the same band for {agree:.0%} of the {len(full)} conversations "
