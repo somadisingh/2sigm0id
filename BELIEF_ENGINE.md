@@ -189,7 +189,7 @@ These are the settings after Preyansh's review (Nov 12). The table shows the fit
 | Spoken readings: lapse | 0.10 | 0.20 | (as above) | adopted |
 | Spoken fact readings that miss the true value | 0.10 | 0.104 | (as above) | adopted |
 
-**After the review (Nov 12):** with D's new choice model, the refit gave spoken spreads 0.125 / 0.075 / 0.10 and lapse 0.10. They did no better on left-out pilot users (D 0.087 against 0.086 with the starting values), so they are **not adopted**. D now uses the starting spoken settings (0.20 / 0.25 / 0.15, lapse 0.10). The form settings are still adopted. Source: `pilot/fit.md`, `pilot/fitted.json`.
+**After the review (Nov 12):** with D's new choice model, the refit gave spoken spreads 0.125 / 0.075 / 0.10 and lapse 0.10. They did no better on left-out pilot users (D 0.087 against 0.086 with the starting values), so they are **not adopted**. D now uses the starting spoken settings (0.15 / 0.15 / 0.20, lapse 0.10; see change 5 above). The form settings are still adopted. Source: `pilot/fit.md`, `pilot/fitted.json`.
 | Fixed-form questions for A and B, chosen on the pilot users | bank priority | see `pilot/fit.md` | A: 0.099 → 0.108 (worse) | not adopted |
 
 Findings:
