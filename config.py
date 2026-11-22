@@ -102,6 +102,11 @@ EXPERIMENT_PERSONAS = "mirofish/personas_100_with_backstories.json"   # Siya's 1
 # Give each test user its MiroFish backstory. On since Nov 13, 2026 (Somaditya read them;
 # risk sentences rewritten, see rewrite_backstories.py). Bake-off stages use personas.json (none).
 USE_BACKSTORIES = True
+# Noise version for spoken methods (Nov 22, failure analysis part 1). False: a planned
+# contradiction can fire again when the interviewer asks to clarify the same fact, so the test
+# user may repeat its false value (the full run). True: when the interviewer asks to clarify a
+# fact the test user stated falsely, the test user corrects it, as a person who misspoke would.
+SLIPS_FIXED_ON_REASK = False
 
 # ---------------- Interview settings ----------------
 BUDGET = 10                 # the middle budget from the shared contract

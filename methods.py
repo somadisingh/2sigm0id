@@ -394,6 +394,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     asks = {}
     unclear = {}   # D: fact item -> "vague" (no clear reading) or "conflict" (contradicted)
     said = set()
+    slipped = {}   # fact -> the false statement the test user was told to make
     pending_fix = None   # a planned mistake to correct on the next turn
     would_stop_at, early_stop = None, False
     t0 = time.monotonic()
@@ -445,11 +446,20 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             if fact:   # a planned mistake now, corrected on the next turn
                 noise = ["correction"]
                 correction = {"fact": fact, "phase": "wrong", "wrong": P.wrong_fact(persona, fact)}
+            if (C.SLIPS_FIXED_ON_REASK and reask and item.get("fact") in slipped
+                    and not (correction and correction["phase"] == "fix")):
+                # asked to clarify a fact it stated falsely: the test user corrects it
+                noise = [n for n in noise if n not in ("contradiction", "vague", "correction")] + ["reask_fix"]
+                target, fact = None, None
+                correction = {"fact": item["fact"], "phase": "fix", "on_reask": True,
+                              "slip": slipped.pop(item["fact"]), "true": P.true_fact(persona, item["fact"])}
+            if target:
+                slipped[target["fact"]] = target["wrong"]
             pending_fix = fact
             question = item["spoken"]
             if reask:
                 question, step_calls = clarify(llm, mapper, m_setting, item, turns)
-            wrong = target["wrong"] if target else (correction or {}).get("wrong")
+            wrong = target["wrong"] if target else (correction or {}).get("true" if (correction or {}).get("on_reask") else "wrong")
             fix_fact = correction["fact"] if correction and correction["phase"] == "fix" else None
             note = P.private_note(noise, wrong, fix_fact)
         else:

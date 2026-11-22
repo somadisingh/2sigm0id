@@ -102,6 +102,15 @@ MAX_ASKS_PER_FACT = 3  # D may re-ask a fact to clarify it, up to this many time
 NO_LOSS = -1.0   # past-loss statement "never had a big loss"
 CONFLICT_GAP = {"horizon_yrs": 2, "emergency_fund_months": 1, "debt_to_income": 0.05,
                 "dependents": 0.5}
+# How clear spoken statements of one money fact are combined (Nov 22, failure analysis part 1).
+# "all": every statement counts (the full run). "majority": statements that agree form a group;
+# only a group with more than half of the statements counts. With no such group (for example
+# one statement against one), the fact counts as not known yet, so one false statement cannot
+# pull capacity under a weakest-link cap. Vague statements always count, as weak evidence.
+CONFLICT_RULE = "majority"
+# The stop rule also needs this much confidence in the most likely final band (Nov 22, failure
+# analysis part 4: the engine stopped when no question could help, even when it was unsure).
+STOP_CONFIDENCE = 0.80
 
 
 def capacity_vec(h, e, inc, d, dep):
@@ -187,6 +196,21 @@ def _normal(p):
     return p / p.sum()
 
 
+def _range_lik(fact, low, high, outside):
+    """Likelihood of a spoken range: 1 inside it, `outside` elsewhere."""
+    grid = FACT_GRIDS[fact]
+    inside = (grid >= low - 1e-9) & (grid <= high + 1e-9)
+    if not inside.any():   # range falls between grid values: use the nearest one
+        inside = np.abs(grid - (low + high) / 2) == np.abs(grid - (low + high) / 2).min()
+    return np.where(inside, 1.0, outside)
+
+
+def _agree(fact, a, b):
+    """Two statements (low, high) of a fact agree: the same rule as a contradiction flag."""
+    limit = max(CONFLICT_GAP[fact], 0.3 * max(a[1], b[1])) if fact in CONFLICT_GAP else 0.5
+    return max(a[0] - b[1], b[0] - a[1]) <= limit
+
+
 class Belief:
     """One person's profile as probability distributions. Copy it to try out an answer."""
 
@@ -199,11 +223,15 @@ class Belief:
         self.said = []   # every stated fact or past-loss score, for contradiction checks
         self.asked = set()
         self._models = {}
+        self.fact_base = {f: v.copy() for f, v in self.fact.items()}   # all fact evidence except clear statements
+        self.stmts = {f: [] for f in FACTS}   # clear spoken statements (low, high) of each fact
 
     def copy(self):
         b = Belief.__new__(Belief)
         b.dim = {k: v.copy() for k, v in self.dim.items()}
         b.fact = {k: v.copy() for k, v in self.fact.items()}
+        b.fact_base = {k: v.copy() for k, v in self.fact_base.items()}
+        b.stmts = {k: list(v) for k, v in self.stmts.items()}
         b.u, b.said, b.asked, b._models = self.u, list(self.said), set(self.asked), self._models
         b.channel = self.channel
         return b
@@ -220,8 +248,32 @@ class Belief:
 
     def update(self, target, lik):
         kind, name = target
-        store = self.dim if kind == "dim" else self.fact
-        store[name] = _normal(store[name] * lik)
+        if kind == "dim":
+            self.dim[name] = _normal(self.dim[name] * lik)
+        else:
+            self.fact_base[name] = _normal(self.fact_base[name] * lik)
+            self._refresh(name)
+
+    def _refresh(self, fact):
+        """fact belief = all other evidence x the clear statements that count (CONFLICT_RULE)."""
+        p = self.fact_base[fact]
+        for lo, hi in self.counted(fact):
+            p = p * _range_lik(fact, lo, hi, OUTSIDE)
+        self.fact[fact] = _normal(p)
+
+    def counted(self, fact):
+        """The clear statements of a fact that count. "majority": the largest group of
+        statements that agree with each other, if it has more than half of them."""
+        s = self.stmts[fact]
+        if CONFLICT_RULE == "all" or len(s) < 2:
+            return list(s)
+        groups = [[b for b in s if _agree(fact, a, b)] for a in s]
+        best = max(groups, key=len)
+        return best if 2 * len(best) > len(s) else []
+
+    def disputed(self, fact):
+        """True when clear statements of the fact disagree and no majority settles them."""
+        return CONFLICT_RULE != "all" and len(self.stmts[fact]) >= 2 and not self.counted(fact)
 
     def observe_option(self, item, choice):
         """A form answer: option number `choice` (1-based) of a bank item."""
@@ -261,11 +313,11 @@ class Belief:
 
     def observe_fact(self, fact, low, high, vague=False, turn=None):
         """A spoken fact, as a range of values (income: its sub-score as low = high)."""
-        grid = FACT_GRIDS[fact]
-        inside = (grid >= low - 1e-9) & (grid <= high + 1e-9)
-        if not inside.any():   # range falls between grid values: use the nearest one
-            inside = np.abs(grid - (low + high) / 2) == np.abs(grid - (low + high) / 2).min()
-        self.update(("fact", fact), np.where(inside, 1.0, OUTSIDE_VAGUE if vague else OUTSIDE))
+        if vague:
+            self.update(("fact", fact), _range_lik(fact, low, high, OUTSIDE_VAGUE))
+        else:
+            self.stmts[fact].append((low, high))
+            self._refresh(fact)
         return self._conflicts(fact, low, high, vague, turn)
 
     def observe_score(self, dim, score, kind, vague=False, turn=None):
@@ -434,7 +486,7 @@ class Belief:
         plan = list({it["id"]: it for it in ranked}.values())[:left]
         p_change = self.change_chance(plan, seed)
         # fresh every turn: a later contradiction can make a settled band uncertain again
-        settled = p_change < STOP_CHANCE
+        settled = p_change < STOP_CHANCE and float(pmf.max()) >= STOP_CONFIDENCE
         key = "var_cut" if settled else "gain"
         best = max(candidates, key=lambda it: scores[it["id"]][key])
         return best, {"phase": "sharpen" if settled else "settle band",

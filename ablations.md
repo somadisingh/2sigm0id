@@ -113,6 +113,26 @@ A, B, C, D, D0, DR, DP, and the new D without re-asks (test 3). C0 is not needed
 - **Nov 14, test 8 (Somaditya).** Not run. `N_ROLLOUTS` was set to 400 in the Nov 12 review, before the run, so the plan says that this test is not needed.
 - **Nov 15, test 5 (Somaditya, written after the run).** The prediction for D gives a reason that was out of date before the run: it says the stop rule simulates D's answers with the weaker form model. Since the Nov 12 review, D's belief uses its own spoken answer model to choose questions and to stop (`channel="spoken"` in `belief.py`). This entry should have been made before the run (plan task P2b); we make it now, after we saw the results. We keep the prediction ("D: more than 5%") as it was written, but we withdraw its reason. So D's result below holds as a number, but it does not support that reason. Plan P2b also listed tests 7 and 8; they are the two Nov 14 entries above.
 
+## Follow-up tests 9 and 10 (Nov 22, written before the reruns)
+
+These test the two fixes from the failure analysis (`failure_D_capacity.md`, `failure_analysis_2to4.md`). The settings were chosen on the full run's recorded answers, so only the new interviews test them.
+
+**Engine changes (`belief.py`, both on by default from Nov 22):**
+
+1. **Conflicting facts need a majority** (`CONFLICT_RULE = "majority"`). Clear spoken statements of a fact that agree form a group. Only a group with more than half of the statements counts. With no such group (for example one statement against one), the fact counts as not known until another statement decides. On the full run's recorded answers, this lowers D's capacity error from 0.164 to 0.159 at 10 questions and from 0.140 to 0.133 at 15, and helps every D method at every budget a little.
+2. **The stop rule needs confidence** (`STOP_CONFIDENCE = 0.80`). Stop only when the change chance is under 5% *and* the engine gives its most likely band at least 80%. On the recorded runs, the band then changes after the stop in 0% to 3.4% of runs (C and D, 10 and 15 questions), against 7% to 14% before, and 1.1 to 3.7 questions per run are saved.
+
+**Test-user change (noise version 3, `--fix-slips`, off by default):** when the interviewer asks to clarify a fact that the test user stated falsely (a planned contradiction), the test user says it was a mistake and gives the true value. Reason: in the full run, a planned contradiction could fire again on the clarifying question with the same wrong value, so in 74 facts the false value was stated more often than the true one. A person who misspoke would usually correct it when asked. This changes the test users after we saw the results, so we report it as a separate arm and never mix it with the full run. Check on 20 users (Nov 22): 8 of 8 corrections were read as the true value.
+
+**Runs** (all 100 test users, 5/10/15 questions, 3 repeats; U054 is left out in the scoring):
+
+- `results/rerun_engine.jsonl`: C, D, DN with the new engine and the old noise.
+- `results/rerun_fixslips.jsonl`: D with the new engine and noise version 3.
+
+**Test 9: what the engine changes do** (rerun_engine against the full run, paired). Predictions: D's capacity error is lower by 0.003 to 0.010 at 10 and 15 questions; D's avg error is lower by 0.001 to 0.005 (may not be clear). DN gains less than D, because it cannot re-ask. C's avg error changes by less than 0.005 (forms get no contradictions; only the questions after the stop change). The band changes after the stop point in under 5% of runs for C and D at every budget.
+
+**Test 10: what realistic slips do** (D in rerun_fixslips against D in rerun_engine, paired: same users, repeats and noise seeds). Predictions: D's capacity error on heavy-noise users is lower by at least 0.03 at 15 questions; D's avg error at 10 and 15 is lower by 0.005 to 0.015; D is still not clearly better than C at 10 questions.
+
 ## Results (full run, scored Nov 14)
 
 File: `results/experiment_full.jsonl` (7,200 runs, no errors). Script: `python ablations_run.py results/experiment_full.jsonl`, output in `results/ablations.txt`. No new API calls. All differences are paired on the same test user, budget and repeat (300 pairs). "Clear" means that the 95% range does not include zero.

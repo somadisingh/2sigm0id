@@ -297,6 +297,8 @@ def run_config(personas_file=None):
         "interviewer_prompt": P.INTERVIEWER_PROMPT,
         "interviewer": C.EXPERIMENT_INTERVIEWER, "user": C.EXPERIMENT_USER,
         "engine_settings": methods.BE.SETTINGS_SOURCE,
+        "conflict_rule": methods.BE.CONFLICT_RULE, "stop_confidence": methods.BE.STOP_CONFIDENCE,
+        "slips_fixed_on_reask": C.SLIPS_FIXED_ON_REASK,
     }
     return {"setup": setup, "commit": git("rev-parse", "--short", "HEAD"),
             "uncommitted_code": bool(git("status", "--porcelain", "--untracked-files=no", "--", "*.py"))}
@@ -425,6 +427,7 @@ def prompts(args):
 
 def experiment(args):
     """The main experiment: methods A-D x budgets, same users, same noise schedule."""
+    C.SLIPS_FIXED_ON_REASK = args.fix_slips
     llm = make_llm(args.mock)
     personas = load_personas(args.personas, args.limit)
     print(f"{len(personas)} test users from {args.personas}"
@@ -529,6 +532,8 @@ def main():
     ex.add_argument("--out", help="results file name")
     ex.add_argument("--workers", type=int, help=f"interviews in parallel (default {C.MAX_WORKERS}); "
                     "each model is still held under its requests-per-minute limit")
+    ex.add_argument("--fix-slips", action="store_true",
+                    help="noise version 3: a test user corrects a false fact when asked to clarify it")
     ex.add_argument("--mock", action="store_true")
     ex.set_defaults(fn=experiment)
     args = ap.parse_args()
