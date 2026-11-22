@@ -133,6 +133,34 @@ These test the two fixes from the failure analysis (`failure_D_capacity.md`, `fa
 
 **Test 10: what realistic slips do** (D in rerun_fixslips against D in rerun_engine, paired: same users, repeats and noise seeds). Predictions: D's capacity error on heavy-noise users is lower by at least 0.03 at 15 questions; D's avg error at 10 and 15 is lower by 0.005 to 0.015; D is still not clearly better than C at 10 questions.
 
+## Results of tests 9 and 10 (scored Nov 22)
+
+Full numbers: `results/rerun_compare.txt` (made by `rerun_compare.py`). 2,700 + 900 interviews, no errors. Each value is the rerun minus the earlier run, paired, with a 95% range. Negative means the rerun is better. Note: the rerun is a new set of interviews, so each difference also contains run-to-run chance, not only the change.
+
+**Test 9 (engine changes):**
+
+| Prediction | Result | Held? |
+|---|---|---|
+| D capacity lower by 0.003 to 0.010 at 10 and 15 | −0.001 at 10, −0.001 at 15, not clear | No. The replay gain (0.005 to 0.007) did not show in new interviews. |
+| D avg error lower by 0.001 to 0.005 | −0.002 at 10, −0.001 at 15, not clear | Yes in size, but not clear |
+| DN gains less than D | DN gained more: avg error −0.007 at 15 (clear) | No |
+| C avg error changes by less than 0.005 | +0.005 at 5 (clear), +0.003 at 10, +0.002 at 15 | Mostly. C became a little worse; C capacity at 10 is +0.011 (clear). A possible cause (not checked): on forms, a flipped answer against one true answer is now "not known". |
+| Band changes after the stop in under 5% (C and D, every budget) | C 0.0% / 1.1% / 4.3%; D 0.0% / 2.2% / 3.0% (full run: 0% to 14.3%) | **Yes** |
+
+The stop rule fix works: the stop is now safe, and it still saves 1.0 to 3.9 questions per run at 10 and 15 questions. The conflict rule gives no clear gain in new interviews.
+
+**Test 10 (noise version 3, D only):**
+
+| Prediction | Result | Held? |
+|---|---|---|
+| Heavy-noise users' capacity lower by at least 0.03 at 15 | −0.023 (−0.053 to +0.007), not clear | No (right direction, smaller) |
+| D avg error lower by 0.005 to 0.015 at 10 and 15 | −0.003 at 10, −0.006 at 15, both not clear | Partly (15 only, not clear) |
+| D still not clearly better than C at 10 | D(v3) − C = +0.005, not clear | Yes |
+
+With realistic slips, D's capacity error is clearly lower at 10 questions (−0.015) and lower at 15 (−0.011, not clear). The test users made 124 corrections on re-asks. D still does not beat the forms on avg error: at 15 questions D(v3) is worse than C (+0.011, clear) and A (+0.010, clear). D's exact-band rate at 10 questions stays clearly higher than A's (+0.178).
+
+**What this means for the final report:** (1) the stop rule is now reliable (under 5% at every budget for C and D); (2) part of D's capacity gap came from the test users repeating false facts, not from the interviewer; (3) even so, the adaptive interviewer is not more accurate than the forms on avg error. Its gain is the exact band at 10 questions.
+
 ## Results (full run, scored Nov 14)
 
 File: `results/experiment_full.jsonl` (7,200 runs, no errors). Script: `python ablations_run.py results/experiment_full.jsonl`, output in `results/ablations.txt`. No new API calls. All differences are paired on the same test user, budget and repeat (300 pairs). "Clear" means that the 95% range does not include zero.

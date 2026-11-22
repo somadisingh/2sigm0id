@@ -1,0 +1,124 @@
+"""Tests 9 and 10 in ablations.md (Nov 22): score the reruns against the full run. No API calls.
+
+python rerun_compare.py > results/rerun_compare.txt
+
+Test 9: the engine changes (results/rerun_engine.jsonl against results/experiment_full.jsonl).
+Test 10: noise version 3 (D in results/rerun_fixslips.jsonl against D in rerun_engine).
+All comparisons are paired on the same test user, budget and repeat. U054 is left out.
+"""
+import json
+from pathlib import Path
+from statistics import mean
+
+from prompts import band
+from score import DIMS, bootstrap_ci
+
+R = Path(__file__).resolve().parent / "results"
+EXCLUDE = set(json.loads((Path(__file__).resolve().parent / "mirofish" / "persona_checks_exclude.json").read_text()))
+BUDGETS = (5, 10, 15)
+
+
+def load(name):
+    out = {}
+    for line in open(R / name):
+        r = json.loads(line)
+        if r.get("error") or not r.get("final_profile") or r["persona_id"] in EXCLUDE:
+            continue
+        out[(r["method"], int(r["budget"]), r["persona_id"], r["repeat"])] = r
+    return out
+
+
+def err(r):
+    return mean(abs(r["final_profile"][d] - r["truth"][d]) for d in DIMS)
+
+
+def cap(r):
+    return abs(r["final_profile"]["capacity"] - r["truth"]["capacity"])
+
+
+def low_band(p):
+    return min(band(p[d]) for d in DIMS)
+
+
+def exact(r):
+    return float(low_band(r["final_profile"]) == r["truth"]["final_band"])
+
+
+def heavy(r):
+    return r["persona_id"].endswith("-heavy")
+
+
+def false_fact(r):
+    return any(t.get("contradiction_target") or (t.get("correction") or {}).get("phase") == "wrong"
+               for t in r["turns"])
+
+
+def pair(a, b, ma, mb, bu, f, keep=lambda r: True):
+    d = [f(r) - f(b[(mb, bu, pid, rep)]) for (m, x, pid, rep), r in a.items()
+         if m == ma and x == bu and keep(r) and (mb, bu, pid, rep) in b]
+    if not d:
+        return "no pairs"
+    lo, hi = bootstrap_ci(d)
+    clear = "CLEAR" if lo > 0 or hi < 0 else "not clear"
+    return f"{mean(d):+.3f} ({lo:+.3f} to {hi:+.3f}, n={len(d)}, {clear})"
+
+
+def level(runs, m, bu, f, keep=lambda r: True):
+    v = [f(r) for (mm, x, _, _), r in runs.items() if mm == m and x == bu and keep(r)]
+    return f"{mean(v):.3f}" if v else "-"
+
+
+def stop_lines(runs, m):
+    out = []
+    for bu in BUDGETS:
+        rs = [r for (mm, x, _, _), r in runs.items() if mm == m and x == bu]
+        fired = [r for r in rs if r["would_stop_at"] is not None and r["would_stop_at"] < len(r["turns"])]
+        if not fired:
+            out.append(f"   {m} b{bu}: stop never fired")
+            continue
+        ch = [low_band(r["turns"][r["would_stop_at"]]["profile_before"]) != low_band(r["final_profile"]) for r in fired]
+        saved = sum(bu - r["would_stop_at"] for r in fired) / len(rs)
+        out.append(f"   {m} b{bu}: fired in {len(fired)}/{len(rs)}, band changes after the stop in "
+                   f"{100 * mean(ch):.1f}%, {saved:.1f} questions saved per run")
+    return out
+
+
+def main():
+    full = load("experiment_full.jsonl")
+    eng = load("rerun_engine.jsonl")
+    out = ["## Test 9: engine changes (rerun_engine - full run; negative = rerun better)"]
+    for m in ("C", "D", "DN"):
+        for bu in BUDGETS:
+            out.append(f"{m} b{bu}: avg error {level(full, m, bu, err)} -> {level(eng, m, bu, err)}, "
+                       f"diff {pair(eng, full, m, m, bu, err)}")
+            out.append(f"      capacity {level(full, m, bu, cap)} -> {level(eng, m, bu, cap)}, diff {pair(eng, full, m, m, bu, cap)}; "
+                       f"exact band {pair(eng, full, m, m, bu, exact)}")
+    out.append("\nStop rule in the rerun (promise: under 5%); full run for comparison:")
+    for m in ("C", "D"):
+        out += stop_lines(eng, m)
+        out += [s.replace("   ", "   (full run) ", 1) for s in stop_lines(full, m)]
+    out.append("\nAgainst A from the full run (A is not affected by the changes):")
+    for m in ("C", "D"):
+        for bu in BUDGETS:
+            out.append(f"   {m} - A b{bu}: avg error {pair(eng, full, m, 'A', bu, err)}; exact {pair(eng, full, m, 'A', bu, exact)}")
+    out.append("   D - C (both reruns) " + "; ".join(f"b{bu} {pair(eng, eng, 'D', 'C', bu, err)}" for bu in BUDGETS))
+
+    if (R / "rerun_fixslips.jsonl").exists():
+        fx = load("rerun_fixslips.jsonl")
+        out.append("\n## Test 10: noise version 3 (D fixslips - D rerun_engine; negative = fixslips better)")
+        for bu in BUDGETS:
+            out.append(f"D b{bu}: avg error {level(eng, 'D', bu, err)} -> {level(fx, 'D', bu, err)}, diff {pair(fx, eng, 'D', 'D', bu, err)}")
+            out.append(f"      capacity {level(eng, 'D', bu, cap)} -> {level(fx, 'D', bu, cap)}, diff {pair(fx, eng, 'D', 'D', bu, cap)}; "
+                       f"heavy users capacity {pair(fx, eng, 'D', 'D', bu, cap, heavy)}; exact {pair(fx, eng, 'D', 'D', bu, exact)}")
+        out.append("\nD with noise version 3 against the forms (forms get no false facts in any version):")
+        for bu in BUDGETS:
+            out.append(f"   D(v3) - C(rerun) b{bu}: {pair(fx, eng, 'D', 'C', bu, err)}; D(v3) - A(full) b{bu}: "
+                       f"{pair(fx, full, 'D', 'A', bu, err)}; exact vs A {pair(fx, full, 'D', 'A', bu, exact)}")
+        n = sum(1 for r in fx.values() for t in r["turns"] if (t.get("correction") or {}).get("on_reask"))
+        out.append(f"   re-ask corrections in noise version 3: {n}")
+        out += stop_lines(fx, "D")
+    print("\n".join(out))
+
+
+if __name__ == "__main__":
+    main()
