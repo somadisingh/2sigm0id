@@ -124,6 +124,17 @@ WRITE_SYSTEM = (
     "number, time span and situation in it. Don't suggest, hint at or give examples of any "
     "answer. Don't give advice or opinions. One or two sentences. Reply with ONE JSON object and "
     'nothing else: {"question": "<the question>"}')
+# Version 2 (Nov 23, test 12b): version 1 opened 12% of its questions by restating an earlier
+# answer ("Since you're leaning toward growth, ..."), which a judge read as leading.
+WRITE_SYSTEM_V2 = (
+    "You are the interviewer in a short spoken interview about how a person invests. You get the "
+    "next question in a standard wording, and the last part of the conversation. Reword the "
+    "question in plain, friendly words so it fits a spoken conversation. Rules: don't mention, "
+    "repeat or sum up anything the person said before; at most, start with one short neutral "
+    "word or phrase such as \"Okay.\" or \"Next,\". Ask about exactly the same thing as the standard "
+    "wording, and only that. Keep every number, time span and situation in it. Don't suggest, "
+    "hint at or give examples of any answer. Don't give advice or opinions. One or two "
+    'sentences. Reply with ONE JSON object and nothing else: {"question": "<the question>"}')
 WRITE_MESSAGE = "Conversation so far:\n{history}\n\nStandard wording of the next question: {question}"
 D_METHODS = ("D", "DR", "DP", "DN", "DW")
 FORM_METHODS = ("A", "B", "C", "C0") + D_METHODS
@@ -383,7 +394,8 @@ def write_question(llm, key, setting, item, turns, last=3):
     """Method DW: word the engine's chosen question from the conversation so far. Falls back
     to the bank wording."""
     history = "\n".join(f'Interviewer: {t["q"]}\nPerson: {(t["a"] or "")[:400]}' for t in turns[-last:]) or "(this is the first question)"
-    msgs = [{"role": "system", "content": WRITE_SYSTEM},
+    system = WRITE_SYSTEM_V2 if C.WRITE_PROMPT_VERSION == 2 else WRITE_SYSTEM
+    msgs = [{"role": "system", "content": system},
             {"role": "user", "content": WRITE_MESSAGE.format(history=history, question=item["spoken"])}]
     r = llm.chat(key, msgs, setting, C.INTERVIEWER_MAX_TOKENS, C.INTERVIEWER_TEMPERATURE)
     obj = extract_json(r["text"])

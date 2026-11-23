@@ -297,7 +297,7 @@ def run_config(personas_file=None):
         "interviewer_prompt": P.INTERVIEWER_PROMPT,
         "interviewer": C.EXPERIMENT_INTERVIEWER, "user": C.EXPERIMENT_USER,
         "engine_settings": methods.BE.SETTINGS_SOURCE,
-        "conflict_rule": methods.BE.CONFLICT_RULE, "stop_confidence": methods.BE.STOP_CONFIDENCE, "band_rule": methods.BE.BAND_RULE,
+        "conflict_rule": methods.BE.CONFLICT_RULE, "stop_confidence": methods.BE.STOP_CONFIDENCE, "band_rule": methods.BE.BAND_RULE, "write_prompt_version": C.WRITE_PROMPT_VERSION,
         "slips_fixed_on_reask": C.SLIPS_FIXED_ON_REASK,
     }
     return {"setup": setup, "commit": git("rev-parse", "--short", "HEAD"),
@@ -428,6 +428,10 @@ def prompts(args):
 def experiment(args):
     """The main experiment: methods A-D x budgets, same users, same noise schedule."""
     C.SLIPS_FIXED_ON_REASK = args.fix_slips
+    if args.band_rule:
+        methods.BE.BAND_RULE = args.band_rule
+    if args.write_version:
+        C.WRITE_PROMPT_VERSION = args.write_version
     llm = make_llm(args.mock)
     personas = load_personas(args.personas, args.limit)
     print(f"{len(personas)} test users from {args.personas}"
@@ -534,6 +538,9 @@ def main():
                     "each model is still held under its requests-per-minute limit")
     ex.add_argument("--fix-slips", action="store_true",
                     help="noise version 3: a test user corrects a false fact when asked to clarify it")
+    ex.add_argument("--band-rule", choices=["reported", "mode"],
+                    help="override belief.BAND_RULE (test 12b uses mode, to pair with the Nov 22 runs)")
+    ex.add_argument("--write-version", type=int, choices=[1, 2], help="override config.WRITE_PROMPT_VERSION")
     ex.add_argument("--mock", action="store_true")
     ex.set_defaults(fn=experiment)
     args = ap.parse_args()

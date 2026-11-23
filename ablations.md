@@ -344,3 +344,14 @@ Predictions: under 5% everywhere: **held**. D's rate goes down: held at 10 quest
 **Against the forms:** DW − C is +0.001 at 10 questions (not clear; D − C was +0.008, clear) and +0.022 at 15 (clear). **Stop rule (DW, old band rule):** the band changes after the stop in 13.8% (4 of 29), 2.0% and 5.6% of runs.
 
 **Decision for the final report.** DW is the clearest generative AI part of the interviewer: it is at least as accurate as D (better at 10 questions), for 42% more cost. Its weak point is that 12% of its questions restate an earlier answer. A next step (not tested): tell the writer not to mention earlier answers, and rerun DW (about $13 and 2.5 hours).
+
+## Follow-up test 12b (Nov 23, written before the rerun)
+
+**Change:** writer prompt version 2 for DW (`config.WRITE_PROMPT_VERSION = 2`). The writer must not mention, repeat or sum up anything the person said earlier; it may only use a short neutral link ("Okay.", "Next,") and plain words. Everything else is the same as test 12, including the old band rule (`BAND_RULE = "mode"`), so that DW v2 pairs with D and with DW v1. Run: `results/rerun_written_v2.jsonl`, 900 interviews.
+
+Predictions:
+
+- Questions that open by restating an earlier answer (code check): under 2% (v1: 12.4%). Judge's leading rate under 5% (v1: 12.9%).
+- On acquiescence users at 15 questions, DW v2 is not clearly worse than D (v1: +0.011, clear).
+- Avg error: within 0.01 of D at every budget. The gain at 10 questions may shrink (if it came from linking to earlier answers) or stay (if it came from plainer wording); we don't predict which.
+- Cost about the same as DW v1 (+40% over D).
