@@ -11,13 +11,14 @@ the question hints at an answer. About $0.10.
 import argparse
 import json
 import random
+import re
 from concurrent.futures import ThreadPoolExecutor
 from statistics import mean
 
 import config as C
 import methods as M
 import run_bakeoff as RB
-from llm import extract_json
+from llm import extract_json, strip_think
 from rerun_compare import BUDGETS, err, exact, load, pair, level, stop_lines
 
 BANK = {i["id"]: i for i in M.load_bank()["items"]}
@@ -29,11 +30,24 @@ JUDGE_SYSTEM = (
     'nothing else: {"leading": true or false, "why": "<a few words>"}')
 
 
-def judge(llm, key, q, setting):
-    r = llm.chat(key, [{"role": "system", "content": JUDGE_SYSTEM}, {"role": "user", "content": f"Question: {q}"}],
-                 setting, 4000 if setting != "off" else 400, 0.0)
-    obj = extract_json(r["text"])
-    return obj.get("leading") if isinstance(obj, dict) and isinstance(obj.get("leading"), bool) else None
+LEADING_RE = re.compile(r'^\s*(?:\{?\s*"leading"\s*:\s*)?(true|false)\b', re.I)
+
+
+def judge(llm, key, q, setting, tries=3):
+    """True/False, or None if the judge gives no usable answer in `tries` calls. Some replies
+    lose their first characters ('false, "why": ...'), so a bare true/false at the start counts."""
+    for _ in range(tries):
+        # one user message: with a separate system message, this judge often replied that
+        # it could not see the question (Nov 23)
+        r = llm.chat(key, [{"role": "user", "content": f"{JUDGE_SYSTEM}\n\nThe question to check: {q}"}],
+                     setting, 4000 if setting != "off" else 400, 0.0)
+        obj = extract_json(r["text"])
+        if isinstance(obj, dict) and isinstance(obj.get("leading"), bool):
+            return obj["leading"]
+        m = LEADING_RE.match(strip_think(r["text"]) or "")
+        if m:
+            return m.group(1).lower() == "true"
+    return None
 
 
 def cost(rs):

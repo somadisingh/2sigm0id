@@ -324,3 +324,23 @@ DRE − DR: willingness −0.003 (−0.010 to +0.004), behavior +0.006 (−0.005
 | D, 15 | 3.0% → 3.0% | 3.13 → 2.83 |
 
 Predictions: under 5% everywhere: **held**. D's rate goes down: held at 10 questions, the same at 15. C changes by under 1 point: **did not hold**, C at 15 improved by 2.4 points. Questions saved change by under 0.5: **held** (0.04 to 0.37 fewer). Decision: `BAND_RULE = "reported"` is the default from Nov 22. The stop rule, the live chat and the score now use one band. Caveat: in a new run the questions after the stop point would differ a little.
+
+## Results of test 12 (scored Nov 23)
+
+`written_compare.py` → `results/written_compare.txt`. 900 DW interviews (`results/rerun_written.jsonl`), no errors, paired with D in `rerun_engine.jsonl`. U054 is left out. Note: the DW run started before the band rule of test 13 was changed, so it used the same engine as D (`BAND_RULE = "mode"`); the pairing is fair. GLM wrote 7,560 questions; 14 fell back to the bank wording.
+
+| Prediction | Result | Held? |
+|---|---|---|
+| Avg error within 0.01 of D, not clearly different | 5: −0.002 (not clear); 10: **−0.007 (−0.014 to −0.001, clear)**; 15: +0.004 (not clear) | Within 0.01: yes. Not clearly different: no. DW is clearly better at 10 questions, and its exact band is 5.4 points higher there (clear). |
+| Written questions flagged as leading more often than bank questions, but in under 10% | bank 0.0%, written 12.9% (judge, 209 of 300 sampled questions; earlier judge versions gave 10.3% and 10.5%) | **No** (slightly over 10%) |
+| Acquiescence: DW not clearly worse than D on those users | 5: +0.001, 10: −0.005 (not clear); 15: **+0.011 (clear)** | Yes at 5 and 10, **no at 15** |
+| Cost 30% to 60% higher | $0.0197 vs $0.0139 per interview (+42%, list price) | Yes |
+| Each question 1 to 4 s slower | +0.38 s of system time per question (1.70 vs 1.32 s) | No: faster than we expected |
+
+**What the leading questions are.** Most flagged questions open by restating an earlier answer: "Since you're leaning toward growth, how much of this money would you feel okay putting into stocks?" A check in code (no judge) finds such an opening in 12.4% of the 7,560 written questions. This can push a person to answer in line with what they said before, so it can hide a real mismatch between what people say and what they do, which is the thing the profiler must find. The effect on acquiescence users at 15 questions (longer conversations have more to restate) fits this.
+
+**Judge note.** With a separate system message, Nemotron 3.5 Super often replied that it could not see the question; we now send one message, and retry up to 3 times. It still gives no usable answer for about 30% of the questions, and some flags look wrong ("Got it, thanks. Now, say you put in $10,000 ..."). So we report the judge's rate together with the code check, which agrees (12.9% and 12.4%).
+
+**Against the forms:** DW − C is +0.001 at 10 questions (not clear; D − C was +0.008, clear) and +0.022 at 15 (clear). **Stop rule (DW, old band rule):** the band changes after the stop in 13.8% (4 of 29), 2.0% and 5.6% of runs.
+
+**Decision for the final report.** DW is the clearest generative AI part of the interviewer: it is at least as accurate as D (better at 10 questions), for 42% more cost. Its weak point is that 12% of its questions restate an earlier answer. A next step (not tested): tell the writer not to mention earlier answers, and rerun DW (about $13 and 2.5 hours).
