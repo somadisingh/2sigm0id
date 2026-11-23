@@ -144,7 +144,7 @@ Full numbers: `results/rerun_compare.txt` (made by `rerun_compare.py`). 2,700 + 
 | D capacity lower by 0.003 to 0.010 at 10 and 15 | −0.001 at 10, −0.001 at 15, not clear | No. The replay gain (0.005 to 0.007) did not show in new interviews. |
 | D avg error lower by 0.001 to 0.005 | −0.002 at 10, −0.001 at 15, not clear | Yes in size, but not clear |
 | DN gains less than D | DN gained more: avg error −0.007 at 15 (clear) | No |
-| C avg error changes by less than 0.005 | +0.005 at 5 (clear), +0.003 at 10, +0.002 at 15 | Mostly. C became a little worse; C capacity at 10 is +0.011 (clear). A possible cause (not checked): on forms, a flipped answer against one true answer is now "not known". |
+| C avg error changes by less than 0.005 | +0.005 at 5 (clear), +0.003 at 10, +0.002 at 15 | Mostly. C became a little worse; C capacity at 10 is +0.011 (clear). Cause (checked): the conflict rule does not touch forms. The confidence floor keeps C longer in "settle the band" mode, so it asks fewer questions that sharpen single scores (24% → 16% of turns at 10). Where C asked the same questions in both runs, the capacity change is 0.000. |
 | Band changes after the stop in under 5% (C and D, every budget) | C 0.0% / 1.1% / 4.3%; D 0.0% / 2.2% / 3.0% (full run: 0% to 14.3%) | **Yes** |
 
 The stop rule fix works: the stop is now safe, and it still saves 1.0 to 3.9 questions per run at 10 and 15 questions. The conflict rule gives no clear gain in new interviews.
