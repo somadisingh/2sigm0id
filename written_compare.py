@@ -30,6 +30,9 @@ JUDGE_SYSTEM = (
     'nothing else: {"leading": true or false, "why": "<a few words>"}')
 
 
+# openings that restate an earlier answer ("Since you're leaning toward growth, ..."), test 12
+RESTATE_RE = re.compile(r"^(since|given|sticking with|that fits|so (protecting|growth|safety|you)|with (that|your)|"
+                        r"you've|you'?re|as you|because you|keeping (that|in mind))", re.I)
 LEADING_RE = re.compile(r'^\s*(?:\{?\s*"leading"\s*:\s*)?(true|false)\b', re.I)
 
 
@@ -62,12 +65,13 @@ def cost(rs):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--file", default="rerun_written.jsonl", help="DW run to score (test 12b: rerun_written_v2.jsonl)")
     ap.add_argument("--judge-sample", type=int, default=300)
     ap.add_argument("--judge", default="nemotron-3.5-super")
     ap.add_argument("--setting", default="low")
     args = ap.parse_args()
-    eng, dw = load("rerun_engine.jsonl"), load("rerun_written.jsonl")
-    out = ["## Test 12: AI-written questions (DW - D; negative = DW better)"]
+    eng, dw = load("rerun_engine.jsonl"), load(args.file)
+    out = [f"## AI-written questions, {args.file} (DW - D; negative = DW better)"]
     for bu in BUDGETS:
         out.append(f"b{bu}: avg error D {level(eng, 'D', bu, err)} -> DW {level(dw, 'DW', bu, err)}, "
                    f"diff {pair(dw, eng, 'DW', 'D', bu, err)}; exact band {pair(dw, eng, 'DW', 'D', bu, exact)}")
@@ -85,9 +89,16 @@ def main():
         secs = mean(t["system_latency"] for r in rs for t in r["turns"])
         out.append(f"{name}: ${cost(rs):.4f} per interview (list price), {secs:.2f} s of system time per question, "
                    f"{mean(len(r['interviewer_calls']) for r in rs) / mean(len(r['turns']) for r in rs):.2f} system calls per question")
+    if args.file != "rerun_written.jsonl":
+        v1 = load("rerun_written.jsonl")
+        out.append("\nAgainst DW version 1 (this run - v1; negative = this run better):")
+        for bu in BUDGETS:
+            out.append(f"   b{bu}: avg error {pair(dw, v1, 'DW', 'DW', bu, err)}; acquiescence users "
+                       f"{pair(dw, v1, 'DW', 'DW', bu, err, acq)}; exact {pair(dw, v1, 'DW', 'DW', bu, exact)}")
     written = [(BANK[t["item"]]["spoken"], t["q"]) for r in dw.values() for t in r["turns"] if not t["reask"]]
     out.append(f"written questions: {len(written)}, same as the bank wording: "
-               f"{sum(a == b for a, b in written)}")
+               f"{sum(a == b for a, b in written)}; open by restating an earlier answer (code check): "
+               f"{100 * mean(bool(RESTATE_RE.match(b)) for _, b in written):.1f}%")
     if args.judge_sample:
         rng = random.Random(0)
         sample = rng.sample(written, min(args.judge_sample, len(written)))

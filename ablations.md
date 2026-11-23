@@ -355,3 +355,28 @@ Predictions:
 - On acquiescence users at 15 questions, DW v2 is not clearly worse than D (v1: +0.011, clear).
 - Avg error: within 0.01 of D at every budget. The gain at 10 questions may shrink (if it came from linking to earlier answers) or stay (if it came from plainer wording); we don't predict which.
 - Cost about the same as DW v1 (+40% over D).
+
+## Results of test 12b (scored Nov 23)
+
+Run: `results/rerun_written_v2.jsonl`, 900 interviews, 0 errors. Scores: `results/written_compare_v2.txt`. Pairs are with D in `rerun_engine.jsonl` (n=297 per budget, U054 left out). Negative = DW v2 better.
+
+| Questions | Avg error, DW v2 − D | Exact band, DW v2 − D | DW v2 − DW v1 (avg error) |
+|---|---|---|---|
+| 5 | −0.003 (not clear) | +4.0 points (not clear) | −0.000 (not clear) |
+| 10 | +0.001 (not clear) | **+5.1 points (clear)** | **+0.008 (clear, v2 worse)** |
+| 15 | −0.004 (not clear) | +0.3 points (not clear) | **−0.009 (clear, v2 better)** |
+
+Predictions:
+
+- **Restating: held.** 0.0% of 7,473 written questions open by restating an earlier answer (v1: 12.4%).
+- **Leading: held.** The judge flagged 1.8% of written questions and 0.5% of the bank wording (218 of 300 sampled questions judged; v1: 12.9%). It flagged 4 written-only and 1 bank-only. The flagged examples are near-copies of the bank wording ("Okay, when markets are going down, ..."), so most of the 1.8% is judge noise, not real hints.
+- **Acquiescence users at 15: held.** −0.004 against D (not clear); v1 was +0.011 (clear). Against v1 the change is −0.015 (clear).
+- **Avg error within 0.01 of D: held** at every budget. The avg-error gain at 10 questions did not stay: −0.007 (clear) in v1, +0.001 now. So that gain most likely came from linking to earlier answers, the same thing that made v1 leading. The exact-band gain at 10 stays (+5.1 points, clear).
+- **Cost: held.** $0.0194 per interview against $0.0197 for v1 and $0.0139 for D (+40%). System time 2.00 s per question against 1.32 s for D.
+
+Other results:
+
+- DW v2 − C: −0.001 at 5 (not clear), +0.009 at 10 (clear), +0.013 at 15 (clear). The forms stay ahead at 10 and 15, as for D.
+- Stop rule (old band rule, kept for pairing): band changes after the stop in 11.1% at 5 (3 of 27), 1.2% at 10, 4.2% at 15. The 5-question figure is from very few stops; test 13 showed the reported band rule brings D under 5% at every budget.
+
+**Decision:** DW v2 is the safe version of the AI-written questions: no leading wording, no loss against D, better band hits at 10 questions, about 40% more cost. It is not clearly better than D on avg error, so the app stays on D and the report gives DW v2 as a tested option.
