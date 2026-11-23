@@ -9,6 +9,8 @@
                           answer into evidence and words the clarifying questions
   DR  D, with retrieval: the extractor also sees similar labeled pilot answers (retrieval.py)
   DN  D without clarifying questions: each question is asked only once (ablation test 3)
+  DW  D, with AI-written questions: the engine chooses the question as in D, and the LLM words
+      it from the conversation so far instead of using the bank wording (ablation test 12)
   DP  D, reading answers with token probabilities: GLM picks the matching option, and its
       calibrated probability for every option is the evidence (soft evidence)
   C0  the earlier adaptive form: a hand-made rule picks the questions
@@ -113,7 +115,17 @@ FACT_TEXT = {
     "dependents": "how many people depend on their income",
     "past_loss_reaction": "what they actually did the last time their investments fell a lot",
 }
-D_METHODS = ("D", "DR", "DP", "DN")
+WRITE_SYSTEM = (
+    "You are the interviewer in a short spoken interview about how a person invests. You get the "
+    "next question in a standard wording, and the last part of the conversation. Reword the "
+    "question so it follows naturally from the conversation. You may start with a few neutral "
+    "words about the last answer (no praise, no judgment), and you may use plain, friendly words. "
+    "Rules: ask about exactly the same thing as the standard wording, and only that. Keep every "
+    "number, time span and situation in it. Don't suggest, hint at or give examples of any "
+    "answer. Don't give advice or opinions. One or two sentences. Reply with ONE JSON object and "
+    'nothing else: {"question": "<the question>"}')
+WRITE_MESSAGE = "Conversation so far:\n{history}\n\nStandard wording of the next question: {question}"
+D_METHODS = ("D", "DR", "DP", "DN", "DW")
 FORM_METHODS = ("A", "B", "C", "C0") + D_METHODS
 _POOL, _TEMPERATURE = None, None
 NO_EVIDENCE = {"facts": {}, "willingness": None, "behavioral": None, "no_past_loss": False}
@@ -367,6 +379,19 @@ def clarify(llm, key, setting, item, turns):
         call_log(r, model=key, valid=valid, retry=False, clarify=True)]
 
 
+def write_question(llm, key, setting, item, turns, last=3):
+    """Method DW: word the engine's chosen question from the conversation so far. Falls back
+    to the bank wording."""
+    history = "\n".join(f'Interviewer: {t["q"]}\nPerson: {(t["a"] or "")[:400]}' for t in turns[-last:]) or "(this is the first question)"
+    msgs = [{"role": "system", "content": WRITE_SYSTEM},
+            {"role": "user", "content": WRITE_MESSAGE.format(history=history, question=item["spoken"])}]
+    r = llm.chat(key, msgs, setting, C.INTERVIEWER_MAX_TOKENS, C.INTERVIEWER_TEMPERATURE)
+    obj = extract_json(r["text"])
+    q = obj.get("question") if isinstance(obj, dict) else None
+    valid = isinstance(q, str) and bool(q.strip())
+    return (q.strip() if valid else item["spoken"]), [call_log(r, model=key, valid=valid, retry=False, written=True)]
+
+
 def pick_option(text, n):
     m = INT_RE.search(strip_think(text) or "")
     if m and 1 <= int(m.group(1)) <= n:
@@ -389,7 +414,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
     fixed = short_form(bank, budget) if method in ("A", "B") else None
     spoken = method in ("B",) + D_METHODS
-    belief = BE.Belief(channel="spoken" if method in ("D", "DR", "DN") else "form")
+    belief = BE.Belief(channel="spoken" if method in ("D", "DR", "DN", "DW") else "form")
     answers, turns, u_calls, m_calls = [], [], [], []
     asks = {}
     unclear = {}   # D: fact item -> "vague" (no clear reading) or "conflict" (contradicted)
@@ -459,6 +484,8 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             question = item["spoken"]
             if reask:
                 question, step_calls = clarify(llm, mapper, m_setting, item, turns)
+            elif method == "DW":
+                question, step_calls = write_question(llm, mapper, m_setting, item, turns)
             wrong = target["wrong"] if target else (correction or {}).get("true" if (correction or {}).get("on_reask") else "wrong")
             fix_fact = correction["fact"] if correction and correction["phase"] == "fix" else None
             note = P.private_note(noise, wrong, fix_fact)

@@ -161,6 +161,24 @@ With realistic slips, D's capacity error is clearly lower at 10 questions (−0.
 
 **What this means for the final report:** (1) the stop rule is now reliable (under 5% at every budget for C and D); (2) part of D's capacity gap came from the test users repeating false facts, not from the interviewer; (3) even so, the adaptive interviewer is not more accurate than the forms on avg error. Its gain is the exact band at 10 questions.
 
+## Follow-up tests 11 to 13 (Nov 22, written before the results)
+
+Two generative AI parts that were agreed on Nov 13 (`plan.md`, "Waiting to-dos"), and one stop-rule fix from `failure_analysis_2to4.md` section 4 (fix 2). Each is tested against the engine of Nov 22 (tests 9 and 10).
+
+**Test 11: embedding retrieval for DR** (no new interviews). `retrieval.py` finds labeled pilot answers that look like a new answer, and DR shows them to the extractor as examples. Until now the search was BM25 (word overlap). The new search uses an embedding model (all-MiniLM-L6-v2: it turns a text into 384 numbers that capture its meaning, so "half a year of savings" is near "six months saved"). Test on the 290 labeled pilot answers, never using examples from the same pilot user:
+
+- (a) Label distance, no API calls: for each answer, how far the labels of the 3 retrieved examples are from its own label (0 to 1 scale), for BM25, the embedding search and random examples. Prediction: both are better than random. The embedding search is better than BM25 on willingness and behavior (answers in different words), and about the same on money facts (numbers decide those, and embeddings handle numbers poorly).
+- (b) Extraction, `pilot.py extract-eval` (about $0.30): DR with each search on the same answers. Prediction: no clear difference in fact accuracy (within 3 points) or score error (within 0.02). The pool is small (10 pilot users), so the best example is often the same for both searches.
+
+**Test 12: AI-written questions (new method DW).** The engine still chooses what to ask (the same as D). GLM then words the question from the conversation so far, instead of using the bank's fixed spoken wording, so the interview reads like a conversation. Everything else is the same as D: re-asks, extractor, engine (Nov 22), noise version 2. Run: all 100 test users, 5/10/15 questions, 3 repeats, paired with D in `results/rerun_engine.jsonl` (same users, repeats and noise seeds). A trial on 20 users comes first. Predictions:
+
+- Accuracy: DW's avg error is within 0.01 of D's at every budget (not clearly different). Reason: the engine and the extractor are the same; only the wording changes.
+- Leading questions: a judge from another company (Nemotron 3.5 Super) reads the bank wording and the written wording of the same questions and says if each hints at an answer. Written questions are flagged more often than bank questions, but in under 10% of cases.
+- Acquiescence: the test users with "acquiescence" noise agree with what a question suggests. On their turns, DW's error is not clearly higher than D's.
+- Cost and speed: one more GLM call per question. The cost per interview is 30% to 60% higher than D, and each question takes 1 to 4 seconds longer.
+
+**Test 13: one band rule everywhere** (no new interviews). The score, the app and the live chat report the lowest of the three bands of the mean scores. The stop rule used the most likely band of the engine's final-band distribution, and the two differ in about 11% of D's stop points. The change: the stop rule, its 80% confidence floor and the live chat's "most likely band" all use the reported band (`BAND_RULE = "reported"` in `belief.py`). Test: replay the engine on the recorded answers of `results/rerun_engine.jsonl` (C and D) and recompute the stop point. Predictions: the band changes after the stop in under 5% of runs for C and D at every budget (as in test 9), D's rate goes down, C's changes by under 1 point (C's two rules rarely differ), and the questions saved per run change by under 0.5. Caveat: in a real run the questions after the stop point would differ a little (as in test 9).
+
 ## Results (full run, scored Nov 14)
 
 File: `results/experiment_full.jsonl` (7,200 runs, no errors). Script: `python ablations_run.py results/experiment_full.jsonl`, output in `results/ablations.txt`. No new API calls. All differences are paired on the same test user, budget and repeat (300 pairs). "Clear" means that the 95% range does not include zero.
@@ -268,3 +286,41 @@ A replay with the run's own values gives back the recorded profiles (largest dif
 4. Retrieval adds cost and no accuracy. Token probabilities save cost and lose accuracy (test 4).
 5. The stop rule saves a third to a half of the questions, but its 5% promise does not hold for C or D (test 5).
 6. The results do not depend on the evidence strengths (test 7).
+
+## Results of tests 11 and 13 (scored Nov 22)
+
+**Test 11: embedding retrieval** (`retrieval_eval.py` → `results/retrieval_eval.txt`; `pilot.py extract-eval --readers D DR DRE` → `results/test11_extract.txt`, $1.17 at list price, more than the $0.30 we expected).
+
+(a) Label distance of the 3 retrieved examples (lower is better):
+
+| Answers | Random | BM25 | Embedding |
+|---|---|---|---|
+| Money facts (60) | 0.440 | **0.344** | 0.380 |
+| Willingness (120) | 0.283 | **0.226** | 0.274 |
+| Behavior (110) | 0.383 | **0.296** | 0.317 |
+| All (290) | 0.353 | **0.277** | 0.312 |
+
+Prediction: the embedding search is better on willingness and behavior. **It did not hold.** Both searches are better than random, but BM25 is better everywhere. A likely cause: we embed the question with the answer, as BM25 does, and all pool answers to one question share the same question text, so the embedding mostly finds "the same question" and not "the same stance". Added after we saw the result (not a planned test): embedding the answer only gives 0.286 overall (willingness 0.259, behavior 0.268, money facts 0.375). That is better than BM25 on behavior only.
+
+(b) Extraction with the retrieved examples (DRE = DR with the embedding search), paired on the same 290 answers:
+
+| Reader | Facts right (50) | Willingness error | Behavior error |
+|---|---|---|---|
+| D (no examples) | 0.88 | 0.105 | 0.085 |
+| DR (BM25) | 0.82 | 0.096 | 0.081 |
+| DRE (embedding) | 0.84 | 0.093 | 0.086 |
+
+DRE − DR: willingness −0.003 (−0.010 to +0.004), behavior +0.006 (−0.005 to +0.020), facts +1 answer of 50. Prediction (no clear difference): **held.** Decision: DR keeps BM25 (`config.RETRIEVAL_SEARCH = "bm25"`). The embedding search stays in `retrieval.py` as an option. With only 10 pilot users in the pool, retrieval has little room to help; a bigger labeled pool (for example the classmate answers) is the better next step.
+
+**Test 13: one band rule everywhere** (`band_rule_replay.py` → `results/band_rule_replay.txt`, no API calls). The replay with the old rule gives the recorded stop point in 100% of runs, so the replay is exact up to the stop point.
+
+| Method, questions | Band changes after the stop: old rule → reported band | Questions saved per run |
+|---|---|---|
+| C, 5 | 0.0% → 0.0% | 0.45 → 0.33 |
+| C, 10 | 1.1% → 0.0% | 1.71 → 1.34 |
+| C, 15 | 4.3% → 1.9% | 3.95 → 3.58 |
+| D, 5 | 0.0% → 0.0% | 0.08 → 0.04 |
+| D, 10 | 2.2% → 0.0% | 0.96 → 0.77 |
+| D, 15 | 3.0% → 3.0% | 3.13 → 2.83 |
+
+Predictions: under 5% everywhere: **held**. D's rate goes down: held at 10 questions, the same at 15. C changes by under 1 point: **did not hold**, C at 15 improved by 2.4 points. Questions saved change by under 0.5: **held** (0.04 to 0.37 fewer). Decision: `BAND_RULE = "reported"` is the default from Nov 22. The stop rule, the live chat and the score now use one band. Caveat: in a new run the questions after the stop point would differ a little.

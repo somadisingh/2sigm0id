@@ -14,7 +14,8 @@ clarifying questions. See BELIEF_ENGINE.md for the reasoning and the sources.
   next question            the one whose answer tells us most about the final band
                            (expected information gain)
   stop                     when asking the rest of the budget has under a 5% chance of
-                           changing the most likely final band (stochastic curtailment)
+                           changing the reported final band (stochastic curtailment), and
+                           the engine gives that band at least 80% (STOP_CONFIDENCE)
 
 The evidence strengths (SIGMA) and LAPSE are starting guesses. Fit them on the 10 pilot
 users and report how sensitive the results are to them.
@@ -111,6 +112,11 @@ CONFLICT_RULE = "majority"
 # The stop rule also needs this much confidence in the most likely final band (Nov 22, failure
 # analysis part 4: the engine stopped when no question could help, even when it was unsure).
 STOP_CONFIDENCE = 0.80
+# Which band the stop rule watches (Nov 22, failure analysis part 4, fix 2). "reported": the
+# band the score, the app and the live chat report, the lowest of the three bands of the mean
+# scores. "mode": the most likely band of the final-band distribution (before Nov 22). The two
+# differed in about 11% of D's stop points, so a "settled" band was not always the reported one.
+BAND_RULE = "reported"
 
 
 def capacity_vec(h, e, inc, d, dep):
@@ -384,6 +390,18 @@ class Belief:
         at_least[5] = 0
         return at_least[:5] - at_least[1:]
 
+    def top_band(self, cap=None):
+        """(band, chance): the band the stop rule watches (BAND_RULE), and the engine's chance
+        that the final band is that band."""
+        cap = self.capacity_samples() if cap is None else cap
+        pmf = self.final_pmf(self.band_pmfs(cap))
+        if BAND_RULE == "reported":
+            top = min([band(float(cap.mean()))] + [band(float((GRID * self.dim[d]).sum()))
+                                                    for d in ("willingness", "behavioral")])
+        else:
+            top = int(np.argmax(pmf)) + 1
+        return top, float(pmf[top - 1])
+
     def profile(self):
         cap = self.capacity_samples()
         return {"capacity": round(float(cap.mean()), 4),
@@ -454,7 +472,7 @@ class Belief:
         """Stochastic curtailment: the chance that asking every item in `plan` would change
         the most likely final band. Draws a 'true' person from the current belief, simulates
         their answers, updates a copy, and checks the band at the end."""
-        now = int(np.argmax(self.final_pmf(self.band_pmfs())))
+        now = self.top_band()[0]
         if not plan:
             return 0.0
         rng = np.random.default_rng(seed)
@@ -469,7 +487,7 @@ class Belief:
                 col = L[:, truth[name]]
                 o = rng.choice(len(L), p=col / col.sum())
                 b.update((kind, name), L[o])
-            changed += int(np.argmax(b.final_pmf(b.band_pmfs()))) != now
+            changed += b.top_band()[0] != now
         return changed / N_ROLLOUTS
 
     def choose(self, candidates, left, seed=0):
@@ -480,16 +498,16 @@ class Belief:
         the band (where a real system would stop), the study keeps asking: pick the item
         that most cuts the uncertainty of its own dimension, to lower the error per score.
         """
-        pmf = self.final_pmf(self.band_pmfs())
         scores = self.score_items(candidates)
         ranked = sorted(candidates, key=lambda it: -scores[it["id"]]["gain"])
         plan = list({it["id"]: it for it in ranked}.values())[:left]
         p_change = self.change_chance(plan, seed)
         # fresh every turn: a later contradiction can make a settled band uncertain again
-        settled = p_change < STOP_CHANCE and float(pmf.max()) >= STOP_CONFIDENCE
+        top, chance = self.top_band()
+        settled = p_change < STOP_CHANCE and chance >= STOP_CONFIDENCE
         key = "var_cut" if settled else "gain"
         best = max(candidates, key=lambda it: scores[it["id"]][key])
         return best, {"phase": "sharpen" if settled else "settle band",
                       "value": round(scores[best["id"]][key], 5),
-                      "top_band": int(np.argmax(pmf)) + 1, "top_band_chance": round(float(pmf.max()), 3),
+                      "top_band": top, "top_band_chance": round(chance, 3),
                       "change_chance": round(p_change, 3), "settled": settled}

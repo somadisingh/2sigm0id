@@ -297,7 +297,7 @@ def run_config(personas_file=None):
         "interviewer_prompt": P.INTERVIEWER_PROMPT,
         "interviewer": C.EXPERIMENT_INTERVIEWER, "user": C.EXPERIMENT_USER,
         "engine_settings": methods.BE.SETTINGS_SOURCE,
-        "conflict_rule": methods.BE.CONFLICT_RULE, "stop_confidence": methods.BE.STOP_CONFIDENCE,
+        "conflict_rule": methods.BE.CONFLICT_RULE, "stop_confidence": methods.BE.STOP_CONFIDENCE, "band_rule": methods.BE.BAND_RULE,
         "slips_fixed_on_reask": C.SLIPS_FIXED_ON_REASK,
     }
     return {"setup": setup, "commit": git("rev-parse", "--short", "HEAD"),
@@ -522,7 +522,7 @@ def main():
     pr.set_defaults(fn=prompts)
     ex = sub.add_parser("experiment", help="main experiment: methods A-D at each budget")
     ex.add_argument("--methods", nargs="*", default=["A", "B", "C", "D"],
-                    choices=["A", "B", "C", "D", "DR", "DP", "DN", "C0", "D0"],
+                    choices=["A", "B", "C", "D", "DR", "DP", "DN", "DW", "C0", "D0"],
                     help="DR, DP and DN are D variants; C0 and D0 are the versions before the belief engine")
     ex.add_argument("--budgets", nargs="*", type=int, default=[5, 10, 15], choices=[5, 10, 15])
     ex.add_argument("--repeats", type=int, default=3)

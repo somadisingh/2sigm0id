@@ -115,6 +115,7 @@ USER_MAX_TOKENS = 1500
 INTERVIEWER_TEMPERATURE = 0.7   # set to None to use each provider's default
 USER_TEMPERATURE = 0.9
 MAX_WORKERS = 6             # interviews run in parallel
+RETRIEVAL_SEARCH = "bm25"   # DR's example search: "bm25" or "embedding"; test 11 (Nov 22): no clear gain, keep bm25
 
 # ---------------- Full-run projection (for cost/time estimates) ----------------
 # 100 users x 3 budgets x 3 repeats x 2 conversational methods (B and D),

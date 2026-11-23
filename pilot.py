@@ -167,7 +167,10 @@ def read_all(llm, rows, bank_items, t=1.0):
 
 def calibrate(args):
     llm = R.make_llm(args.mock)
-    pool = retrieval.Pool.load(OUT / ("pool_mock.jsonl" if args.mock else "pool.jsonl"))
+    pool_path = OUT / ("pool_mock.jsonl" if args.mock else "pool.jsonl")
+    pool = retrieval.Pool.load(pool_path, search="bm25")
+    # DRE: DR with the embedding search (ablation test 11, Nov 22)
+    epool = retrieval.Pool.load(pool_path, search="embedding") if "DRE" in args.readers else None
     items = {i["id"]: i for i in M.load_bank()["items"]}
     read = read_all(llm, pool.entries, items)
     ok = [r for r in read if r["q"]]
@@ -222,7 +225,10 @@ def extract_eval(args):
     """D (extractor), DR (extractor + retrieved examples) and DP (option probabilities) on the
     same labeled pilot answers. DR never sees examples from the same pilot user."""
     llm = R.make_llm(args.mock)
-    pool = retrieval.Pool.load(OUT / ("pool_mock.jsonl" if args.mock else "pool.jsonl"))
+    pool_path = OUT / ("pool_mock.jsonl" if args.mock else "pool.jsonl")
+    pool = retrieval.Pool.load(pool_path, search="bm25")
+    # DRE: DR with the embedding search (ablation test 11, Nov 22)
+    epool = retrieval.Pool.load(pool_path, search="embedding") if "DRE" in args.readers else None
     items = {i["id"]: i for i in M.load_bank()["items"]}
     iv = C.EXPERIMENT_INTERVIEWER
 
@@ -230,13 +236,14 @@ def extract_eval(args):
 
     def one(r):
         item = items[r["item"]]
-        out = {"r": r, "D": (dict(M.NO_EVIDENCE), []), "DR": (dict(M.NO_EVIDENCE), []), "DP": (None, [])}
-        for name, ex in (("D", ""), ("DR", None)):
+        out = {"r": r, "D": (dict(M.NO_EVIDENCE), []), "DR": (dict(M.NO_EVIDENCE), []),
+               "DRE": (dict(M.NO_EVIDENCE), []), "DP": (None, [])}
+        for name, ex in (("D", ""), ("DR", None), ("DRE", None)):
             if name not in readers:
                 continue
             if ex is None:
-                ex = retrieval.examples_block(
-                    pool.similar(item, r["question"], r["answer"], exclude_persona=r["persona_id"]))
+                ex = retrieval.examples_block((epool if name == "DRE" else pool).similar(
+                    item, r["question"], r["answer"], exclude_persona=r["persona_id"]))
             ev, calls = M.extract(llm, iv, C.EXPERIMENT_INTERVIEWER_REASONING, r["question"], item,
                                   r["answer"], ex)
             out[name] = (ev, calls)
@@ -301,12 +308,12 @@ def extract_eval(args):
             return f"${v:.5f}"
         return f"{v:.3f}" if isinstance(v, float) else str(v)
 
-    rows = {k: summary(k) for k in ("D", "DR", "DP") if k in readers}
+    rows = {k: summary(k) for k in ("D", "DR", "DRE", "DP") if k in readers}
     cols = list(rows["D"])
     raw = [{"persona_id": o["r"]["persona_id"], "item": o["r"]["item"], "question": o["r"]["question"],
             "answer": o["r"]["answer"], "dimension": o["r"]["dimension"], "topic": o["r"]["topic"],
             "gold": o["r"]["gold"], "gold_option": o["r"]["gold_option"],
-            "D": o["D"][0], "DR": o["DR"][0], "DP": o["DP"][0]} for o in res]
+            "D": o["D"][0], "DR": o["DR"][0], "DRE": o["DRE"][0], "DP": o["DP"][0]} for o in res]
     if not args.mock and set(readers) == {"D", "DR", "DP"}:
         (HERE / "results").mkdir(exist_ok=True)
         (HERE / "results" / "pilot_extract_eval.jsonl").write_text("".join(json.dumps(r) + "\n" for r in raw))
@@ -321,12 +328,15 @@ def extract_eval(args):
               "DP's score is the expected option score. Labels come from the true profiles, so a "
               "pilot user who answered off-profile counts against every reader equally."]
     lines += ["", "Paired differences against D (negative = lower error than D), with 95% bootstrap ranges:", ""]
-    for name in [x for x in ("DR", "DP") if x in readers and "D" in readers]:
+    pairs = [(x, "D") for x in ("DR", "DRE", "DP") if x in readers and "D" in readers]
+    if "DRE" in readers and "DR" in readers:
+        pairs.append(("DRE", "DR"))
+    for name, base in pairs:
         for dim in ("willingness", "behavioral"):
-            d = [score_error(r, name) - score_error(r, "D") for r in raw
-                 if r["dimension"] == dim and score_error(r, name) is not None and score_error(r, "D") is not None]
+            d = [score_error(r, name) - score_error(r, base) for r in raw
+                 if r["dimension"] == dim and score_error(r, name) is not None and score_error(r, base) is not None]
             lo, hi = paired_range(d)
-            lines.append(f"- {name} {dim}: {sum(d) / len(d):+.3f} ({lo:+.3f} to {hi:+.3f}), {len(d)} answers")
+            lines.append(f"- {name} - {base} {dim}: {sum(d) / len(d):+.3f} ({lo:+.3f} to {hi:+.3f}), {len(d)} answers")
     text = "\n".join(lines) + "\n"
     if not args.mock and set(readers) == {"D", "DR", "DP"}:
         (OUT / "extract_eval.md").write_text(text)
@@ -574,7 +584,7 @@ def main():
         sp = sub.add_parser(name)
         sp.add_argument("--mock", action="store_true")
         if name == "extract-eval":
-            sp.add_argument("--readers", nargs="*", default=["D", "DR", "DP"], choices=["D", "DR", "DP"],
+            sp.add_argument("--readers", nargs="*", default=["D", "DR", "DP"], choices=["D", "DR", "DRE", "DP"],
                             help="only these readers; the saved files are written only for all three")
             sp.add_argument("--save", help="also save the raw readings to this results file")
         sp.set_defaults(fn=fn)

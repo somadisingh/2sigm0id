@@ -226,3 +226,17 @@ def test_stop_needs_confidence():
     assert pmf.max() < B.STOP_CONFIDENCE
     _, info = b.choose(POOL[:3], left=0)   # nothing left to ask: change chance is 0
     assert info["change_chance"] == 0 and not info["settled"]
+
+
+def test_stop_watches_the_reported_band():
+    """Nov 22: the stop rule watches the band that the score and the app report (the lowest of
+    the three bands of the mean scores), not the most likely band of the distribution."""
+    from prompts import band
+    b = B.Belief()
+    b.observe_score("willingness", 0.9, "stated")
+    b.observe_score("behavioral", 0.3, "hypothetical")
+    reported = min(band(v) for v in b.profile().values())
+    top, chance = b.top_band()
+    assert top == reported
+    pmf = b.final_pmf(b.band_pmfs())
+    assert abs(chance - pmf[top - 1]) < 1e-9

@@ -31,9 +31,10 @@ DIM_NAMES = {"capacity": "Capacity (how much loss you can afford)",
 
 
 def band_state(b):
-    """The current final-band probabilities and the most likely band."""
+    """The current final-band probabilities and the band the app reports (BAND_RULE, Nov 22:
+    the same band as the stop rule and the score)."""
     pmf = b.final_pmf(b.band_pmfs())
-    return {"top_band": int(np.argmax(pmf)) + 1, "band_probs": [round(float(x), 3) for x in pmf]}
+    return {"top_band": b.top_band()[0], "band_probs": [round(float(x), 3) for x in pmf]}
 
 
 class _Session:
