@@ -54,11 +54,12 @@ def false_fact(r):
 
 
 def pair(a, b, ma, mb, bu, f, keep=lambda r: True):
-    d = [f(r) - f(b[(mb, bu, pid, rep)]) for (m, x, pid, rep), r in a.items()
-         if m == ma and x == bu and keep(r) and (mb, bu, pid, rep) in b]
+    keys = [(pid, rep, r) for (m, x, pid, rep), r in a.items()
+            if m == ma and x == bu and keep(r) and (mb, bu, pid, rep) in b]
+    d = [f(r) - f(b[(mb, bu, pid, rep)]) for pid, rep, r in keys]
     if not d:
         return "no pairs"
-    lo, hi = bootstrap_ci(d)
+    lo, hi = bootstrap_ci(d, groups=[pid for pid, _, _ in keys])   # resample test users
     clear = "CLEAR" if lo > 0 or hi < 0 else "not clear"
     return f"{mean(d):+.3f} ({lo:+.3f} to {hi:+.3f}, n={len(d)}, {clear})"
 

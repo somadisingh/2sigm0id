@@ -387,7 +387,7 @@ The feedback asks three things for the final submission: (1) show where natural-
 
 ### Step 1: where does talking help? (no new runs, scored Nov 24)
 
-Script: `nl_benefits.py`, output `results/nl_benefits.txt`. Paired on test user, budget and repeat against C in `rerun_engine.jsonl`; noise groups use the noise schedule drawn for that test user and repeat, which is the same for every method. Negative = the conversation method has less error.
+Script: `nl_benefits.py`, output `results/nl_benefits.txt`. Paired on test user, budget and repeat against C in `rerun_engine.jsonl`; 95% ranges resample whole test users (see below); noise groups use the noise schedule drawn for that test user and repeat, which is the same for every method. Negative = the conversation method has less error.
 
 | | D − C, 10 questions | D − C, 15 questions | DW − C, 15 questions |
 |---|---|---|---|
@@ -397,12 +397,30 @@ Script: `nl_benefits.py`, output `results/nl_benefits.txt`. Paired on test user,
 | Clean test users, avg error | **−0.015 (clear)** | **−0.015 (clear)** | **−0.014 (clear)** |
 | Heavy-noise test users, avg error | **+0.036 (clear)** | **+0.065 (clear)** | **+0.059 (clear)** |
 
-- **D's whole gap to C is in capacity.** On willingness and behavior, where both get the same kind of input, the conversation ties the form at every budget (D at 5 questions is better on willingness alone, −0.017, clear).
-- **Talking helps when people answer clearly.** With no noise drawn, D and DW beat the form by 0.015–0.022 at every budget. A free answer carries more than one ticked box.
+- **D's whole gap to C is in capacity.** On willingness and behavior, where both get the same kind of input, the conversation ties the form at every budget.
+- **Talking helps when people answer clearly.** With no noise drawn, D and DW beat the form by 0.015–0.022 at 10 and 15 questions (clear; at 5 questions −0.013 to −0.015, not clear). A free answer carries more than one ticked box.
 - **Talking loses on noisy answers**, mostly through capacity. On heavy-noise test users the gap on willingness and behavior alone is smaller (+0.013 to +0.039) than on all three. But the noise is not the same in the two channels: contradictions, planted wrong facts and going along with hints happen only in conversation, so this is the input difference the feedback describes, not proof that talking handles ambiguity badly.
 - **Re-asks help.** D − DN (no re-asks): capacity −0.030 at 10 and −0.040 at 15 (clear), all three dimensions −0.010 (clear). On re-ask turns the final band went wrong→right more often than right→wrong (D at 10: 38 against 28; DW at 10: 33 against 13).
 - **Contradictions are caught.** D flags 86–92% of the planted contradictions (DW 81–88%), and flags 2–3% of runs with no false fact.
 - **Cost:** C has no AI calls (0.11 s per question). D: $0.0126 per interview at list price, 1.42 s per question. DW: $0.0182, 2.10 s (test users' calls not counted).
+
+### Bootstrap by test user (Nov 24)
+
+Until now the 95% ranges resampled single interviews. Each test user appears 3 times (repeats) at each budget, and repeats of one user are not independent, so those ranges were too narrow. `score.bootstrap_ci` now takes `groups` and resamples whole test users with all their repeats; every comparison script uses it (`rerun_compare.pair`, `score.py`, `ablations_run.py`, `failure_more.py`, `style_swap_compare.py`, and through `pair` also `nl_benefits.py` and `written_compare.py`). All results files were scored again. Means don't change; only ranges do, mostly wider. Earlier sections keep the verdicts as first scored; these changed:
+
+No longer clear:
+- D − C at 10 questions (both reruns, test 9): +0.008 (−0.002 to +0.018). At 15, +0.017 stays clear.
+- DW v2 − C at 10 questions: +0.009 (−0.001 to +0.019). At 15, +0.013 stays clear.
+- DW v1 − D exact band at 10 questions (test 12): +5.4 points (−0.3 to +10.8). DW v2's +5.1 stays clear (+0.3 to +9.8).
+- Full run, test 2: D − C at 5 questions, avg error +0.008; D − C willingness −0.019; D − C exact band at 15, −7.7 points. Test 1 and test 6: D − D0 at 5 questions, avg error +0.010, and the test 6 capacity results.
+- Test 9: C at 5 questions, rerun − full run, +0.005; one capacity line (−0.008).
+- Test 14 step 1: D − C willingness at 5 questions; several noise-group lines at 5 questions and some attitude-only lines (see `results/nl_benefits.txt`).
+
+Now clear:
+- Test 3: D − DN on clean and moderate test users at 10 questions, −0.007 (−0.013 to −0.000).
+- Test 9: one capacity line, −0.011 (−0.021 to −0.000).
+
+The main conclusions hold: D's gap to the forms is clear at 15 questions and comes from capacity; re-asks help; DW v2 is no worse than D. At 10 questions the conversation methods and the forms are now tied.
 
 ### Test 14: the hybrid CW (written Nov 24, before the run)
 
