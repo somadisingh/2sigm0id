@@ -15,6 +15,9 @@
       willingness and behavior in conversation as in DW; one belief engine picks every question.
       Facts reach the engine only from the form, so CW - C isolates talking about attitudes,
       and CW - DW isolates hearing the money facts in conversation
+  CWF CW with the money facts first (Nov 24): the first min(5, budget // 2) questions are fact
+      questions on the form (the engine picks which), then the engine picks freely. Test 14
+      showed CW asks fewer fact questions than C and loses capacity accuracy that way
   DP  D, reading answers with token probabilities: GLM picks the matching option, and its
       calibrated probability for every option is the evidence (soft evidence)
   C0  the earlier adaptive form: a hand-made rule picks the questions
@@ -141,7 +144,7 @@ WRITE_SYSTEM_V2 = (
     'sentences. Reply with ONE JSON object and nothing else: {"question": "<the question>"}')
 WRITE_MESSAGE = "Conversation so far:\n{history}\n\nStandard wording of the next question: {question}"
 D_METHODS = ("D", "DR", "DP", "DN", "DW")
-FORM_METHODS = ("A", "B", "C", "C0", "CW") + D_METHODS
+FORM_METHODS = ("A", "B", "C", "C0", "CW", "CWF") + D_METHODS
 HYBRID_FORM_DIMS = ("capacity",)   # CW: these dimensions are asked on the form
 _POOL, _TEMPERATURE = None, None
 NO_EVIDENCE = {"facts": {}, "willingness": None, "behavioral": None, "no_past_loss": False}
@@ -434,9 +437,10 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     rng = random.Random(zlib.crc32(f"{persona['id']}|{repeat}".encode()))
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
     fixed = short_form(bank, budget) if method in ("A", "B") else None
-    hybrid = method == "CW"
-    talks = method in ("B", "CW") + D_METHODS   # has spoken turns
-    belief = BE.Belief(channel="spoken" if method in ("D", "DR", "DN", "DW", "CW") else "form")
+    hybrid = method in ("CW", "CWF")
+    facts_first = min(5, budget // 2) if method == "CWF" else 0   # CWF: fact questions asked first
+    talks = method in ("B", "CW", "CWF") + D_METHODS   # has spoken turns
+    belief = BE.Belief(channel="spoken" if method in ("D", "DR", "DN", "DW", "CW", "CWF") else "form")
     if hybrid:
         belief.form_dims = HYBRID_FORM_DIMS
     answers, turns, u_calls, m_calls = [], [], [], []
@@ -466,6 +470,8 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
                           and 0 < asks.get(i["id"], 0) < (
                     BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or unclear.get(i["id"]) == "conflict"
                     else 2 if unclear.get(i["id"]) == "vague" else 0)]
+            if k < facts_first:
+                cands = [i for i in cands if i["dimension"] in HYBRID_FORM_DIMS and i["id"] not in asks] or cands
             item, info = belief.choose(cands, budget - k, seed=k)
             if info["settled"] and would_stop_at is None:
                 would_stop_at = k   # the first time the band was settled
@@ -511,7 +517,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             question = item["spoken"]
             if reask:
                 question, step_calls = clarify(llm, mapper, m_setting, item, turns)
-            elif method in ("DW", "CW"):
+            elif method in ("DW", "CW", "CWF"):
                 # CW: the writer sees only the conversation turns, not the form questions
                 question, step_calls = write_question(llm, mapper, m_setting, item,
                                                       [t for t in turns if not t.get("form")])
@@ -602,7 +608,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         "truth": persona["ground_truth"], "persona": persona,
         "final_profile": belief.profile(),
         # the bank's plain-average scoring, kept for comparison (D has no option answers)
-        "final_profile_mean": estimate(answers) if method not in D_METHODS + ("CW",) else None,
+        "final_profile_mean": estimate(answers) if method not in D_METHODS + ("CW", "CWF") else None,
         "final_flags": final_flags,
         "questions_asked": len(turns), "early_stop": early_stop,
         "would_stop_at": would_stop_at, "full_budget": full_budget,

@@ -473,3 +473,14 @@ Other: CW never re-asks (its re-asks in D were almost all money facts). Stop rul
 - **Where talking helps.** On clean answerers, conversation reads attitudes better than the form (−0.016 and −0.018, clear). On heavy-noise answerers at 15 questions it reads them worse (+0.023, clear), and that noise (going along with hints, flips said aloud) only exists in conversation.
 - **Cost.** CW costs $0.014 per interview and about 1.3 s more per question than C, for no clear overall gain. It is the most accurate conversational method: better than D at every budget (−0.008 to −0.014, clear) and than DW at 10 and 15.
 - **A possible fix, not tested:** ask all five money facts on the form first, then hand the rest of the budget to the conversation. That removes the fact-question shortfall above.
+
+### Test 15: the facts-first hybrid CWF (written Nov 24, before the run)
+
+**Method CWF** (`methods.py`): CW, but the first min(5, budget // 2) questions must be money-fact questions on the form (the engine picks which and in what order): 2 at 5 questions, all 5 at 10 and 15. After that the engine picks freely; with all five asked at 10 and 15, the rest is conversation about attitudes. Everything else as in CW and test 14. Run: `results/rerun_hybrid_ff.jsonl`, 900 interviews. No separate trial: the change only limits the engine's candidates for the first turns (checked in a mock run), and the rest is CW's code, trialed for test 14.
+
+Predictions (against C and CW, paired, ranges by test user):
+
+- Capacity: CWF − C clearly lower at 10 and 15 questions (5 fact questions against C's 3.24 and 4.12); within ±0.01 at 5 (2 against 1.65).
+- Attitudes: CWF − CW higher at 10 questions (5 conversation turns instead of 7.3), within ±0.01 at 15.
+- Avg error: CWF − CW lower at 15 questions; CWF − C at or below zero at 10 and 15, but maybe not clear.
+- System cost below CW's $0.0140 (fewer conversation turns), about $0.011 per interview.
