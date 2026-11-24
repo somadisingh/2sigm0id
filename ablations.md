@@ -512,3 +512,12 @@ Predictions:
 **Caveat: CWF − C is not a clean test of talking.** It changes two things at once, asking all the money facts first and talking about attitudes. C itself asks only 1.65, 3.24 and 4.12 fact questions at 5, 10 and 15, and CWF's whole gain over C is in capacity (attitudes are tied). So most of the gain probably comes from the facts-first rule, which a form could use too. The clean test is a facts-first C ("CF": the same first-questions rule, all on the form) against CWF. CF has no AI calls on the system side, so it is cheap to run.
 
 **For the feedback so far:** the best method we have tested is CWF. It is clearly better than C at 5 and 10 questions and than every conversation method at every budget, at $0.011 per interview. Its gain over C is in the money facts, and on attitudes it ties the form overall: better for clean answerers at 15 (−0.019, clear) and worse for heavy-noise answerers (+0.029, clear).
+
+### Test 16: the facts-first form CF (written Nov 24, before the run)
+
+**Method CF** (`methods.py`): C with CWF's rule. The first min(5, budget // 2) questions must be money-fact questions (the engine picks which and in what order), then the engine picks freely; every question is on the form. CWF − CF then differs only in how attitudes are asked (conversation against form), under the same question rule. Same settings otherwise (old band rule). Run: `results/rerun_form_ff.jsonl`, 900 interviews; no system AI calls, only the test users'. Checked in a mock run; the rest is C's code.
+
+Predictions (paired, ranges by test user):
+
+- CF − C: capacity clearly lower at every budget, close to CWF's gain (−0.043, −0.050, −0.020); attitudes within ±0.01; avg error clearly lower at 5 and 10.
+- CWF − CF: capacity within ±0.01 (same fact questions, same form). Attitudes within ±0.01 overall, lower for clean test users and higher for heavy-noise test users, as in tests 14 and 15. Avg error within ±0.01 and not clear at every budget: most of CWF's gain over C comes from the facts-first rule, not from talking.

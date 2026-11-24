@@ -18,6 +18,8 @@
   CWF CW with the money facts first (Nov 24): the first min(5, budget // 2) questions are fact
       questions on the form (the engine picks which), then the engine picks freely. Test 14
       showed CW asks fewer fact questions than C and loses capacity accuracy that way
+  CF  C with the money facts first (Nov 24): CWF's first-questions rule, everything on the form.
+      CWF - CF isolates talking about attitudes under the same question rule
   DP  D, reading answers with token probabilities: GLM picks the matching option, and its
       calibrated probability for every option is the evidence (soft evidence)
   C0  the earlier adaptive form: a hand-made rule picks the questions
@@ -144,7 +146,7 @@ WRITE_SYSTEM_V2 = (
     'sentences. Reply with ONE JSON object and nothing else: {"question": "<the question>"}')
 WRITE_MESSAGE = "Conversation so far:\n{history}\n\nStandard wording of the next question: {question}"
 D_METHODS = ("D", "DR", "DP", "DN", "DW")
-FORM_METHODS = ("A", "B", "C", "C0", "CW", "CWF") + D_METHODS
+FORM_METHODS = ("A", "B", "C", "C0", "CW", "CWF", "CF") + D_METHODS
 HYBRID_FORM_DIMS = ("capacity",)   # CW: these dimensions are asked on the form
 _POOL, _TEMPERATURE = None, None
 NO_EVIDENCE = {"facts": {}, "willingness": None, "behavioral": None, "no_past_loss": False}
@@ -438,7 +440,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
     fixed = short_form(bank, budget) if method in ("A", "B") else None
     hybrid = method in ("CW", "CWF")
-    facts_first = min(5, budget // 2) if method == "CWF" else 0   # CWF: fact questions asked first
+    facts_first = min(5, budget // 2) if method in ("CWF", "CF") else 0   # fact questions asked first
     talks = method in ("B", "CW", "CWF") + D_METHODS   # has spoken turns
     belief = BE.Belief(channel="spoken" if method in ("D", "DR", "DN", "DW", "CW", "CWF") else "form")
     if hybrid:

@@ -31,9 +31,9 @@ METHOD_NAMES = {"A": "fixed form", "B": "scripted interview", "C": "adaptive for
                 "DP": "adaptive interviewer + token probabilities",
                 "DN": "adaptive interviewer, no re-asks", "DW": "adaptive interviewer, AI-written questions",
                 "CW": "hybrid: form for money facts, AI-written conversation for attitudes",
-                "CWF": "hybrid, money facts first"}
+                "CWF": "hybrid, money facts first", "CF": "adaptive form, money facts first"}
 FLAGGING = ("D", "DR", "DP", "DN", "DW", "CW", "CWF", "D0")          # methods that raise contradiction flags
-ENGINE_CHOOSES = ("C", "CW", "CWF", "D", "DR", "DP", "DN", "DW", "D0")   # methods with a stop point (would stop)
+ENGINE_CHOOSES = ("C", "CF", "CW", "CWF", "D", "DR", "DP", "DN", "DW", "D0")   # methods with a stop point (would stop)
 NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
 
 
@@ -334,7 +334,7 @@ def cost_chart(summaries, path):
         print("(Skipped the cost chart: pip install matplotlib)")
         return
     colors = {"A": "#4C78A8", "B": "#F58518", "C": "#54A24B", "D": "#B279A2",
-              "C0": "#9FD08F", "D0": "#D9B8D0", "DR": "#E45756", "DP": "#72B7B2", "DN": "#9D755D", "DW": "#FF9DA6", "CW": "#B279A2", "CWF": "#8E6C8A"}
+              "C0": "#9FD08F", "D0": "#D9B8D0", "DR": "#E45756", "DP": "#72B7B2", "DN": "#9D755D", "DW": "#FF9DA6", "CW": "#B279A2", "CWF": "#8E6C8A", "CF": "#6E9F5F"}
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), sharey=True)
     for ax, key, xlabel in ((axes[0], "sys_cost", "System $ per completed profile"),
                             (axes[1], "sys_secs", "System LLM seconds per completed profile")):
@@ -440,7 +440,7 @@ def main():
                    fmt(s["err_capacity"], "err"), fmt(s["err_willingness"], "err"),
                    fmt(s["err_behavioral"], "err"),
                    fmt(s["band_exact"], "pct"), fmt(s["band_within1"], "pct"),
-                   fmt(s["mismatch_caught"], "pct") if k[0] in ("C",) + FLAGGING else "-",
+                   fmt(s["mismatch_caught"], "pct") if k[0] in ("C", "CF") + FLAGGING else "-",
                    f"{fmt(s['contradiction_caught'], 'pct')} of {s['contradiction_turns']}" if k[0] in FLAGGING else "-",
                    f"{fmt(s['contra_recovered'], 'pct')} of {s['contra_targeted']}" if k[0] in ("B",) + FLAGGING else "-",
                    f"{fmt(s['correction_accepted'], 'pct')} of {s['corrections']}" if k[0] in ("B",) + FLAGGING else "-",
