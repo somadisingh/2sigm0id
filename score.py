@@ -29,9 +29,10 @@ METHOD_NAMES = {"A": "fixed form", "B": "scripted interview", "C": "adaptive for
                 "D": "adaptive interviewer", "C0": "adaptive form, old rule",
                 "D0": "adaptive interviewer, LLM only", "DR": "adaptive interviewer + retrieval",
                 "DP": "adaptive interviewer + token probabilities",
-                "DN": "adaptive interviewer, no re-asks", "DW": "adaptive interviewer, AI-written questions"}
-FLAGGING = ("D", "DR", "DP", "DN", "DW", "D0")          # methods that raise contradiction flags
-ENGINE_CHOOSES = ("C", "D", "DR", "DP", "DN", "DW", "D0")   # methods with a stop point (would stop)
+                "DN": "adaptive interviewer, no re-asks", "DW": "adaptive interviewer, AI-written questions",
+                "CW": "hybrid: form for money facts, AI-written conversation for attitudes"}
+FLAGGING = ("D", "DR", "DP", "DN", "DW", "CW", "D0")          # methods that raise contradiction flags
+ENGINE_CHOOSES = ("C", "CW", "D", "DR", "DP", "DN", "DW", "D0")   # methods with a stop point (would stop)
 NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
 
 
@@ -315,7 +316,7 @@ def cost_chart(summaries, path):
         print("(Skipped the cost chart: pip install matplotlib)")
         return
     colors = {"A": "#4C78A8", "B": "#F58518", "C": "#54A24B", "D": "#B279A2",
-              "C0": "#9FD08F", "D0": "#D9B8D0", "DR": "#E45756", "DP": "#72B7B2", "DN": "#9D755D", "DW": "#FF9DA6"}
+              "C0": "#9FD08F", "D0": "#D9B8D0", "DR": "#E45756", "DP": "#72B7B2", "DN": "#9D755D", "DW": "#FF9DA6", "CW": "#B279A2"}
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), sharey=True)
     for ax, key, xlabel in ((axes[0], "sys_cost", "System $ per completed profile"),
                             (axes[1], "sys_secs", "System LLM seconds per completed profile")):

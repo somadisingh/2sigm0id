@@ -380,3 +380,44 @@ Other results:
 - Stop rule (old band rule, kept for pairing): band changes after the stop in 11.1% at 5 (3 of 27), 1.2% at 10, 4.2% at 15. The 5-question figure is from very few stops; test 13 showed the reported band rule brings D under 5% at every budget.
 
 **Decision:** DW v2 is the safe version of the AI-written questions: no leading wording, no loss against D, better band hits at 10 questions, about 40% more cost. It is not clearly better than D on avg error, so the app stays on D and the report gives DW v2 as a tested option.
+
+## Instructor feedback on Milestone 3 (Nov 24) and the controlled test
+
+The feedback asks three things for the final submission: (1) show where natural-language interaction helps (ambiguous or contradictory answers) and whether that is worth its cost; (2) a fairer comparison, because the spoken methods hear false money facts that the forms never see, so D − C mixes the AI interviewer with harder input; (3) keep conclusions from the synthetic users apart from those of the real-user study.
+
+### Step 1: where does talking help? (no new runs, scored Nov 24)
+
+Script: `nl_benefits.py`, output `results/nl_benefits.txt`. Paired on test user, budget and repeat against C in `rerun_engine.jsonl`; noise groups use the noise schedule drawn for that test user and repeat, which is the same for every method. Negative = the conversation method has less error.
+
+| | D − C, 10 questions | D − C, 15 questions | DW − C, 15 questions |
+|---|---|---|---|
+| Capacity error | **+0.033 (clear)** | **+0.042 (clear)** | **+0.046 (clear)** |
+| Willingness + behavior error | −0.004 (not clear) | +0.005 (not clear) | −0.004 (not clear) |
+| No noise drawn, avg error | **−0.016 (clear)** | **−0.022 (clear)** | **−0.022 (clear)** |
+| Clean test users, avg error | **−0.015 (clear)** | **−0.015 (clear)** | **−0.014 (clear)** |
+| Heavy-noise test users, avg error | **+0.036 (clear)** | **+0.065 (clear)** | **+0.059 (clear)** |
+
+- **D's whole gap to C is in capacity.** On willingness and behavior, where both get the same kind of input, the conversation ties the form at every budget (D at 5 questions is better on willingness alone, −0.017, clear).
+- **Talking helps when people answer clearly.** With no noise drawn, D and DW beat the form by 0.015–0.022 at every budget. A free answer carries more than one ticked box.
+- **Talking loses on noisy answers**, mostly through capacity. On heavy-noise test users the gap on willingness and behavior alone is smaller (+0.013 to +0.039) than on all three. But the noise is not the same in the two channels: contradictions, planted wrong facts and going along with hints happen only in conversation, so this is the input difference the feedback describes, not proof that talking handles ambiguity badly.
+- **Re-asks help.** D − DN (no re-asks): capacity −0.030 at 10 and −0.040 at 15 (clear), all three dimensions −0.010 (clear). On re-ask turns the final band went wrong→right more often than right→wrong (D at 10: 38 against 28; DW at 10: 33 against 13).
+- **Contradictions are caught.** D flags 86–92% of the planted contradictions (DW 81–88%), and flags 2–3% of runs with no false fact.
+- **Cost:** C has no AI calls (0.11 s per question). D: $0.0126 per interview at list price, 1.42 s per question. DW: $0.0182, 2.10 s (test users' calls not counted).
+
+### Test 14: the hybrid CW (written Nov 24, before the run)
+
+**Method CW** (`methods.py`): the money facts (the five capacity items) are asked on the form exactly as in C; willingness and behavior are asked in conversation exactly as in DW v2 (AI-written questions, extraction, re-asks of unclear answers). One belief engine picks every question and decides when to stop. Money facts reach the engine only from the form: facts the extractor finds in a conversation answer are dropped. So the two channels get the same money-fact input as C, and:
+
+- **CW − C** = talking about attitudes, with the same fact input (the controlled comparison the feedback asks for);
+- **CW − DW** = hearing the money facts in conversation instead of on a form.
+
+Same settings as test 12b (old band rule, writer prompt v2), 100 test users × 3 budgets × 3 repeats = 900 interviews. Run: `results/rerun_hybrid.jsonl`.
+
+Predictions:
+
+- Capacity error: CW − C within ±0.01 and not clear at every budget. CW − DW clearly lower at 10 and 15 questions (DW − C was +0.033 and +0.046).
+- Willingness + behavior error: CW − DW within ±0.01 (the same conversation). CW − C not clearly worse at any budget.
+- Avg error over three dimensions: CW − C within ±0.01 at every budget; CW − DW clearly lower at 15 questions.
+- On test users with no noise drawn, CW beats C (as D and DW do), but by less, since only the attitude part talks.
+- On heavy-noise test users, CW − C on willingness + behavior stays worse (conversation-only noise remains).
+- System cost about 60–70% of DW's ($0.011–0.013 per interview), since form turns make no AI calls.

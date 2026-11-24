@@ -222,6 +222,7 @@ class Belief:
 
     def __init__(self, seed=0, channel="form"):
         self.channel = channel   # how answers arrive: "form" (A, B, C, DP) or "spoken" (D, DR)
+        self.form_dims = ()      # dimensions asked on a form even when channel is "spoken" (CW)
         self.dim = {d: np.full(len(GRID), 1 / len(GRID)) for d in ("willingness", "behavioral")}
         self.fact = {f: np.full(len(g), 1 / len(g)) for f, g in FACT_GRIDS.items()}
         # fixed random numbers: the same belief always gives the same capacity samples
@@ -239,13 +240,14 @@ class Belief:
         b.fact_base = {k: v.copy() for k, v in self.fact_base.items()}
         b.stmts = {k: list(v) for k, v in self.stmts.items()}
         b.u, b.said, b.asked, b._models = self.u, list(self.said), set(self.asked), self._models
-        b.channel = self.channel
+        b.channel, b.form_dims = self.channel, self.form_dims
         return b
 
     def model(self, item, channel=None):
         """The answer model for choosing questions (this belief's channel), or for a given
         channel. Form answers are always read with the "form" model."""
-        key = (item["id"], channel or self.channel)
+        own = "form" if item["dimension"] in self.form_dims else self.channel
+        key = (item["id"], channel or own)
         if key not in self._models:
             self._models[key] = option_model(item, key[1])
         return self._models[key]
