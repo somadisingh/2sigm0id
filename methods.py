@@ -9,6 +9,12 @@
                           answer into evidence and words the clarifying questions
   DR  D, with retrieval: the extractor also sees similar labeled pilot answers (retrieval.py)
   DN  D without clarifying questions: each question is asked only once (ablation test 3)
+  DW  D, with AI-written questions: the engine chooses the question as in D, and the LLM words
+      it from the conversation so far instead of using the bank wording (ablation test 12)
+  CW  hybrid (controlled test, Nov 24): the money facts (capacity items) on the form as in C,
+      willingness and behavior in conversation as in DW; one belief engine picks every question.
+      Facts reach the engine only from the form, so CW - C isolates talking about attitudes,
+      and CW - DW isolates hearing the money facts in conversation
   DP  D, reading answers with token probabilities: GLM picks the matching option, and its
       calibrated probability for every option is the evidence (soft evidence)
   C0  the earlier adaptive form: a hand-made rule picks the questions
@@ -113,8 +119,30 @@ FACT_TEXT = {
     "dependents": "how many people depend on their income",
     "past_loss_reaction": "what they actually did the last time their investments fell a lot",
 }
-D_METHODS = ("D", "DR", "DP", "DN")
-FORM_METHODS = ("A", "B", "C", "C0") + D_METHODS
+WRITE_SYSTEM = (
+    "You are the interviewer in a short spoken interview about how a person invests. You get the "
+    "next question in a standard wording, and the last part of the conversation. Reword the "
+    "question so it follows naturally from the conversation. You may start with a few neutral "
+    "words about the last answer (no praise, no judgment), and you may use plain, friendly words. "
+    "Rules: ask about exactly the same thing as the standard wording, and only that. Keep every "
+    "number, time span and situation in it. Don't suggest, hint at or give examples of any "
+    "answer. Don't give advice or opinions. One or two sentences. Reply with ONE JSON object and "
+    'nothing else: {"question": "<the question>"}')
+# Version 2 (Nov 23, test 12b): version 1 opened 12% of its questions by restating an earlier
+# answer ("Since you're leaning toward growth, ..."), which a judge read as leading.
+WRITE_SYSTEM_V2 = (
+    "You are the interviewer in a short spoken interview about how a person invests. You get the "
+    "next question in a standard wording, and the last part of the conversation. Reword the "
+    "question in plain, friendly words so it fits a spoken conversation. Rules: don't mention, "
+    "repeat or sum up anything the person said before; at most, start with one short neutral "
+    "word or phrase such as \"Okay.\" or \"Next,\". Ask about exactly the same thing as the standard "
+    "wording, and only that. Keep every number, time span and situation in it. Don't suggest, "
+    "hint at or give examples of any answer. Don't give advice or opinions. One or two "
+    'sentences. Reply with ONE JSON object and nothing else: {"question": "<the question>"}')
+WRITE_MESSAGE = "Conversation so far:\n{history}\n\nStandard wording of the next question: {question}"
+D_METHODS = ("D", "DR", "DP", "DN", "DW")
+FORM_METHODS = ("A", "B", "C", "C0", "CW") + D_METHODS
+HYBRID_FORM_DIMS = ("capacity",)   # CW: these dimensions are asked on the form
 _POOL, _TEMPERATURE = None, None
 NO_EVIDENCE = {"facts": {}, "willingness": None, "behavioral": None, "no_past_loss": False}
 
@@ -324,6 +352,10 @@ FACT_ITEM = {"horizon_yrs": "CAP01", "emergency_fund_months": "CAP02", "income_s
              "debt_to_income": "CAP04", "dependents": "CAP05", "past_loss_reaction": "BEH02"}
 
 
+FACT_ITEM_DIM = {"horizon_yrs": "capacity", "emergency_fund_months": "capacity", "income_stability": "capacity",
+                 "debt_to_income": "capacity", "dependents": "capacity", "past_loss_reaction": "behavioral"}
+
+
 def update_unclear(unclear, item, ev, flags, pool):
     """D re-asks a fact item only while it is unclear. "vague": its own answer gave no clear
     reading (re-asked once). "conflict": a contradiction about that fact was flagged, in
@@ -367,6 +399,20 @@ def clarify(llm, key, setting, item, turns):
         call_log(r, model=key, valid=valid, retry=False, clarify=True)]
 
 
+def write_question(llm, key, setting, item, turns, last=3):
+    """Method DW: word the engine's chosen question from the conversation so far. Falls back
+    to the bank wording."""
+    history = "\n".join(f'Interviewer: {t["q"]}\nPerson: {(t["a"] or "")[:400]}' for t in turns[-last:]) or "(this is the first question)"
+    system = WRITE_SYSTEM_V2 if C.WRITE_PROMPT_VERSION == 2 else WRITE_SYSTEM
+    msgs = [{"role": "system", "content": system},
+            {"role": "user", "content": WRITE_MESSAGE.format(history=history, question=item["spoken"])}]
+    r = llm.chat(key, msgs, setting, C.INTERVIEWER_MAX_TOKENS, C.INTERVIEWER_TEMPERATURE)
+    obj = extract_json(r["text"])
+    q = obj.get("question") if isinstance(obj, dict) else None
+    valid = isinstance(q, str) and bool(q.strip())
+    return (q.strip() if valid else item["spoken"]), [call_log(r, model=key, valid=valid, retry=False, written=True)]
+
+
 def pick_option(text, n):
     m = INT_RE.search(strip_think(text) or "")
     if m and 1 <= int(m.group(1)) <= n:
@@ -388,12 +434,16 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
     rng = random.Random(zlib.crc32(f"{persona['id']}|{repeat}".encode()))
     u_msgs = [{"role": "system", "content": P.build_user_system(persona)}]
     fixed = short_form(bank, budget) if method in ("A", "B") else None
-    spoken = method in ("B",) + D_METHODS
-    belief = BE.Belief(channel="spoken" if method in ("D", "DR", "DN") else "form")
+    hybrid = method == "CW"
+    talks = method in ("B", "CW") + D_METHODS   # has spoken turns
+    belief = BE.Belief(channel="spoken" if method in ("D", "DR", "DN", "DW", "CW") else "form")
+    if hybrid:
+        belief.form_dims = HYBRID_FORM_DIMS
     answers, turns, u_calls, m_calls = [], [], [], []
     asks = {}
     unclear = {}   # D: fact item -> "vague" (no clear reading) or "conflict" (contradicted)
     said = set()
+    slipped = {}   # fact -> the false statement the test user was told to make
     pending_fix = None   # a planned mistake to correct on the next turn
     would_stop_at, early_stop = None, False
     t0 = time.monotonic()
@@ -407,11 +457,13 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             item = next_adaptive_item(bank, answers, {a["id"] for a in answers})
         else:
             cands = [i for i in pool if i["id"] not in asks]
-            if method in D_METHODS and method != "DN":   # a conversation can come back to a fact to check it.
+            if (method in D_METHODS and method != "DN") or hybrid:   # a conversation can come back to a fact to check it.
                 # Money facts: up to MAX_ASKS_PER_FACT asks; a second statement guards the
                 # estimate against vague or false answers. The past-loss question: only when
                 # unclear, because people repeat the same story (Nov 12, 20-user checks).
-                cands += [i for i in pool if 0 < asks.get(i["id"], 0) < (
+                # CW: form items are never re-asked, as in C
+                cands += [i for i in pool if not (hybrid and i["dimension"] in HYBRID_FORM_DIMS)
+                          and 0 < asks.get(i["id"], 0) < (
                     BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or unclear.get(i["id"]) == "conflict"
                     else 2 if unclear.get(i["id"]) == "vague" else 0)]
             item, info = belief.choose(cands, budget - k, seed=k)
@@ -428,6 +480,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
 
         noise = draw_noise(rng, persona, k)
         target, correction = None, None
+        spoken = talks and not (hybrid and item["dimension"] in HYBRID_FORM_DIMS)   # this turn
         if spoken:
             # spoken interview: same noise rules as method D0, including targeted contradictions
             if pending_fix:   # the user corrects the planned mistake of the last turn
@@ -445,11 +498,24 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             if fact:   # a planned mistake now, corrected on the next turn
                 noise = ["correction"]
                 correction = {"fact": fact, "phase": "wrong", "wrong": P.wrong_fact(persona, fact)}
+            if (C.SLIPS_FIXED_ON_REASK and reask and item.get("fact") in slipped
+                    and not (correction and correction["phase"] == "fix")):
+                # asked to clarify a fact it stated falsely: the test user corrects it
+                noise = [n for n in noise if n not in ("contradiction", "vague", "correction")] + ["reask_fix"]
+                target, fact = None, None
+                correction = {"fact": item["fact"], "phase": "fix", "on_reask": True,
+                              "slip": slipped.pop(item["fact"]), "true": P.true_fact(persona, item["fact"])}
+            if target:
+                slipped[target["fact"]] = target["wrong"]
             pending_fix = fact
             question = item["spoken"]
             if reask:
                 question, step_calls = clarify(llm, mapper, m_setting, item, turns)
-            wrong = target["wrong"] if target else (correction or {}).get("wrong")
+            elif method in ("DW", "CW"):
+                # CW: the writer sees only the conversation turns, not the form questions
+                question, step_calls = write_question(llm, mapper, m_setting, item,
+                                                      [t for t in turns if not t.get("form")])
+            wrong = target["wrong"] if target else (correction or {}).get("true" if (correction or {}).get("on_reask") else "wrong")
             fix_fact = correction["fact"] if correction and correction["phase"] == "fix" else None
             note = P.private_note(noise, wrong, fix_fact)
         else:
@@ -484,12 +550,15 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             if q:
                 flags = [f"contradiction: {item.get('fact') or item['dimension']} differs from the answer "
                          f"to question {t + 1}" for t in belief.observe_soft(item, q, k)[:1]]
-        elif method in D_METHODS:
+        elif spoken and (method in D_METHODS or hybrid):
             import retrieval
             examples = (retrieval.examples_block(pilot_pool().similar(item, question, answer))
                         if method == "DR" else "")
             evidence, calls = extract(llm, mapper, m_setting, question, item, answer, examples)
             step_calls += calls
+            if hybrid:   # money facts come only from the form
+                evidence = {**evidence, "facts": {f: v for f, v in evidence["facts"].items()
+                                                  if FACT_ITEM_DIM.get(f) not in HYBRID_FORM_DIMS}}
             flags = apply_evidence(belief, evidence, k)
             update_unclear(unclear, item, evidence, flags, pool)
         else:
@@ -506,7 +575,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
             said.add(correction["fact"])   # now stated truthfully
 
         score = item["options"][choice - 1]["score"] if choice else None
-        if method not in D_METHODS:
+        if method not in D_METHODS and not (hybrid and spoken):
             belief.observe_option(item, choice)
             answers.append({"id": item["id"], "dimension": item["dimension"], "score": score})
         if belief.mismatch():
@@ -514,7 +583,7 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         m_calls += step_calls
         # forms pick and score in code (no LLM); B's system call is the answer mapper; D's are
         # the extractor and, when it re-asks a fact, the clarifying question
-        turns.append({"q": question, "item": item["id"], "reask": reask, "a": answer,
+        turns.append({"q": question, "item": item["id"], "reask": reask, "a": answer, "form": not spoken,
                       "option": choice, "score": score, "evidence": evidence, "noise": noise,
                       "contradiction_target": target, "correction": correction,
                       "profile_before": profile_before,
@@ -526,14 +595,14 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
                    if belief.mismatch() else [])
     return {
         "method": method, "budget": budget,
-        "interviewer": mapper if spoken else None,
-        "interviewer_setting": m_setting if spoken else None,
+        "interviewer": mapper if talks else None,
+        "interviewer_setting": m_setting if talks else None,
         "user": user, "user_setting": u_setting,
         "persona_id": persona["id"], "repeat": repeat,
         "truth": persona["ground_truth"], "persona": persona,
         "final_profile": belief.profile(),
         # the bank's plain-average scoring, kept for comparison (D has no option answers)
-        "final_profile_mean": estimate(answers) if method not in D_METHODS else None,
+        "final_profile_mean": estimate(answers) if method not in D_METHODS + ("CW",) else None,
         "final_flags": final_flags,
         "questions_asked": len(turns), "early_stop": early_stop,
         "would_stop_at": would_stop_at, "full_budget": full_budget,

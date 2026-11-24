@@ -201,3 +201,42 @@ if __name__ == "__main__":
         if name.startswith("test_"):
             fn()
             print("ok", name)
+
+
+def test_conflicting_fact_needs_a_majority():
+    """Nov 22: one statement against one leaves the fact unknown; a third statement decides."""
+    b = B.Belief(channel="spoken")
+    prior = b.fact["horizon_yrs"].copy()
+    b.observe_fact("horizon_yrs", 20, 20, turn=0)
+    b.observe_fact("horizon_yrs", 2, 2, turn=1)     # contradicts the first statement
+    assert b.disputed("horizon_yrs")
+    assert np.allclose(b.fact["horizon_yrs"], prior)   # neither statement counts yet
+    b.observe_fact("horizon_yrs", 19, 21, turn=2)   # agrees with the first
+    assert not b.disputed("horizon_yrs")
+    assert b.counted("horizon_yrs") == [(20, 20), (19, 21)]
+    grid = B.FACT_GRIDS["horizon_yrs"]
+    assert float((grid * b.fact["horizon_yrs"]).sum()) > 15
+
+
+def test_stop_needs_confidence():
+    """Nov 22: a change chance under 5% alone does not settle the band when the engine is
+    unsure which band it is (failure analysis part 4)."""
+    b = B.Belief()
+    pmf = b.final_pmf(b.band_pmfs())
+    assert pmf.max() < B.STOP_CONFIDENCE
+    _, info = b.choose(POOL[:3], left=0)   # nothing left to ask: change chance is 0
+    assert info["change_chance"] == 0 and not info["settled"]
+
+
+def test_stop_watches_the_reported_band():
+    """Nov 22: the stop rule watches the band that the score and the app report (the lowest of
+    the three bands of the mean scores), not the most likely band of the distribution."""
+    from prompts import band
+    b = B.Belief()
+    b.observe_score("willingness", 0.9, "stated")
+    b.observe_score("behavioral", 0.3, "hypothetical")
+    reported = min(band(v) for v in b.profile().values())
+    top, chance = b.top_band()
+    assert top == reported
+    pmf = b.final_pmf(b.band_pmfs())
+    assert abs(chance - pmf[top - 1]) < 1e-9

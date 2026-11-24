@@ -203,6 +203,9 @@ NOISE_NOTES = {
                    "it is a mistake."),
     "correction_fix": ("In this answer, also correct a mistake you made just before about {fact}: "
                        "say that what you said was wrong, and give the true value."),
+    # noise version 3 (config.SLIPS_FIXED_ON_REASK): asked to clarify a fact it stated falsely
+    "reask_fix": ("Earlier you stated {fact} wrongly. The truth is: {wrong}. In this answer, say that "
+                  "your earlier statement was a mistake, and give this true value."),
 }
 # How a test user refers to a fact when it corrects itself.
 FACT_WORDS = {"horizon_yrs": "when you need the money", "emergency_fund_months": "your emergency savings",
@@ -228,6 +231,20 @@ FACT_KEYWORDS = {
 def facts_asked(question):
     q = question.lower()
     return {f for f, kws in FACT_KEYWORDS.items() if any(k in q for k in kws)}
+
+
+def true_fact(p, fact):
+    """The persona's true value of one fact, in words (for the noise-version-3 re-ask fix)."""
+    f, e = p["finances"], p["experience"]
+    return {
+        "horizon_yrs": f"you need the money in about {f['horizon_yrs']} years",
+        "emergency_fund_months": f"you have about {f['emergency_fund_months']:g} months of expenses saved",
+        "dependents": (f"{f['dependents']} people depend" if f['dependents'] != 1 else "1 person depends") + " on you financially",
+        "debt_to_income": f"debt payments take about {round(100 * f['debt_to_income'])}% of your income",
+        "income_stability": f"your income is {f['income_stability']}",
+        "past_loss_reaction": {"sold": "in your last big loss you sold", "held": "in your last big loss you held on",
+                               "none": "you have never had a big investment loss"}.get(e["past_loss_reaction"], ""),
+    }[fact]
 
 
 def wrong_fact(p, fact):
@@ -263,6 +280,7 @@ def private_note(noise_kinds, wrong=None, fix_fact=None):
         return ""
     notes = [NOISE_NOTES[k].format(wrong=wrong) if k in ("contradiction", "correction")
              else NOISE_NOTES[k].format(fact=FACT_WORDS[fix_fact]) if k == "correction_fix"
+             else NOISE_NOTES[k].format(fact=FACT_WORDS[fix_fact], wrong=wrong) if k == "reask_fix"
              else NOISE_NOTES[k] for k in noise_kinds]
     return "\n\n[Private note: " + " ".join(notes) + "]"
 

@@ -14,7 +14,8 @@ clarifying questions. See BELIEF_ENGINE.md for the reasoning and the sources.
   next question            the one whose answer tells us most about the final band
                            (expected information gain)
   stop                     when asking the rest of the budget has under a 5% chance of
-                           changing the most likely final band (stochastic curtailment)
+                           changing the reported final band (stochastic curtailment), and
+                           the engine gives that band at least 80% (STOP_CONFIDENCE)
 
 The evidence strengths (SIGMA) and LAPSE are starting guesses. Fit them on the 10 pilot
 users and report how sensitive the results are to them.
@@ -102,6 +103,20 @@ MAX_ASKS_PER_FACT = 3  # D may re-ask a fact to clarify it, up to this many time
 NO_LOSS = -1.0   # past-loss statement "never had a big loss"
 CONFLICT_GAP = {"horizon_yrs": 2, "emergency_fund_months": 1, "debt_to_income": 0.05,
                 "dependents": 0.5}
+# How clear spoken statements of one money fact are combined (Nov 22, failure analysis part 1).
+# "all": every statement counts (the full run). "majority": statements that agree form a group;
+# only a group with more than half of the statements counts. With no such group (for example
+# one statement against one), the fact counts as not known yet, so one false statement cannot
+# pull capacity under a weakest-link cap. Vague statements always count, as weak evidence.
+CONFLICT_RULE = "majority"
+# The stop rule also needs this much confidence in the most likely final band (Nov 22, failure
+# analysis part 4: the engine stopped when no question could help, even when it was unsure).
+STOP_CONFIDENCE = 0.80
+# Which band the stop rule watches (Nov 22, failure analysis part 4, fix 2). "reported": the
+# band the score, the app and the live chat report, the lowest of the three bands of the mean
+# scores. "mode": the most likely band of the final-band distribution (before Nov 22). The two
+# differed in about 11% of D's stop points, so a "settled" band was not always the reported one.
+BAND_RULE = "reported"
 
 
 def capacity_vec(h, e, inc, d, dep):
@@ -187,11 +202,27 @@ def _normal(p):
     return p / p.sum()
 
 
+def _range_lik(fact, low, high, outside):
+    """Likelihood of a spoken range: 1 inside it, `outside` elsewhere."""
+    grid = FACT_GRIDS[fact]
+    inside = (grid >= low - 1e-9) & (grid <= high + 1e-9)
+    if not inside.any():   # range falls between grid values: use the nearest one
+        inside = np.abs(grid - (low + high) / 2) == np.abs(grid - (low + high) / 2).min()
+    return np.where(inside, 1.0, outside)
+
+
+def _agree(fact, a, b):
+    """Two statements (low, high) of a fact agree: the same rule as a contradiction flag."""
+    limit = max(CONFLICT_GAP[fact], 0.3 * max(a[1], b[1])) if fact in CONFLICT_GAP else 0.5
+    return max(a[0] - b[1], b[0] - a[1]) <= limit
+
+
 class Belief:
     """One person's profile as probability distributions. Copy it to try out an answer."""
 
     def __init__(self, seed=0, channel="form"):
         self.channel = channel   # how answers arrive: "form" (A, B, C, DP) or "spoken" (D, DR)
+        self.form_dims = ()      # dimensions asked on a form even when channel is "spoken" (CW)
         self.dim = {d: np.full(len(GRID), 1 / len(GRID)) for d in ("willingness", "behavioral")}
         self.fact = {f: np.full(len(g), 1 / len(g)) for f, g in FACT_GRIDS.items()}
         # fixed random numbers: the same belief always gives the same capacity samples
@@ -199,19 +230,24 @@ class Belief:
         self.said = []   # every stated fact or past-loss score, for contradiction checks
         self.asked = set()
         self._models = {}
+        self.fact_base = {f: v.copy() for f, v in self.fact.items()}   # all fact evidence except clear statements
+        self.stmts = {f: [] for f in FACTS}   # clear spoken statements (low, high) of each fact
 
     def copy(self):
         b = Belief.__new__(Belief)
         b.dim = {k: v.copy() for k, v in self.dim.items()}
         b.fact = {k: v.copy() for k, v in self.fact.items()}
+        b.fact_base = {k: v.copy() for k, v in self.fact_base.items()}
+        b.stmts = {k: list(v) for k, v in self.stmts.items()}
         b.u, b.said, b.asked, b._models = self.u, list(self.said), set(self.asked), self._models
-        b.channel = self.channel
+        b.channel, b.form_dims = self.channel, self.form_dims
         return b
 
     def model(self, item, channel=None):
         """The answer model for choosing questions (this belief's channel), or for a given
         channel. Form answers are always read with the "form" model."""
-        key = (item["id"], channel or self.channel)
+        own = "form" if item["dimension"] in self.form_dims else self.channel
+        key = (item["id"], channel or own)
         if key not in self._models:
             self._models[key] = option_model(item, key[1])
         return self._models[key]
@@ -220,8 +256,32 @@ class Belief:
 
     def update(self, target, lik):
         kind, name = target
-        store = self.dim if kind == "dim" else self.fact
-        store[name] = _normal(store[name] * lik)
+        if kind == "dim":
+            self.dim[name] = _normal(self.dim[name] * lik)
+        else:
+            self.fact_base[name] = _normal(self.fact_base[name] * lik)
+            self._refresh(name)
+
+    def _refresh(self, fact):
+        """fact belief = all other evidence x the clear statements that count (CONFLICT_RULE)."""
+        p = self.fact_base[fact]
+        for lo, hi in self.counted(fact):
+            p = p * _range_lik(fact, lo, hi, OUTSIDE)
+        self.fact[fact] = _normal(p)
+
+    def counted(self, fact):
+        """The clear statements of a fact that count. "majority": the largest group of
+        statements that agree with each other, if it has more than half of them."""
+        s = self.stmts[fact]
+        if CONFLICT_RULE == "all" or len(s) < 2:
+            return list(s)
+        groups = [[b for b in s if _agree(fact, a, b)] for a in s]
+        best = max(groups, key=len)
+        return best if 2 * len(best) > len(s) else []
+
+    def disputed(self, fact):
+        """True when clear statements of the fact disagree and no majority settles them."""
+        return CONFLICT_RULE != "all" and len(self.stmts[fact]) >= 2 and not self.counted(fact)
 
     def observe_option(self, item, choice):
         """A form answer: option number `choice` (1-based) of a bank item."""
@@ -261,11 +321,11 @@ class Belief:
 
     def observe_fact(self, fact, low, high, vague=False, turn=None):
         """A spoken fact, as a range of values (income: its sub-score as low = high)."""
-        grid = FACT_GRIDS[fact]
-        inside = (grid >= low - 1e-9) & (grid <= high + 1e-9)
-        if not inside.any():   # range falls between grid values: use the nearest one
-            inside = np.abs(grid - (low + high) / 2) == np.abs(grid - (low + high) / 2).min()
-        self.update(("fact", fact), np.where(inside, 1.0, OUTSIDE_VAGUE if vague else OUTSIDE))
+        if vague:
+            self.update(("fact", fact), _range_lik(fact, low, high, OUTSIDE_VAGUE))
+        else:
+            self.stmts[fact].append((low, high))
+            self._refresh(fact)
         return self._conflicts(fact, low, high, vague, turn)
 
     def observe_score(self, dim, score, kind, vague=False, turn=None):
@@ -331,6 +391,18 @@ class Belief:
             at_least[:5] *= np.cumsum(p[::-1])[::-1]
         at_least[5] = 0
         return at_least[:5] - at_least[1:]
+
+    def top_band(self, cap=None):
+        """(band, chance): the band the stop rule watches (BAND_RULE), and the engine's chance
+        that the final band is that band."""
+        cap = self.capacity_samples() if cap is None else cap
+        pmf = self.final_pmf(self.band_pmfs(cap))
+        if BAND_RULE == "reported":
+            top = min([band(float(cap.mean()))] + [band(float((GRID * self.dim[d]).sum()))
+                                                    for d in ("willingness", "behavioral")])
+        else:
+            top = int(np.argmax(pmf)) + 1
+        return top, float(pmf[top - 1])
 
     def profile(self):
         cap = self.capacity_samples()
@@ -402,7 +474,7 @@ class Belief:
         """Stochastic curtailment: the chance that asking every item in `plan` would change
         the most likely final band. Draws a 'true' person from the current belief, simulates
         their answers, updates a copy, and checks the band at the end."""
-        now = int(np.argmax(self.final_pmf(self.band_pmfs())))
+        now = self.top_band()[0]
         if not plan:
             return 0.0
         rng = np.random.default_rng(seed)
@@ -417,7 +489,7 @@ class Belief:
                 col = L[:, truth[name]]
                 o = rng.choice(len(L), p=col / col.sum())
                 b.update((kind, name), L[o])
-            changed += int(np.argmax(b.final_pmf(b.band_pmfs()))) != now
+            changed += b.top_band()[0] != now
         return changed / N_ROLLOUTS
 
     def choose(self, candidates, left, seed=0):
@@ -428,16 +500,16 @@ class Belief:
         the band (where a real system would stop), the study keeps asking: pick the item
         that most cuts the uncertainty of its own dimension, to lower the error per score.
         """
-        pmf = self.final_pmf(self.band_pmfs())
         scores = self.score_items(candidates)
         ranked = sorted(candidates, key=lambda it: -scores[it["id"]]["gain"])
         plan = list({it["id"]: it for it in ranked}.values())[:left]
         p_change = self.change_chance(plan, seed)
         # fresh every turn: a later contradiction can make a settled band uncertain again
-        settled = p_change < STOP_CHANCE
+        top, chance = self.top_band()
+        settled = p_change < STOP_CHANCE and chance >= STOP_CONFIDENCE
         key = "var_cut" if settled else "gain"
         best = max(candidates, key=lambda it: scores[it["id"]][key])
         return best, {"phase": "sharpen" if settled else "settle band",
                       "value": round(scores[best["id"]][key], 5),
-                      "top_band": int(np.argmax(pmf)) + 1, "top_band_chance": round(float(pmf.max()), 3),
+                      "top_band": top, "top_band_chance": round(chance, 3),
                       "change_chance": round(p_change, 3), "settled": settled}

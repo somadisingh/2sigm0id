@@ -33,8 +33,8 @@ def load(path, method="D"):
     return out
 
 
-def rng(xs):
-    lo, hi = bootstrap_ci(xs)
+def rng(xs, users=None):
+    lo, hi = bootstrap_ci(xs, groups=users)
     clear = "CLEAR" if lo is not None and (lo > 0 or hi < 0) else "not clear"
     return f"{mean(xs):+.3f} ({lo:+.3f} to {hi:+.3f}, {clear})"
 
@@ -61,11 +61,11 @@ def main(swap_path, full_path):
         ex_s = mean(final_band(s) == s["truth"]["final_band"] for s, _ in ps)
         differs = mean(final_band(s) != final_band(o) for s, o in ps)
         out.append(f"| {bu} | {len(ps)} | {mean(err(o) for _, o in ps):.3f} | {mean(err(s) for s, _ in ps):.3f} "
-                   f"| {rng(diffs)} | {100 * ex_o:.0f}% / {100 * ex_s:.0f}% | {100 * differs:.0f}% |")
+                   f"| {rng(diffs, [o['persona_id'] for _, o in ps])} | {100 * ex_o:.0f}% / {100 * ex_s:.0f}% | {100 * differs:.0f}% |")
     out.append("\nBy dimension (all budgets): swap - original")
     allp = [p for v in pairs.values() for p in v]
     for d in DIMS:
-        out.append(f"   {d}: {rng([abs(s['final_profile'][d] - s['truth'][d]) - abs(o['final_profile'][d] - o['truth'][d]) for s, o in allp])}")
+        out.append(f"   {d}: {rng([abs(s['final_profile'][d] - s['truth'][d]) - abs(o['final_profile'][d] - o['truth'][d]) for s, o in allp], [o['persona_id'] for _, o in allp])}")
     out.append("\nBy the new style (all budgets): swap - original avg error")
     for field in ("verbosity", "vocabulary", "hedging"):
         groups = defaultdict(list)

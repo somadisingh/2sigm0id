@@ -102,6 +102,11 @@ EXPERIMENT_PERSONAS = "mirofish/personas_100_with_backstories.json"   # Siya's 1
 # Give each test user its MiroFish backstory. On since Nov 13, 2026 (Somaditya read them;
 # risk sentences rewritten, see rewrite_backstories.py). Bake-off stages use personas.json (none).
 USE_BACKSTORIES = True
+# Noise version for spoken methods (Nov 22, failure analysis part 1). False: a planned
+# contradiction can fire again when the interviewer asks to clarify the same fact, so the test
+# user may repeat its false value (the full run). True: when the interviewer asks to clarify a
+# fact the test user stated falsely, the test user corrects it, as a person who misspoke would.
+SLIPS_FIXED_ON_REASK = False
 
 # ---------------- Interview settings ----------------
 BUDGET = 10                 # the middle budget from the shared contract
@@ -110,6 +115,8 @@ USER_MAX_TOKENS = 1500
 INTERVIEWER_TEMPERATURE = 0.7   # set to None to use each provider's default
 USER_TEMPERATURE = 0.9
 MAX_WORKERS = 6             # interviews run in parallel
+WRITE_PROMPT_VERSION = 2   # DW's question writer: 1 (test 12) or 2 (test 12b, Nov 23: no restating earlier answers)
+RETRIEVAL_SEARCH = "bm25"   # DR's example search: "bm25" or "embedding"; test 11 (Nov 22): no clear gain, keep bm25
 
 # ---------------- Full-run projection (for cost/time estimates) ----------------
 # 100 users x 3 budgets x 3 repeats x 2 conversational methods (B and D),

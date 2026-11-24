@@ -41,14 +41,15 @@ def load(path):
 
 def paired(runs, a, b, budget, f, keep=lambda r: True):
     """Mean of f(run of a) - f(run of b) on the same user and repeat, with a 95% range."""
-    diffs = []
+    diffs, users = [], []
     for (m, bu, pid, rep), r in runs.items():
         if m != a or bu != budget or not keep(r):
             continue
         o = runs.get((b, budget, pid, rep))
         if o:
             diffs.append(f(r) - f(o))
-    lo, hi = bootstrap_ci(diffs)
+            users.append(pid)
+    lo, hi = bootstrap_ci(diffs, groups=users)
     return len(diffs), mean(diffs) if diffs else None, lo, hi
 
 
@@ -180,7 +181,7 @@ def test7(runs):
             keys = [k for k in other if k[0] == m and k[1] == bu]
             f_ = mean(E(runs[k]) for k in keys)
             s_ = mean(other[k] for k in keys)
-            lo, hi = bootstrap_ci([other[k] - E(runs[k]) for k in keys])
+            lo, hi = bootstrap_ci([other[k] - E(runs[k]) for k in keys], groups=[k[2] for k in keys])
             label = "spoken fitted" if m in SPOKEN else "starting form"
             out.append(f"   {m}: as run {f_:.3f}, {label} {s_:.3f}, change {s_ - f_:+.3f} ({lo:+.3f} to {hi:+.3f})")
             run_order.append((f_, m))

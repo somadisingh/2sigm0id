@@ -70,3 +70,9 @@ We do not make these changes before Milestone 3. The full run is fixed, and a fi
 ## Note on cost
 
 The dollar figures in `score.py` use the list prices in `config.py`. They give $77.33 for the full run. The provider billed $43.54 for the last two days, including the full run and the test runs before it. GLM 5.3 is $68 of the $77 at list price, so the real price is lower, maybe because of a discount for repeated prompt text. Milestone 3 must say that our costs are list-price upper bounds. The ratios between methods are an estimate: a discount for repeated text helps methods with long prompts (D0, DR) more.
+
+## Update (Nov 22): ablation tests 9 and 10 (new interviews)
+
+- **Fix "conflicting facts need a majority" (in the engine from Nov 22):** on the recorded answers it lowered D's capacity error by 0.005 to 0.007. In new interviews the change is −0.001 at 10 and 15 questions (not clear). It does not fix the problem, because the AI test users usually state the false value again on the re-ask, so the false value often has the majority.
+- **Test users who correct a false fact when asked again (noise version 3, a separate arm):** D's capacity error falls from 0.163 to 0.147 at 10 questions (clear) and from 0.139 to 0.128 at 15 (not clear). This supports point 4 of section 7: part of D's gap comes from how the AI test users act, not from the interviewer. Even so, D is not more accurate than the forms on avg error (at 15 questions D is worse than C by 0.011, clear).
+- Full numbers: `ablations.md`, "Results of tests 9 and 10".

@@ -29,9 +29,10 @@ METHOD_NAMES = {"A": "fixed form", "B": "scripted interview", "C": "adaptive for
                 "D": "adaptive interviewer", "C0": "adaptive form, old rule",
                 "D0": "adaptive interviewer, LLM only", "DR": "adaptive interviewer + retrieval",
                 "DP": "adaptive interviewer + token probabilities",
-                "DN": "adaptive interviewer, no re-asks"}
-FLAGGING = ("D", "DR", "DP", "DN", "D0")          # methods that raise contradiction flags
-ENGINE_CHOOSES = ("C", "D", "DR", "DP", "DN", "D0")   # methods with a stop point (would stop)
+                "DN": "adaptive interviewer, no re-asks", "DW": "adaptive interviewer, AI-written questions",
+                "CW": "hybrid: form for money facts, AI-written conversation for attitudes"}
+FLAGGING = ("D", "DR", "DP", "DN", "DW", "CW", "D0")          # methods that raise contradiction flags
+ENGINE_CHOOSES = ("C", "CW", "D", "DR", "DP", "DN", "DW", "D0")   # methods with a stop point (would stop)
 NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
 
 
@@ -45,11 +46,27 @@ def mean(xs):
     return st.mean(xs) if xs else None
 
 
-def bootstrap_ci(xs, n=2000, seed=0):
+def bootstrap_ci(xs, n=2000, seed=0, groups=None):
+    """95% range of the mean of xs. groups: the test user of each value. Then whole test
+    users are resampled (with all their repeats), since repeats of one test user are not
+    independent (Nov 24); without groups, single values are resampled."""
     if len(xs) < 2:
         return (None, None)
     rng = random.Random(seed)
-    means = sorted(st.mean(rng.choices(xs, k=len(xs))) for _ in range(n))
+    if groups is None:
+        means = sorted(st.mean(rng.choices(xs, k=len(xs))) for _ in range(n))
+    else:
+        by = {}
+        for g, x in zip(groups, xs):
+            by.setdefault(g, []).append(x)
+        if len(by) < 2:
+            return (None, None)
+        sums = [(sum(v), len(v)) for v in by.values()]
+        means = []
+        for _ in range(n):
+            pick = rng.choices(sums, k=len(sums))
+            means.append(sum(s for s, _ in pick) / sum(c for _, c in pick))
+        means.sort()
     return means[int(0.025 * n)], means[int(0.975 * n) - 1]
 
 
@@ -83,7 +100,7 @@ def summarize(recs):
 
     per_interview = [mean([abs(r["final_profile"][d] - r["truth"][d]) for d in DIMS]) for r in scored]
     s["avg_error"] = mean(per_interview)
-    s["ci_low"], s["ci_high"] = bootstrap_ci(per_interview)
+    s["ci_low"], s["ci_high"] = bootstrap_ci(per_interview, groups=[r["persona_id"] for r in scored])
     for d in DIMS:
         s[f"err_{d}"] = mean([abs(r["final_profile"][d] - r["truth"][d]) for r in scored])
     pred_bands = [min(band(r["final_profile"][d]) for d in DIMS) for r in scored]
@@ -264,17 +281,18 @@ def paired_table(groups, order, label, base="A"):
             continue
         ref = {(r["persona_id"], r["repeat"]): r for r in groups[(base, k[1])]
                if not r.get("error") and r.get("final_profile")}
-        diffs, band_diffs = [], []
+        diffs, band_diffs, users = [], [], []
         for r in groups[k]:
             b = ref.get((r["persona_id"], r["repeat"]))
             if b is None or r.get("error") or not r.get("final_profile"):
                 continue
             diffs.append(interview_error(r) - interview_error(b))
+            users.append(r["persona_id"])
             exact = lambda x: min(band(x["final_profile"][d]) for d in DIMS) == x["truth"]["final_band"]  # noqa: E731
             band_diffs.append(exact(r) - exact(b))
         if not diffs:
             continue
-        lo, hi = bootstrap_ci(diffs)
+        lo, hi = bootstrap_ci(diffs, groups=users)
         rows.append([label(k), str(len(diffs)), f"{mean(diffs):+.3f}",
                      "-" if lo is None else f"{lo:+.3f} to {hi:+.3f}",
                      f"{100 * mean(band_diffs):+.0f} points"])
@@ -315,7 +333,7 @@ def cost_chart(summaries, path):
         print("(Skipped the cost chart: pip install matplotlib)")
         return
     colors = {"A": "#4C78A8", "B": "#F58518", "C": "#54A24B", "D": "#B279A2",
-              "C0": "#9FD08F", "D0": "#D9B8D0", "DR": "#E45756", "DP": "#72B7B2", "DN": "#9D755D"}
+              "C0": "#9FD08F", "D0": "#D9B8D0", "DR": "#E45756", "DP": "#72B7B2", "DN": "#9D755D", "DW": "#FF9DA6", "CW": "#B279A2"}
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), sharey=True)
     for ax, key, xlabel in ((axes[0], "sys_cost", "System $ per completed profile"),
                             (axes[1], "sys_secs", "System LLM seconds per completed profile")):

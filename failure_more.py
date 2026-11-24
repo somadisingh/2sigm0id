@@ -39,8 +39,8 @@ def false_fact(r):
                for t in r["turns"])
 
 
-def ci(xs):
-    lo, hi = bootstrap_ci(xs)
+def ci(xs, users=None):
+    lo, hi = bootstrap_ci(xs, groups=users)
     return f"{mean(xs):+.3f} ({lo:+.3f} to {hi:+.3f})"
 
 
@@ -82,11 +82,11 @@ def part2(runs, out):
         g = [(r, idx[(r["persona_id"], r["repeat"])]) for r in runs
              if r["method"] == "D" and r["budget"] == bu and level(r) == "heavy"]
         out.append(f"   budget {bu}: " + "; ".join(
-            f"{d} {ci([abs(a['final_profile'][d] - a['truth'][d]) - abs(b['final_profile'][d] - b['truth'][d]) for a, b in g])}"
+            f"{d} {ci([abs(a['final_profile'][d] - a['truth'][d]) - abs(b['final_profile'][d] - b['truth'][d]) for a, b in g], [a['persona_id'] for a, _ in g])}"
             for d in DIMS))
         gf = [(a, b) for a, b in g if not false_fact(a)]
         out.append(f"      without false fact in D's run ({len(gf)} pairs): " + "; ".join(
-            f"{d} {ci([abs(a['final_profile'][d] - a['truth'][d]) - abs(b['final_profile'][d] - b['truth'][d]) for a, b in gf])}"
+            f"{d} {ci([abs(a['final_profile'][d] - a['truth'][d]) - abs(b['final_profile'][d] - b['truth'][d]) for a, b in gf], [a['persona_id'] for a, _ in gf])}"
             for d in DIMS))
 
 

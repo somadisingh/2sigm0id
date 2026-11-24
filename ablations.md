@@ -113,6 +113,72 @@ A, B, C, D, D0, DR, DP, and the new D without re-asks (test 3). C0 is not needed
 - **Nov 14, test 8 (Somaditya).** Not run. `N_ROLLOUTS` was set to 400 in the Nov 12 review, before the run, so the plan says that this test is not needed.
 - **Nov 15, test 5 (Somaditya, written after the run).** The prediction for D gives a reason that was out of date before the run: it says the stop rule simulates D's answers with the weaker form model. Since the Nov 12 review, D's belief uses its own spoken answer model to choose questions and to stop (`channel="spoken"` in `belief.py`). This entry should have been made before the run (plan task P2b); we make it now, after we saw the results. We keep the prediction ("D: more than 5%") as it was written, but we withdraw its reason. So D's result below holds as a number, but it does not support that reason. Plan P2b also listed tests 7 and 8; they are the two Nov 14 entries above.
 
+## Follow-up tests 9 and 10 (Nov 22, written before the reruns)
+
+These test the two fixes from the failure analysis (`failure_D_capacity.md`, `failure_analysis_2to4.md`). The settings were chosen on the full run's recorded answers, so only the new interviews test them.
+
+**Engine changes (`belief.py`, both on by default from Nov 22):**
+
+1. **Conflicting facts need a majority** (`CONFLICT_RULE = "majority"`). Clear spoken statements of a fact that agree form a group. Only a group with more than half of the statements counts. With no such group (for example one statement against one), the fact counts as not known until another statement decides. On the full run's recorded answers, this lowers D's capacity error from 0.164 to 0.159 at 10 questions and from 0.140 to 0.133 at 15, and helps every D method at every budget a little.
+2. **The stop rule needs confidence** (`STOP_CONFIDENCE = 0.80`). Stop only when the change chance is under 5% *and* the engine gives its most likely band at least 80%. On the recorded runs, the band then changes after the stop in 0% to 3.4% of runs (C and D, 10 and 15 questions), against 7% to 14% before, and 1.1 to 3.7 questions per run are saved.
+
+**Test-user change (noise version 3, `--fix-slips`, off by default):** when the interviewer asks to clarify a fact that the test user stated falsely (a planned contradiction), the test user says it was a mistake and gives the true value. Reason: in the full run, a planned contradiction could fire again on the clarifying question with the same wrong value, so in 74 facts the false value was stated more often than the true one. A person who misspoke would usually correct it when asked. This changes the test users after we saw the results, so we report it as a separate arm and never mix it with the full run. Check on 20 users (Nov 22): 8 of 8 corrections were read as the true value.
+
+**Runs** (all 100 test users, 5/10/15 questions, 3 repeats; U054 is left out in the scoring):
+
+- `results/rerun_engine.jsonl`: C, D, DN with the new engine and the old noise.
+- `results/rerun_fixslips.jsonl`: D with the new engine and noise version 3.
+
+**Test 9: what the engine changes do** (rerun_engine against the full run, paired). Predictions: D's capacity error is lower by 0.003 to 0.010 at 10 and 15 questions; D's avg error is lower by 0.001 to 0.005 (may not be clear). DN gains less than D, because it cannot re-ask. C's avg error changes by less than 0.005 (forms get no contradictions; only the questions after the stop change). The band changes after the stop point in under 5% of runs for C and D at every budget.
+
+**Test 10: what realistic slips do** (D in rerun_fixslips against D in rerun_engine, paired: same users, repeats and noise seeds). Predictions: D's capacity error on heavy-noise users is lower by at least 0.03 at 15 questions; D's avg error at 10 and 15 is lower by 0.005 to 0.015; D is still not clearly better than C at 10 questions.
+
+## Results of tests 9 and 10 (scored Nov 22)
+
+Full numbers: `results/rerun_compare.txt` (made by `rerun_compare.py`). 2,700 + 900 interviews, no errors. Each value is the rerun minus the earlier run, paired, with a 95% range. Negative means the rerun is better. Note: the rerun is a new set of interviews, so each difference also contains run-to-run chance, not only the change.
+
+**Test 9 (engine changes):**
+
+| Prediction | Result | Held? |
+|---|---|---|
+| D capacity lower by 0.003 to 0.010 at 10 and 15 | −0.001 at 10, −0.001 at 15, not clear | No. The replay gain (0.005 to 0.007) did not show in new interviews. |
+| D avg error lower by 0.001 to 0.005 | −0.002 at 10, −0.001 at 15, not clear | Yes in size, but not clear |
+| DN gains less than D | DN gained more: avg error −0.007 at 15 (clear) | No |
+| C avg error changes by less than 0.005 | +0.005 at 5 (clear), +0.003 at 10, +0.002 at 15 | Mostly. C became a little worse; C capacity at 10 is +0.011 (clear). Cause (checked): the conflict rule does not touch forms. The confidence floor keeps C longer in "settle the band" mode, so it asks fewer questions that sharpen single scores (24% → 16% of turns at 10). Where C asked the same questions in both runs, the capacity change is 0.000. |
+| Band changes after the stop in under 5% (C and D, every budget) | C 0.0% / 1.1% / 4.3%; D 0.0% / 2.2% / 3.0% (full run: 0% to 14.3%) | **Yes** |
+
+The stop rule fix works: the stop is now safe, and it still saves 1.0 to 3.9 questions per run at 10 and 15 questions. The conflict rule gives no clear gain in new interviews.
+
+**Test 10 (noise version 3, D only):**
+
+| Prediction | Result | Held? |
+|---|---|---|
+| Heavy-noise users' capacity lower by at least 0.03 at 15 | −0.023 (−0.053 to +0.007), not clear | No (right direction, smaller) |
+| D avg error lower by 0.005 to 0.015 at 10 and 15 | −0.003 at 10, −0.006 at 15, both not clear | Partly (15 only, not clear) |
+| D still not clearly better than C at 10 | D(v3) − C = +0.005, not clear | Yes |
+
+With realistic slips, D's capacity error is clearly lower at 10 questions (−0.015) and lower at 15 (−0.011, not clear). The test users made 124 corrections on re-asks. D still does not beat the forms on avg error: at 15 questions D(v3) is worse than C (+0.011, clear) and A (+0.010, clear). D's exact-band rate at 10 questions stays clearly higher than A's (+0.178).
+
+**What this means for the final report:** (1) the stop rule is now reliable (under 5% at every budget for C and D); (2) part of D's capacity gap came from the test users repeating false facts, not from the interviewer; (3) even so, the adaptive interviewer is not more accurate than the forms on avg error. Its gain is the exact band at 10 questions.
+
+## Follow-up tests 11 to 13 (Nov 22, written before the results)
+
+Two generative AI parts that were agreed on Nov 13 (`plan.md`, "Waiting to-dos"), and one stop-rule fix from `failure_analysis_2to4.md` section 4 (fix 2). Each is tested against the engine of Nov 22 (tests 9 and 10).
+
+**Test 11: embedding retrieval for DR** (no new interviews). `retrieval.py` finds labeled pilot answers that look like a new answer, and DR shows them to the extractor as examples. Until now the search was BM25 (word overlap). The new search uses an embedding model (all-MiniLM-L6-v2: it turns a text into 384 numbers that capture its meaning, so "half a year of savings" is near "six months saved"). Test on the 290 labeled pilot answers, never using examples from the same pilot user:
+
+- (a) Label distance, no API calls: for each answer, how far the labels of the 3 retrieved examples are from its own label (0 to 1 scale), for BM25, the embedding search and random examples. Prediction: both are better than random. The embedding search is better than BM25 on willingness and behavior (answers in different words), and about the same on money facts (numbers decide those, and embeddings handle numbers poorly).
+- (b) Extraction, `pilot.py extract-eval` (about $0.30): DR with each search on the same answers. Prediction: no clear difference in fact accuracy (within 3 points) or score error (within 0.02). The pool is small (10 pilot users), so the best example is often the same for both searches.
+
+**Test 12: AI-written questions (new method DW).** The engine still chooses what to ask (the same as D). GLM then words the question from the conversation so far, instead of using the bank's fixed spoken wording, so the interview reads like a conversation. Everything else is the same as D: re-asks, extractor, engine (Nov 22), noise version 2. Run: all 100 test users, 5/10/15 questions, 3 repeats, paired with D in `results/rerun_engine.jsonl` (same users, repeats and noise seeds). A trial on 20 users comes first. Predictions:
+
+- Accuracy: DW's avg error is within 0.01 of D's at every budget (not clearly different). Reason: the engine and the extractor are the same; only the wording changes.
+- Leading questions: a judge from another company (Nemotron 3.5 Super) reads the bank wording and the written wording of the same questions and says if each hints at an answer. Written questions are flagged more often than bank questions, but in under 10% of cases.
+- Acquiescence: the test users with "acquiescence" noise agree with what a question suggests. On their turns, DW's error is not clearly higher than D's.
+- Cost and speed: one more GLM call per question. The cost per interview is 30% to 60% higher than D, and each question takes 1 to 4 seconds longer.
+
+**Test 13: one band rule everywhere** (no new interviews). The score, the app and the live chat report the lowest of the three bands of the mean scores. The stop rule used the most likely band of the engine's final-band distribution, and the two differ in about 11% of D's stop points. The change: the stop rule, its 80% confidence floor and the live chat's "most likely band" all use the reported band (`BAND_RULE = "reported"` in `belief.py`). Test: replay the engine on the recorded answers of `results/rerun_engine.jsonl` (C and D) and recompute the stop point. Predictions: the band changes after the stop in under 5% of runs for C and D at every budget (as in test 9), D's rate goes down, C's changes by under 1 point (C's two rules rarely differ), and the questions saved per run change by under 0.5. Caveat: in a real run the questions after the stop point would differ a little (as in test 9).
+
 ## Results (full run, scored Nov 14)
 
 File: `results/experiment_full.jsonl` (7,200 runs, no errors). Script: `python ablations_run.py results/experiment_full.jsonl`, output in `results/ablations.txt`. No new API calls. All differences are paired on the same test user, budget and repeat (300 pairs). "Clear" means that the 95% range does not include zero.
@@ -220,3 +286,156 @@ A replay with the run's own values gives back the recorded profiles (largest dif
 4. Retrieval adds cost and no accuracy. Token probabilities save cost and lose accuracy (test 4).
 5. The stop rule saves a third to a half of the questions, but its 5% promise does not hold for C or D (test 5).
 6. The results do not depend on the evidence strengths (test 7).
+
+## Results of tests 11 and 13 (scored Nov 22)
+
+**Test 11: embedding retrieval** (`retrieval_eval.py` → `results/retrieval_eval.txt`; `pilot.py extract-eval --readers D DR DRE` → `results/test11_extract.txt`, $1.17 at list price, more than the $0.30 we expected).
+
+(a) Label distance of the 3 retrieved examples (lower is better):
+
+| Answers | Random | BM25 | Embedding |
+|---|---|---|---|
+| Money facts (60) | 0.440 | **0.344** | 0.380 |
+| Willingness (120) | 0.283 | **0.226** | 0.274 |
+| Behavior (110) | 0.383 | **0.296** | 0.317 |
+| All (290) | 0.353 | **0.277** | 0.312 |
+
+Prediction: the embedding search is better on willingness and behavior. **It did not hold.** Both searches are better than random, but BM25 is better everywhere. A likely cause: we embed the question with the answer, as BM25 does, and all pool answers to one question share the same question text, so the embedding mostly finds "the same question" and not "the same stance". Added after we saw the result (not a planned test): embedding the answer only gives 0.286 overall (willingness 0.259, behavior 0.268, money facts 0.375). That is better than BM25 on behavior only.
+
+(b) Extraction with the retrieved examples (DRE = DR with the embedding search), paired on the same 290 answers:
+
+| Reader | Facts right (50) | Willingness error | Behavior error |
+|---|---|---|---|
+| D (no examples) | 0.88 | 0.105 | 0.085 |
+| DR (BM25) | 0.82 | 0.096 | 0.081 |
+| DRE (embedding) | 0.84 | 0.093 | 0.086 |
+
+DRE − DR: willingness −0.003 (−0.010 to +0.004), behavior +0.006 (−0.005 to +0.020), facts +1 answer of 50. Prediction (no clear difference): **held.** Decision: DR keeps BM25 (`config.RETRIEVAL_SEARCH = "bm25"`). The embedding search stays in `retrieval.py` as an option. With only 10 pilot users in the pool, retrieval has little room to help; a bigger labeled pool (for example the classmate answers) is the better next step.
+
+**Test 13: one band rule everywhere** (`band_rule_replay.py` → `results/band_rule_replay.txt`, no API calls). The replay with the old rule gives the recorded stop point in 100% of runs, so the replay is exact up to the stop point.
+
+| Method, questions | Band changes after the stop: old rule → reported band | Questions saved per run |
+|---|---|---|
+| C, 5 | 0.0% → 0.0% | 0.45 → 0.33 |
+| C, 10 | 1.1% → 0.0% | 1.71 → 1.34 |
+| C, 15 | 4.3% → 1.9% | 3.95 → 3.58 |
+| D, 5 | 0.0% → 0.0% | 0.08 → 0.04 |
+| D, 10 | 2.2% → 0.0% | 0.96 → 0.77 |
+| D, 15 | 3.0% → 3.0% | 3.13 → 2.83 |
+
+Predictions: under 5% everywhere: **held**. D's rate goes down: held at 10 questions, the same at 15. C changes by under 1 point: **did not hold**, C at 15 improved by 2.4 points. Questions saved change by under 0.5: **held** (0.04 to 0.37 fewer). Decision: `BAND_RULE = "reported"` is the default from Nov 22. The stop rule, the live chat and the score now use one band. Caveat: in a new run the questions after the stop point would differ a little.
+
+## Results of test 12 (scored Nov 23)
+
+`written_compare.py` → `results/written_compare.txt`. 900 DW interviews (`results/rerun_written.jsonl`), no errors, paired with D in `rerun_engine.jsonl`. U054 is left out. Note: the DW run started before the band rule of test 13 was changed, so it used the same engine as D (`BAND_RULE = "mode"`); the pairing is fair. GLM wrote 7,560 questions; 14 fell back to the bank wording.
+
+| Prediction | Result | Held? |
+|---|---|---|
+| Avg error within 0.01 of D, not clearly different | 5: −0.002 (not clear); 10: **−0.007 (−0.014 to −0.001, clear)**; 15: +0.004 (not clear) | Within 0.01: yes. Not clearly different: no. DW is clearly better at 10 questions, and its exact band is 5.4 points higher there (clear). |
+| Written questions flagged as leading more often than bank questions, but in under 10% | bank 0.0%, written 12.9% (judge, 209 of 300 sampled questions; earlier judge versions gave 10.3% and 10.5%) | **No** (slightly over 10%) |
+| Acquiescence: DW not clearly worse than D on those users | 5: +0.001, 10: −0.005 (not clear); 15: **+0.011 (clear)** | Yes at 5 and 10, **no at 15** |
+| Cost 30% to 60% higher | $0.0197 vs $0.0139 per interview (+42%, list price) | Yes |
+| Each question 1 to 4 s slower | +0.38 s of system time per question (1.70 vs 1.32 s) | No: faster than we expected |
+
+**What the leading questions are.** Most flagged questions open by restating an earlier answer: "Since you're leaning toward growth, how much of this money would you feel okay putting into stocks?" A check in code (no judge) finds such an opening in 12.4% of the 7,560 written questions. This can push a person to answer in line with what they said before, so it can hide a real mismatch between what people say and what they do, which is the thing the profiler must find. The effect on acquiescence users at 15 questions (longer conversations have more to restate) fits this.
+
+**Judge note.** With a separate system message, Nemotron 3.5 Super often replied that it could not see the question; we now send one message, and retry up to 3 times. It still gives no usable answer for about 30% of the questions, and some flags look wrong ("Got it, thanks. Now, say you put in $10,000 ..."). So we report the judge's rate together with the code check, which agrees (12.9% and 12.4%).
+
+**Against the forms:** DW − C is +0.001 at 10 questions (not clear; D − C was +0.008, clear) and +0.022 at 15 (clear). **Stop rule (DW, old band rule):** the band changes after the stop in 13.8% (4 of 29), 2.0% and 5.6% of runs.
+
+**Decision for the final report.** DW is the clearest generative AI part of the interviewer: it is at least as accurate as D (better at 10 questions), for 42% more cost. Its weak point is that 12% of its questions restate an earlier answer. A next step (not tested): tell the writer not to mention earlier answers, and rerun DW (about $13 and 2.5 hours).
+
+## Follow-up test 12b (Nov 23, written before the rerun)
+
+**Change:** writer prompt version 2 for DW (`config.WRITE_PROMPT_VERSION = 2`). The writer must not mention, repeat or sum up anything the person said earlier; it may only use a short neutral link ("Okay.", "Next,") and plain words. Everything else is the same as test 12, including the old band rule (`BAND_RULE = "mode"`), so that DW v2 pairs with D and with DW v1. Run: `results/rerun_written_v2.jsonl`, 900 interviews.
+
+Predictions:
+
+- Questions that open by restating an earlier answer (code check): under 2% (v1: 12.4%). Judge's leading rate under 5% (v1: 12.9%).
+- On acquiescence users at 15 questions, DW v2 is not clearly worse than D (v1: +0.011, clear).
+- Avg error: within 0.01 of D at every budget. The gain at 10 questions may shrink (if it came from linking to earlier answers) or stay (if it came from plainer wording); we don't predict which.
+- Cost about the same as DW v1 (+40% over D).
+
+## Results of test 12b (scored Nov 23)
+
+Run: `results/rerun_written_v2.jsonl`, 900 interviews, 0 errors. Scores: `results/written_compare_v2.txt`. Pairs are with D in `rerun_engine.jsonl` (n=297 per budget, U054 left out). Negative = DW v2 better.
+
+| Questions | Avg error, DW v2 − D | Exact band, DW v2 − D | DW v2 − DW v1 (avg error) |
+|---|---|---|---|
+| 5 | −0.003 (not clear) | +4.0 points (not clear) | −0.000 (not clear) |
+| 10 | +0.001 (not clear) | **+5.1 points (clear)** | **+0.008 (clear, v2 worse)** |
+| 15 | −0.004 (not clear) | +0.3 points (not clear) | **−0.009 (clear, v2 better)** |
+
+Predictions:
+
+- **Restating: held.** 0.0% of 7,473 written questions open by restating an earlier answer (v1: 12.4%).
+- **Leading: held.** The judge flagged 1.8% of written questions and 0.5% of the bank wording (218 of 300 sampled questions judged; v1: 12.9%). It flagged 4 written-only and 1 bank-only. The flagged examples are near-copies of the bank wording ("Okay, when markets are going down, ..."), so most of the 1.8% is judge noise, not real hints.
+- **Acquiescence users at 15: held.** −0.004 against D (not clear); v1 was +0.011 (clear). Against v1 the change is −0.015 (clear).
+- **Avg error within 0.01 of D: held** at every budget. The avg-error gain at 10 questions did not stay: −0.007 (clear) in v1, +0.001 now. So that gain most likely came from linking to earlier answers, the same thing that made v1 leading. The exact-band gain at 10 stays (+5.1 points, clear).
+- **Cost: held.** $0.0194 per interview against $0.0197 for v1 and $0.0139 for D (+40%). System time 2.00 s per question against 1.32 s for D.
+
+Other results:
+
+- DW v2 − C: −0.001 at 5 (not clear), +0.009 at 10 (clear), +0.013 at 15 (clear). The forms stay ahead at 10 and 15, as for D.
+- Stop rule (old band rule, kept for pairing): band changes after the stop in 11.1% at 5 (3 of 27), 1.2% at 10, 4.2% at 15. The 5-question figure is from very few stops; test 13 showed the reported band rule brings D under 5% at every budget.
+
+**Decision:** DW v2 is the safe version of the AI-written questions: no leading wording, no loss against D, better band hits at 10 questions, about 40% more cost. It is not clearly better than D on avg error, so the app stays on D and the report gives DW v2 as a tested option.
+
+## Instructor feedback on Milestone 3 (Nov 24) and the controlled test
+
+The feedback asks three things for the final submission: (1) show where natural-language interaction helps (ambiguous or contradictory answers) and whether that is worth its cost; (2) a fairer comparison, because the spoken methods hear false money facts that the forms never see, so D − C mixes the AI interviewer with harder input; (3) keep conclusions from the synthetic users apart from those of the real-user study.
+
+### Step 1: where does talking help? (no new runs, scored Nov 24)
+
+Script: `nl_benefits.py`, output `results/nl_benefits.txt`. Paired on test user, budget and repeat against C in `rerun_engine.jsonl`; 95% ranges resample whole test users (see below); noise groups use the noise schedule drawn for that test user and repeat, which is the same for every method. Negative = the conversation method has less error.
+
+| | D − C, 10 questions | D − C, 15 questions | DW − C, 15 questions |
+|---|---|---|---|
+| Capacity error | **+0.033 (clear)** | **+0.042 (clear)** | **+0.046 (clear)** |
+| Willingness + behavior error | −0.004 (not clear) | +0.005 (not clear) | −0.004 (not clear) |
+| No noise drawn, avg error | **−0.016 (clear)** | **−0.022 (clear)** | **−0.022 (clear)** |
+| Clean test users, avg error | **−0.015 (clear)** | **−0.015 (clear)** | **−0.014 (clear)** |
+| Heavy-noise test users, avg error | **+0.036 (clear)** | **+0.065 (clear)** | **+0.059 (clear)** |
+
+- **D's whole gap to C is in capacity.** On willingness and behavior, where both get the same kind of input, the conversation ties the form at every budget.
+- **Talking helps when people answer clearly.** With no noise drawn, D and DW beat the form by 0.015–0.022 at 10 and 15 questions (clear; at 5 questions −0.013 to −0.015, not clear). A free answer carries more than one ticked box.
+- **Talking loses on noisy answers**, mostly through capacity. On heavy-noise test users the gap on willingness and behavior alone is smaller (+0.013 to +0.039) than on all three. But the noise is not the same in the two channels: contradictions, planted wrong facts and going along with hints happen only in conversation, so this is the input difference the feedback describes, not proof that talking handles ambiguity badly.
+- **Re-asks help.** D − DN (no re-asks): capacity −0.030 at 10 and −0.040 at 15 (clear), all three dimensions −0.010 (clear). On re-ask turns the final band went wrong→right more often than right→wrong (D at 10: 38 against 28; DW at 10: 33 against 13).
+- **Contradictions are caught.** D flags 86–92% of the planted contradictions (DW 81–88%), and flags 2–3% of runs with no false fact.
+- **Cost:** C has no AI calls (0.11 s per question). D: $0.0126 per interview at list price, 1.42 s per question. DW: $0.0182, 2.10 s (test users' calls not counted).
+
+### Bootstrap by test user (Nov 24)
+
+Until now the 95% ranges resampled single interviews. Each test user appears 3 times (repeats) at each budget, and repeats of one user are not independent, so those ranges were too narrow. `score.bootstrap_ci` now takes `groups` and resamples whole test users with all their repeats; every comparison script uses it (`rerun_compare.pair`, `score.py`, `ablations_run.py`, `failure_more.py`, `style_swap_compare.py`, and through `pair` also `nl_benefits.py` and `written_compare.py`). All results files were scored again. Means don't change; only ranges do, mostly wider. Earlier sections keep the verdicts as first scored; these changed:
+
+No longer clear:
+- D − C at 10 questions (both reruns, test 9): +0.008 (−0.002 to +0.018). At 15, +0.017 stays clear.
+- DW v2 − C at 10 questions: +0.009 (−0.001 to +0.019). At 15, +0.013 stays clear.
+- DW v1 − D exact band at 10 questions (test 12): +5.4 points (−0.3 to +10.8). DW v2's +5.1 stays clear (+0.3 to +9.8).
+- Full run, test 2: D − C at 5 questions, avg error +0.008; D − C willingness −0.019; D − C exact band at 15, −7.7 points. Test 1 and test 6: D − D0 at 5 questions, avg error +0.010, and the test 6 capacity results.
+- Test 9: C at 5 questions, rerun − full run, +0.005; one capacity line (−0.008).
+- Test 14 step 1: D − C willingness at 5 questions; several noise-group lines at 5 questions and some attitude-only lines (see `results/nl_benefits.txt`).
+
+Now clear:
+- Test 3: D − DN on clean and moderate test users at 10 questions, −0.007 (−0.013 to −0.000).
+- Test 9: one capacity line, −0.011 (−0.021 to −0.000).
+
+The main conclusions hold: D's gap to the forms is clear at 15 questions and comes from capacity; re-asks help; DW v2 is no worse than D. At 10 questions the conversation methods and the forms are now tied.
+
+### Test 14: the hybrid CW (written Nov 24, before the run)
+
+**Method CW** (`methods.py`): the money facts (the five capacity items) are asked on the form exactly as in C; willingness and behavior are asked in conversation exactly as in DW v2 (AI-written questions, extraction, re-asks of unclear answers). One belief engine picks every question and decides when to stop. Money facts reach the engine only from the form: facts the extractor finds in a conversation answer are dropped. So the two channels get the same money-fact input as C, and:
+
+- **CW − C** = talking about attitudes, with the same fact input (the controlled comparison the feedback asks for);
+- **CW − DW** = hearing the money facts in conversation instead of on a form.
+
+Same settings as test 12b (old band rule, writer prompt v2), 100 test users × 3 budgets × 3 repeats = 900 interviews. Run: `results/rerun_hybrid.jsonl`.
+
+Predictions:
+
+- Capacity error: CW − C within ±0.01 and not clear at every budget. CW − DW clearly lower at 10 and 15 questions (DW − C was +0.033 and +0.046).
+- Willingness + behavior error: CW − DW within ±0.01 (the same conversation). CW − C not clearly worse at any budget.
+- Avg error over three dimensions: CW − C within ±0.01 at every budget; CW − DW clearly lower at 15 questions.
+- On test users with no noise drawn, CW beats C (as D and DW do), but by less, since only the attitude part talks.
+- On heavy-noise test users, CW − C on willingness + behavior stays worse (conversation-only noise remains).
+- System cost about 60–70% of DW's ($0.011–0.013 per interview), since form turns make no AI calls.
