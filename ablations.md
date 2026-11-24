@@ -558,3 +558,15 @@ What this means:
 3. **CWF is worse on exact band at 10 (−0.074, clear)**, even though its avg error is level.
 4. **CF at 15 is no better than at 10** (capacity 0.080 against 0.077). The facts are already in by 10, and C catches up at 15, so CF − C is not clear there.
 5. **Method we present: CWF** (team decision, Nov 24). It has the lowest error of all methods at every budget (0.118, 0.085, 0.082), clearly beats C at 5 and 10, and beats D and DW at every budget. Against CF (the same design with no AI) its gain is too small to show (about −0.004), and it costs $0.011 and about 1 s more per question. Conversation earns its place on attitudes for clean answerers (−0.02, clear at 10 and 15), and in the real-user study the conversation method D noticed 4 of 5 unsure or self-contradicting classmates, which a form cannot do. CF is reported as the no-AI alternative at the same error. Limits: CWF and CF were tested on synthetic test users only; the real-user study compared A and D.
+
+### CWF stop rule with the new band rule (replay, Nov 24)
+
+CWF was run with the old band rule (`BAND_RULE = "mode"`) to pair with D and DW. Its stop rule broke the under-5% promise at 10 questions: the band changed after the stop in 6.2% of runs (2 of 32 stops). `band_rule_replay.py` now follows `run_form` for CF, CW and CWF too. It replays the engine on CWF's recorded answers (`python band_rule_replay.py rerun_hybrid_ff.jsonl CWF > results/band_rule_replay_cwf.txt`, no API calls). The replay with the old rule matches the recorded stop point in 100% of runs.
+
+| CWF, questions | Band changes after the stop: old rule → reported band | Questions saved per run |
+|---|---|---|
+| 5 | 0.0% → 0.0% (8 stops → 8) | 0.03 → 0.03 |
+| 10 | 6.2% → 0.0% (32 stops → 25) | 0.22 → 0.14 |
+| 15 | 4.3% → 0.9% (115 stops → 107) | 1.53 → 1.25 |
+
+With the reported band, CWF's stop rule is under 5% at every budget. It saves fewer questions than C (1.34 and 3.58 at 10 and 15), because the first 5 questions are fixed as money facts. Caveat (as in test 13): in a new run, the questions after the stop point would differ a little.

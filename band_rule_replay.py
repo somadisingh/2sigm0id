@@ -4,8 +4,11 @@ fires, with BAND_RULE "mode" (as run; a check that the replay matches the record
 "reported" (the new rule). No API calls.
 
 python band_rule_replay.py > results/band_rule_replay.txt
+python band_rule_replay.py rerun_hybrid_ff.jsonl CWF > results/band_rule_replay_cwf.txt   # Nov 24
+python band_rule_replay.py rerun_form_ff.jsonl CF > results/band_rule_replay_cf.txt
 """
 import json
+import sys
 from concurrent.futures import ProcessPoolExecutor
 from statistics import mean
 
@@ -19,23 +22,31 @@ ITEMS = {i["id"]: i for i in BANK["items"]}
 
 
 def stop_turn(r, rule):
-    """The first turn where the engine (with BAND_RULE = rule) calls the band settled."""
+    """The first turn where the engine (with BAND_RULE = rule) calls the band settled.
+    Follows methods.run_form for C, CF, D, CW and CWF."""
     BE.BAND_RULE = rule
     method, budget = r["method"], int(r["budget"])
-    b = BE.Belief(channel="spoken" if method == "D" else "form")
+    hybrid = method in ("CW", "CWF")
+    facts_first = min(5, budget // 2) if method in ("CWF", "CF") else 0
+    b = BE.Belief(channel="spoken" if method in ("D", "CW", "CWF") else "form")
+    if hybrid:
+        b.form_dims = M.HYBRID_FORM_DIMS
     asks, unclear = {}, {}
     for k, t in enumerate(r["turns"]):
         cands = [i for i in POOL if i["id"] not in asks]
-        if method == "D":
-            cands += [i for i in POOL if 0 < asks.get(i["id"], 0) < (
+        if method == "D" or hybrid:
+            cands += [i for i in POOL if not (hybrid and i["dimension"] in M.HYBRID_FORM_DIMS)
+                      and 0 < asks.get(i["id"], 0) < (
                 BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or unclear.get(i["id"]) == "conflict"
                 else 2 if unclear.get(i["id"]) == "vague" else 0)]
+        if k < facts_first:
+            cands = [i for i in cands if i["dimension"] in M.HYBRID_FORM_DIMS and i["id"] not in asks] or cands
         _, info = b.choose(cands, budget - k, seed=k)
         if info["settled"]:
             return k
         item = ITEMS[t["item"]]
         asks[item["id"]] = asks.get(item["id"], 0) + 1
-        if method == "D":
+        if method == "D" or (hybrid and not t["form"]):
             ev = t["evidence"] or dict(M.NO_EVIDENCE)
             flags = M.apply_evidence(b, ev, k)
             M.update_unclear(unclear, item, ev, flags, POOL)
@@ -49,12 +60,14 @@ def one(r):
 
 
 def main():
-    runs = [json.loads(x) for x in open(R / "rerun_engine.jsonl")]
-    runs = [r for r in runs if r["method"] in ("C", "D") and not r.get("error") and r["persona_id"] not in EXCLUDE]
+    name = sys.argv[1] if len(sys.argv) > 1 else "rerun_engine.jsonl"
+    methods = tuple(sys.argv[2:]) or ("C", "D")
+    runs = [json.loads(x) for x in open(R / name)]
+    runs = [r for r in runs if r["method"] in methods and not r.get("error") and r["persona_id"] not in EXCLUDE]
     with ProcessPoolExecutor() as ex:
         res = list(ex.map(one, runs, chunksize=8))
-    print("Stop point replayed on the recorded answers of rerun_engine.jsonl (C and D, U054 left out)\n")
-    for m in ("C", "D"):
+    print(f"Stop point replayed on the recorded answers of {name} ({', '.join(methods)}, U054 left out)\n")
+    for m in methods:
         for bu in (5, 10, 15):
             rows = [x for x in res if x[0] == m and x[1] == bu]
             match = mean(x[2] == x[3] for x in rows)
