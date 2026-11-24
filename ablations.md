@@ -439,3 +439,37 @@ Predictions:
 - On test users with no noise drawn, CW beats C (as D and DW do), but by less, since only the attitude part talks.
 - On heavy-noise test users, CW − C on willingness + behavior stays worse (conversation-only noise remains).
 - System cost about 60–70% of DW's ($0.011–0.013 per interview), since form turns make no AI calls.
+
+### Results of test 14 (scored Nov 24)
+
+Run: `results/rerun_hybrid.jsonl`, 900 interviews, 0 errors. Scores: `results/hybrid_compare.txt` (`hybrid_compare.py`). Paired with C and D in `rerun_engine.jsonl` and DW v2 in `rerun_written_v2.jsonl`; n=297 per budget; ranges resample whole test users. Negative = CW has less error.
+
+| Avg error | 5 questions | 10 questions | 15 questions |
+|---|---|---|---|
+| C / CW / DW / D | 0.135 / 0.128 / 0.134 / 0.136 | 0.106 / 0.105 / 0.115 / 0.114 | 0.088 / 0.091 / 0.101 / 0.106 |
+| CW − C | −0.006 (not clear) | −0.001 (not clear) | +0.003 (not clear) |
+| CW − DW | −0.005 (not clear) | **−0.010 (clear)** | **−0.010 (clear)** |
+| CW − D | **−0.008 (clear)** | **−0.009 (clear)** | **−0.014 (clear)** |
+| Capacity, CW − C | +0.002 (not clear) | **+0.015 (clear)** | **+0.014 (clear)** |
+| Capacity, CW − DW | −0.010 (not clear) | **−0.018 (clear)** | **−0.031 (clear)** |
+| Attitudes, CW − C | −0.010 (not clear) | −0.009 (not clear) | −0.003 (not clear) |
+| Clean test users, attitudes, CW − C | −0.016 (not clear) | **−0.016 (clear)** | **−0.018 (clear)** |
+| Heavy-noise test users, attitudes, CW − C | +0.004 (not clear) | +0.008 (not clear) | **+0.023 (clear)** |
+
+Predictions:
+
+- **Capacity, CW − C within ±0.01: failed** at 10 and 15 questions (+0.015, +0.014, clear). The cause is the number of fact questions, not the input: CW asked 2.73 fact questions at 10 and 3.66 at 15, against 3.24 and 4.12 for C. The engine expects a spoken attitude answer to tell it more than a ticked box, so it spends more turns on attitudes. Where CW asked as many fact questions as C, capacity error is the same (+0.000 at 10, n=113; +0.003 at 15, n=146, not clear); where it asked fewer, it is +0.059 and +0.055. (This split is on something chosen during the interview, so it explains the gap but is not a controlled test.) **Capacity, CW − DW clearly lower at 10 and 15: held** (−0.018, −0.031).
+- **Attitudes, CW − DW within ±0.01: held** (−0.003, −0.006, +0.001). **CW − C not clearly worse: held** (−0.010, −0.009, −0.003).
+- **Avg error, CW − C within ±0.01: held** at every budget. **CW − DW clearly lower at 15: held** (−0.010), and also at 10.
+- **No noise drawn, CW beats C but by less than D: held in direction, not clear** (−0.013, −0.009, −0.009; D − C was −0.015 to −0.022). On clean test users the attitude part is clearly better than the form at 10 and 15.
+- **Heavy-noise test users, attitudes, CW − C stays worse: held only at 15** (+0.023, clear; +0.004 and +0.008 not clear).
+- **System cost 60–70% of DW: failed, a little.** $0.0140 per interview, 77% of DW ($0.0182), because about three quarters of CW's turns are conversation. D: $0.0126. C: none. System time 1.37 s per question.
+
+Other: CW never re-asks (its re-asks in D were almost all money facts). Stop rule (old band rule): band changes after the stop in 0.0%, 2.9% and 1.6% at 5, 10 and 15.
+
+**What this means for the feedback:**
+
+- **The controlled comparison.** With the same money-fact input, talking about attitudes ties the form overall (CW − C on attitudes −0.010 to −0.003, not clear). D's capacity gap is the input: hearing the money facts in conversation costs 0.018 at 10 questions and 0.031 at 15 (CW − DW, capacity).
+- **Where talking helps.** On clean answerers, conversation reads attitudes better than the form (−0.016 and −0.018, clear). On heavy-noise answerers at 15 questions it reads them worse (+0.023, clear), and that noise (going along with hints, flips said aloud) only exists in conversation.
+- **Cost.** CW costs $0.014 per interview and about 1.3 s more per question than C, for no clear overall gain. It is the most accurate conversational method: better than D at every budget (−0.008 to −0.014, clear) and than DW at 10 and 15.
+- **A possible fix, not tested:** ask all five money facts on the form first, then hand the rest of the budget to the conversation. That removes the fact-question shortfall above.
