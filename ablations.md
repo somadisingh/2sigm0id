@@ -521,3 +521,40 @@ Predictions (paired, ranges by test user):
 
 - CF − C: capacity clearly lower at every budget, close to CWF's gain (−0.043, −0.050, −0.020); attitudes within ±0.01; avg error clearly lower at 5 and 10.
 - CWF − CF: capacity within ±0.01 (same fact questions, same form). Attitudes within ±0.01 overall, lower for clean test users and higher for heavy-noise test users, as in tests 14 and 15. Avg error within ±0.01 and not clear at every budget: most of CWF's gain over C comes from the facts-first rule, not from talking.
+
+### Results of test 16 (scored Nov 24)
+
+Run complete: 900 of 900 interviews, no errors. Scored with `python hybrid_compare.py CF > results/hybrid_compare_cf.txt`. Paired on test user, budget and repeat (n = 297 per budget, U054 left out). Ranges resample whole test users.
+
+| Avg error (capacity / attitudes) | 5 | 10 | 15 |
+|---|---|---|---|
+| C | 0.135 (0.185 / 0.110) | 0.106 (0.129 / 0.094) | 0.088 (0.097 / 0.084) |
+| CF | 0.123 (0.149 / 0.110) | 0.088 (0.077 / 0.093) | 0.086 (0.080 / 0.089) |
+| CWF | 0.118 (0.142 / 0.107) | 0.085 (0.079 / 0.088) | 0.082 (0.077 / 0.084) |
+
+| Paired difference | 5 | 10 | 15 |
+|---|---|---|---|
+| CF − C, avg error | −0.012 clear | −0.018 clear | −0.003 not clear |
+| CF − C, capacity | −0.036 clear | −0.052 clear | −0.018 clear |
+| CF − C, attitudes | +0.001 | −0.001 | +0.005 |
+| CWF − CF, avg error | −0.005 not clear | −0.003 not clear | −0.004 not clear |
+| CWF − CF, capacity | −0.007 clear | +0.002 | −0.002 |
+| CWF − CF, attitudes | −0.003 | −0.006 | −0.004 |
+| CWF − CF, attitudes, clean test users | −0.018 not clear | −0.020 clear | −0.021 clear |
+| CWF − CF, attitudes, heavy test users | +0.021 not clear | −0.002 | +0.010 not clear |
+| CWF − CF, exact band | +0.024 | −0.074 clear (CWF worse) | +0.010 |
+
+Predictions:
+
+- **CF − C: all three held.** Capacity is clearly lower at every budget and close to CWF's gain (−0.036, −0.052, −0.018 against −0.043, −0.050, −0.020). Attitudes are within ±0.01. Avg error is clearly lower at 5 and 10.
+- **CWF − CF, capacity: held** (within ±0.01; the −0.007 at 5 is clear but small).
+- **CWF − CF, attitudes: held overall and for clean test users** (−0.020 and −0.021, clear at 10 and 15). For heavy-noise test users it is higher at 5 and 15 but not clear, and level at 10: **partly held**.
+- **CWF − CF, avg error: held.** Within ±0.01 and not clear at any budget.
+
+What this means:
+
+1. **The facts-first rule, not talking, gives CWF its gain over C.** At 5 and 10, CF gets about 75–85% of CWF's avg-error gain over C (−0.012 and −0.018 against −0.016 and −0.021) with no AI calls ($0 and 0.10 s per question, against CWF's $0.011 and 1.10 s).
+2. **The controlled effect of talking, with the same fact input and the same question rule, is about −0.004 avg error: too small to show.** It splits by test user. For clean answerers, conversation lowers attitude error by about 0.02, clear at 10 and 15. For heavy-noise answerers there is no gain and maybe a loss. This answers the instructor's fairness question: once the false money facts are taken off the conversation, the AI is level with the form overall.
+3. **CWF is worse on exact band at 10 (−0.074, clear)**, even though its avg error is level.
+4. **CF at 15 is no better than at 10** (capacity 0.080 against 0.077). The facts are already in by 10, and C catches up at 15, so CF − C is not clear there.
+5. **Best method on synthetic test users: CF** (or CWF at the same error, if the gain for clean answerers is worth $0.011 and about 1 s per question). This holds for synthetic test users only; the real-user study has not tested CF or CWF.

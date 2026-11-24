@@ -2,6 +2,7 @@
 
 python hybrid_compare.py > results/hybrid_compare.txt              # test 14: CW
 python hybrid_compare.py CWF > results/hybrid_compare_ff.txt       # test 15: CWF, also against CW
+python hybrid_compare.py CF > results/hybrid_compare_cf.txt        # test 16: CF, and CWF - CF
 
 CW in results/rerun_hybrid.jsonl, paired on test user, budget and repeat (U054 left out) with
 C, D (rerun_engine.jsonl) and DW v2 (rerun_written_v2.jsonl), all with the old band rule.
@@ -18,31 +19,37 @@ from score import noise_level
 
 H = sys.argv[1] if len(sys.argv) > 1 else "CW"
 CW = load("rerun_hybrid.jsonl")
-CWF = load("rerun_hybrid_ff.jsonl") if H == "CWF" else {}
-ALL = {**RUNS, **CW, **CWF}
-HR = CWF if H == "CWF" else CW
+CWF = load("rerun_hybrid_ff.jsonl") if H in ("CWF", "CF") else {}
+CF = load("rerun_form_ff.jsonl") if H == "CF" else {}
+ALL = {**RUNS, **CW, **CWF, **CF}
+HR = {"CW": CW, "CWF": CWF, "CF": CF}[H]
+PAIRS = {"CW": [("CW", o) for o in ("C", "DW", "D")],
+         "CWF": [("CWF", o) for o in ("C", "CW", "DW", "D")],
+         "CF": [("CF", "C"), ("CWF", "CF"), ("CF", "CW"), ("CF", "DW")]}[H]
+LEVELS = {"CW": ("C", "CW", "DW", "D"), "CWF": ("C", "CW", "CWF", "DW", "D"),
+          "CF": ("C", "CF", "CW", "CWF", "DW", "D")}[H]
 
 
 def main():
-    print(f"# Hybrid {H}. Negative = {H} has less error (exact band: + = {H} better).")
+    print(f"# {H}. Negative = the first method has less error (exact band: + = first better).")
     groups = [("all", lambda r: True), ("no noise drawn", lambda r: not schedule(r)),
               ("clean test users", lambda r: noise_level(r["persona"]) == "clean"),
               ("heavy test users", lambda r: noise_level(r["persona"]) == "heavy")]
-    for other in ("C", "CW", "DW", "D") if H == "CWF" else ("C", "DW", "D"):
-        print(f"\n## {H} - {other}")
+    for first, other in PAIRS:
+        print(f"\n## {first} - {other}")
         for bu in BUDGETS:
             print(f"b{bu}:")
             for name, keep in groups:
-                print(f"   {name:>17}: avg error {pair(ALL, ALL, H, other, bu, all_err, keep)}")
+                print(f"   {name:>17}: avg error {pair(ALL, ALL, first, other, bu, all_err, keep)}")
                 if name == "all":
-                    print(f"   {'':>17}  capacity {pair(ALL, ALL, H, other, bu, dim_err('capacity'))}")
-                    print(f"   {'':>17}  attitudes {pair(ALL, ALL, H, other, bu, att_err)}")
-                    print(f"   {'':>17}  exact band {pair(ALL, ALL, H, other, bu, exact)}")
+                    print(f"   {'':>17}  capacity {pair(ALL, ALL, first, other, bu, dim_err('capacity'))}")
+                    print(f"   {'':>17}  attitudes {pair(ALL, ALL, first, other, bu, att_err)}")
+                    print(f"   {'':>17}  exact band {pair(ALL, ALL, first, other, bu, exact)}")
                 else:
-                    print(f"   {'':>17}  attitudes {pair(ALL, ALL, H, other, bu, att_err, keep)}")
+                    print(f"   {'':>17}  attitudes {pair(ALL, ALL, first, other, bu, att_err, keep)}")
 
     print("\n## Levels (avg error | capacity | attitudes)")
-    for m in ("C", "CW", "CWF", "DW", "D") if H == "CWF" else ("C", "CW", "DW", "D"):
+    for m in LEVELS:
         for bu in BUDGETS:
             rs = [r for (mm, x, _, _), r in ALL.items() if mm == m and x == bu]
             print(f"{m} b{bu}: {mean(map(all_err, rs)):.3f} | {mean(map(dim_err('capacity'), rs)):.3f} | "
@@ -59,7 +66,7 @@ def main():
     print("\n".join(stop_lines(HR, H)))
 
     print("\n## System cost and time per interview (test users not counted)")
-    for m in ("C", "CW", "CWF", "D", "DW") if H == "CWF" else ("C", "CW", "D", "DW"):
+    for m in LEVELS:
         rs = [r for (mm, x, _, _), r in ALL.items() if mm == m]
         usd = mean(sum((c["usage"]["in"] * C.MODELS[c.get("model") or r["interviewer"]]["price_in"]
                         + c["usage"]["out"] * C.MODELS[c.get("model") or r["interviewer"]]["price_out"]) / 1e6
