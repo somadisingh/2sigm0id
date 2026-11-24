@@ -484,3 +484,31 @@ Predictions (against C and CW, paired, ranges by test user):
 - Attitudes: CWF − CW higher at 10 questions (5 conversation turns instead of 7.3), within ±0.01 at 15.
 - Avg error: CWF − CW lower at 15 questions; CWF − C at or below zero at 10 and 15, but maybe not clear.
 - System cost below CW's $0.0140 (fewer conversation turns), about $0.011 per interview.
+
+### Results of test 15 (scored Nov 24)
+
+Run: `results/rerun_hybrid_ff.jsonl`, 900 interviews, 0 errors. Scores: `results/hybrid_compare_ff.txt` (`python hybrid_compare.py CWF`). Paired as in test 14; ranges resample whole test users. Negative = CWF has less error.
+
+| Avg error | 5 questions | 10 questions | 15 questions |
+|---|---|---|---|
+| C / CW / **CWF** / D | 0.135 / 0.128 / **0.118** / 0.136 | 0.106 / 0.105 / **0.085** / 0.114 | 0.088 / 0.091 / **0.082** / 0.106 |
+| CWF − C | **−0.016 (clear)** | **−0.021 (clear)** | −0.006 (not clear) |
+| CWF − CW | **−0.010 (clear)** | **−0.020 (clear)** | **−0.009 (clear)** |
+| CWF − D | **−0.018 (clear)** | **−0.029 (clear)** | **−0.024 (clear)** |
+| Capacity, CWF − C | **−0.043 (clear)** | **−0.050 (clear)** | **−0.020 (clear)** |
+| Attitudes, CWF − C | −0.003 (not clear) | −0.007 (not clear) | +0.001 (not clear) |
+| Attitudes, CWF − CW | +0.008 (not clear) | +0.002 (not clear) | +0.003 (not clear) |
+| Heavy-noise test users, attitudes, CWF − C | **+0.033 (clear)** | +0.013 (not clear) | **+0.029 (clear)** |
+
+CWF asked 2.41 form questions at 5 (2 forced, then the engine chose more), 5 at 10 and 5 at 15.
+
+Predictions:
+
+- **Capacity, CWF − C clearly lower at 10 and 15: held** (−0.050, −0.020). **Within ±0.01 at 5: failed**, much lower (−0.043, clear): CWF asked 2.41 fact questions there against C's 1.65.
+- **Attitudes, CWF − CW higher at 10: failed** (+0.002, not clear). Five conversation turns read attitudes about as well as seven. **Within ±0.01 at 15: held** (+0.003).
+- **Avg error, CWF − CW lower at 15: held** (−0.009, clear; also clear at 5 and 10). **CWF − C at or below zero at 10 and 15: held**, clear at 10 (−0.021), not at 15 (−0.006); also clear at 5 (−0.016).
+- **System cost about $0.011: held.** $0.0110 per interview, 1.10 s per question (C: none, 0.11 s).
+
+**Caveat: CWF − C is not a clean test of talking.** It changes two things at once, asking all the money facts first and talking about attitudes. C itself asks only 1.65, 3.24 and 4.12 fact questions at 5, 10 and 15, and CWF's whole gain over C is in capacity (attitudes are tied). So most of the gain probably comes from the facts-first rule, which a form could use too. The clean test is a facts-first C ("CF": the same first-questions rule, all on the form) against CWF. CF has no AI calls on the system side, so it is cheap to run.
+
+**For the feedback so far:** the best method we have tested is CWF. It is clearly better than C at 5 and 10 questions and than every conversation method at every budget, at $0.011 per interview. Its gain over C is in the money facts, and on attitudes it ties the form overall: better for clean answerers at 15 (−0.019, clear) and worse for heavy-noise answerers (+0.029, clear).
