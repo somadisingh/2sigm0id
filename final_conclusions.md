@@ -1,6 +1,6 @@
 # Final report: conclusions (draft, Nov 24)
 
-Draft by Somaditya. Numbers come from `ablations.md` (tests 9–16) and `results/`. Values marked **[Siya]** wait for the final real-user study. Part A uses only synthetic test users. Part B uses only real people. Part C lists what neither part shows.
+Draft by Somaditya. Numbers come from `ablations.md` (tests 9–16) and `results/`. Part A uses only synthetic test users. Part B uses only real people. Part C lists what neither part shows.
 
 ## A. Conclusions from synthetic test users
 
@@ -69,18 +69,28 @@ The Milestone 3 feedback said that D − C mixes two effects: the AI interviewer
 
 ## B. Conclusions from real people (classmate study)
 
-**Setup.** **[Siya: final number of participants; Milestone 3 had 12.]** Each person did the fixed form (A) and the AI interviewer (D). The study did not test C, CF, CW or CWF. Real people have no known true profile, so these results show agreement and how the result feels to the person, not accuracy.
+Source: `classmate_study_report.md` (Siya, Nov 25).
 
-Milestone 3 results (12 people; **[Siya: replace with the final numbers]**):
+**Setup.** 21 classmates did the fixed form (A) and the AI interviewer (D), 10 questions each. Odd participant codes started with A and even codes with D (11 started with A, 10 with D). The study did not test C, CF, CW or CWF. Real people have no known true profile, so these results show agreement and how the result feels to the person, not accuracy. With 21 people we report counts, not significance tests.
 
-- **Agreement.** A and D gave the same band to 10 of 12 people.
-- **Fit.** Both results fit well: on average 4.1 of 5 for A and 3.9 for D.
-- **"About right."** 8 of 12 called D's result about right, against 6 of 12 for A.
-- **Contradictions noticed.** 5 people said they were unsure or contradicted themselves. For 4 of them, D noticed; the fixed form cannot notice (0 of 5).
+| Measure (of 21 people) | A fixed form | D AI interviewer |
+|---|---|---|
+| Same final band as the other method | 17 (the other 4 differ by 1 band, 2 in each direction) | |
+| "Does this profile sound like you?" (1 to 5), average | 4.1 | 3.9 |
+| Rated the profile 4 or 5 | 17 | 17 |
+| Result "about right" | 12 | 14 |
+| Length "about right" | 18 | 20 |
+| Of the people who said they were unsure or contradicted themselves: "it noticed" | 3 of 11 | 6 of 10 (none said no) |
 
-**What this supports:** with real people, the conversation notices unsure or contradictory answers, and its result feels at least as correct as the form's. This matches the synthetic finding in A2.
+- **D agrees with the form on real people.** It gave the same band to 17 of 21, and was never more than 1 band away. Both methods gave the same spread of bands. D does not give strange results with real speech.
+- **D feels as right as the form, not more right.** The average fit is 3.9 against 4.1. D's lower average comes from the 11 people who had invested only a few times (3.7 against 4.2). People who invest regularly rated both 4.2. D's result was "about right" a little more often (14 against 12).
+- **D notices uncertainty.** 6 of the 10 people who were unsure said D noticed; none said it missed. A form cannot follow up. 3 people said A noticed, which suggests that some answered about the app in general.
+- **Capacity makes the results cautious.** 16 of 21 have less than 6 months of savings and 11 need the money within 5 years. Because the final band is the lowest of the three, no one got band 5, and most misses were "more cautious than expected" (6 people for each method).
+- **The outside measure did not separate the bands.** In the lottery task, people in band 2 and band 3 picked the same number of safe bets. So the study cannot say which method is closer to the truth.
 
-**What this does not support:** any claim about CWF or CF on real people, or any claim about accuracy.
+**What this supports:** with real people, the conversation notices unsure or contradictory answers. It agrees with the form and feels about as right. This matches the synthetic findings in A2: talking helps with ambiguous answers, and the overall result ties the form.
+
+**What this does not support:** any claim about the accuracy of D, or any claim about CWF or CF on real people.
 
 ## C. What we cannot conclude
 
@@ -91,7 +101,7 @@ Milestone 3 results (12 people; **[Siya: replace with the final numbers]**):
   - AI test users repeat their own false values more than people probably do. When the test users correct a slip on a follow-up question, D's capacity error falls (test 10).
 - **The differences are small.** CWF − C is −0.016 to −0.021 on a 0-to-1 scale. CWF − CF is not clear at any budget.
 - **One model family plays all test users** (DeepSeek V4 Flash). Three other models agreed within one band on the same users, but other models may answer differently.
-- **The real-user group is small and young.** It is **[Siya: number]** classmates, mostly 23 to 26 years old.
+- **The real-user group is small and not typical.** It is 21 classmates: 14 are 23 to 26 years old, 8 have no income, and 19 of 21 answered all three literacy questions right. They know the project, and they typed in the band themselves (it was not matched with the app's logs).
 
 ## D. Answers to the Milestone 3 feedback
 
