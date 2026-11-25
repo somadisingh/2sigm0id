@@ -35,7 +35,7 @@ After each interview the person reports the band and rates "Does this profile so
 | Less than 6 months of savings | 16 |
 | No dependents | 18 |
 | All 3 financial-literacy questions right | 19 |
-| Past loss: held or bought more / sold / never had one | 12 / 4 / 4 |
+| Past loss: held or bought more / sold / never had one / never invested | 12 / 4 / 4 / 1 |
 
 Self-rated knowledge had a median of 3 of 5. One person had never invested.
 
