@@ -4,6 +4,7 @@
 DInterview follows the steps of method D in run_form (methods.py): the same question choice,
 re-ask rule, extractor and evidence update. The person's answer replaces the AI test user, and
 no noise is injected. AForm is the default short form (method A), scored by the same engine.
+CWFInterview is the facts-first hybrid (method CWF), for the demo only.
 
 Each session is saved to live_sessions/<participant>_<method>_<time>.json after every answer.
 live_sessions/ is in .gitignore: the repo is public, and these files hold real people's answers.
@@ -150,6 +151,112 @@ class DInterview(_Session):
             "answer_secs": answer_secs, "evidence": evidence, "flags_after": flags,
             "engine": p["info"], "profile_before": p["profile_before"],
             "band_before": p["before"], "band_after": after,
+            "band_changed": p["before"]["top_band"] != after["top_band"],
+            "system_latency": round(sum(c["latency"] for c in calls), 3)})
+        self.data["system_calls"] += calls
+        self.k += 1
+        self.current = self._pending = None
+        self.save()
+
+
+class CWFInterview(_Session):
+    """Method CWF with a person (demo only, not part of the classmate study). Follows the CWF
+    steps in run_form: the money facts first, on a form (never re-asked), then willingness and
+    behavior in conversation, each question worded by the writer (prompt version 2) from the
+    conversation turns only. Money facts the extractor hears in conversation are dropped.
+
+    next_question returns an item dict for a form question (answer with an option number, as
+    AForm) or a string for a conversation question (answer with text, as DInterview)."""
+    method = "CWF"
+
+    def __init__(self, participant, llm, model, setting, budget=10, stop_early=False, extra=None):
+        super().__init__(participant, budget, {"extractor": model, "extractor_setting": setting,
+                                               "stop_early": stop_early, "system_calls": [],
+                                               **(extra or {})})
+        self.llm, self.model, self.setting, self.stop_early = llm, model, setting, stop_early
+        self.pool = M.engine_pool(M.load_bank())
+        self.belief = BE.Belief(channel="spoken")
+        self.belief.form_dims = M.HYBRID_FORM_DIMS
+        self.facts_first = min(5, budget // 2)
+        self.asks, self.unclear = {}, {}
+        self._pending = None
+
+    @staticmethod
+    def is_form(item):
+        return item["dimension"] in M.HYBRID_FORM_DIMS
+
+    @property
+    def current_is_form(self):
+        return bool(self.current) and self.is_form(self.current[1])
+
+    def next_question(self):
+        """The next question (item dict for a form question, text for a conversation question),
+        or None when the interview is over."""
+        if self.current:
+            return self.current[1] if self.current_is_form else self.current[0]
+        if self.k >= self.budget:
+            return None
+        cands = [i for i in self.pool if i["id"] not in self.asks]
+        # D's re-ask rule, but a form item is never asked again (run_form, hybrid)
+        cands += [i for i in self.pool if not self.is_form(i) and 0 < self.asks.get(i["id"], 0) < (
+            BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or self.unclear.get(i["id"]) == "conflict"
+            else 2 if self.unclear.get(i["id"]) == "vague" else 0)]
+        if self.k < self.facts_first:   # the money facts first
+            cands = [i for i in cands if self.is_form(i) and i["id"] not in self.asks] or cands
+        item, info = self.belief.choose(cands, self.budget - self.k, seed=self.k)
+        if info["settled"] and self.data["would_stop_at"] is None:
+            self.data["would_stop_at"] = self.k
+            if self.stop_early:
+                self.budget = self.k
+                return None
+        reask = item["id"] in self.asks
+        self.asks[item["id"]] = self.asks.get(item["id"], 0) + 1
+        calls = []
+        if self.is_form(item):
+            question = item["text"]
+        elif reask:
+            question, calls = M.clarify(self.llm, self.model, self.setting, item, self.talk_turns())
+        else:
+            question, calls = M.write_question(self.llm, self.model, self.setting, item, self.talk_turns())
+        self._pending = {"info": info, "reask": reask, "calls": calls,
+                         "before": band_state(self.belief), "profile_before": self.belief.profile()}
+        self.current = (question, item)
+        self.asked_at = time.monotonic()
+        return item if self.is_form(item) else question
+
+    def talk_turns(self):
+        """The conversation turns: the writer never sees the form questions."""
+        return [t for t in self.data["turns"] if not t["form"]]
+
+    def answer(self, reply):
+        """reply: an option number (1 to n) for a form question, text for a conversation question."""
+        question, item = self.current
+        p = self._pending
+        answer_secs = round(time.monotonic() - self.asked_at, 1)
+        calls, flags, evidence, choice, score = p["calls"], [], None, None, None
+        if self.is_form(item):
+            if not (isinstance(reply, int) and 1 <= reply <= len(item["options"])):
+                raise ValueError(f"choice must be 1-{len(item['options'])}")
+            choice, score = reply, item["options"][reply - 1]["score"]
+            self.belief.observe_option(item, choice)
+            text = item["options"][choice - 1]["label"]
+        else:
+            text = reply
+            evidence, ext_calls = M.extract(self.llm, self.model, self.setting, question, item, text)
+            calls = calls + ext_calls
+            # money facts come only from the form
+            evidence = {**evidence, "facts": {f: v for f, v in evidence["facts"].items()
+                                              if M.FACT_ITEM_DIM.get(f) not in M.HYBRID_FORM_DIMS}}
+            flags = M.apply_evidence(self.belief, evidence, self.k)
+            M.update_unclear(self.unclear, item, evidence, flags, self.pool)
+        if self.belief.mismatch():
+            flags.append("mismatch: two scores are likely 2+ bands apart")
+        after = band_state(self.belief)
+        self.data["turns"].append({
+            "q": question, "item": item["id"], "form": self.is_form(item), "reask": p["reask"],
+            "a": text, "option": choice, "score": score, "answer_secs": answer_secs,
+            "evidence": evidence, "flags_after": flags, "engine": p["info"],
+            "profile_before": p["profile_before"], "band_before": p["before"], "band_after": after,
             "band_changed": p["before"]["top_band"] != after["top_band"],
             "system_latency": round(sum(c["latency"] for c in calls), 3)})
         self.data["system_calls"] += calls
