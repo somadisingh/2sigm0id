@@ -55,18 +55,30 @@ The video must show the method that we present. The study must not change.
 
 **P8. Read `final_conclusions.md`.** Check the claims about the system in parts A and C. Send corrections to Somaditya.
 
-### Work for Somaditya (for reference)
+### Work for Somaditya (status Nov 25)
 
-- Add Siya's final numbers to part B of `final_conclusions.md`.
-- Merge `siya/test-users` into `main` and run the tests.
-- Optional: rerun method A with the current engine, so that every row of the main table comes from the same engine version.
-- Update the README: the methods, the final choice and the commands that make each result.
-- Make the final chart (error against cost, all methods) and add up the total project cost.
+- Done: part B of `final_conclusions.md` has the classmate study with 21 people. `siya/test-users` is merged into `main` (also through PR #2), and the tests pass. No other branch has work that is not on `main`.
+- Done: the README lists every method, the final choice, the settings, the commands that make each result, and the total cost (about $189 at list price for the experiment runs).
+- Done: the defaults are the final settings (`BAND_RULE = "reported"`, writer prompt version 2, the engine of Nov 22).
+- In progress: method A rerun with the current engine (`results/rerun_form_a.jsonl`), then the main table and the final chart (`plot_final.py`).
+- After P5: review and merge Preyansh's CWF demo mode, then run the tests.
 
-### Work for Siya (for reference)
+### Milestone 3 next steps: status
 
-- Finish 20 participants and the study report (Nov 25).
-- Send the final numbers for part B of `final_conclusions.md`: agreement between A and D, the fit ratings, "about right", and contradictions that D noticed.
+| Milestone 3 next step | Status |
+|---|---|
+| 1. Resolve conflicting facts | Done (test 9): the majority rule is on, with no clear gain in new interviews |
+| 2. Fix the stop rule | Done (tests 9 and 13, CWF replay): under 5% at every budget for C, D and CWF |
+| 3. AI-written questions | Done (tests 12 and 12b): DW v2 has no leading wording and no loss against D |
+| 4. Embedding retrieval | Done (test 11): no gain, so DR keeps BM25 |
+| 5. Final report | Open |
+
+### Work for Siya (status Nov 25)
+
+- Done: 21 participants and `classmate_study_report.md`.
+- **S8. Fix one count.** In the participants table, the row "Past loss: held or bought more / sold / never had one" is 12 / 4 / 4. That adds up to 20, not 21. Check the form responses and correct the row (or add the missing answer, for example "no answer").
+- **S9 (optional). Match the reported bands with the app's logs.** Each person typed in the band that the app showed. The app saved every session (`live_sessions/` on the computer that hosted it, and the private session repo). Match each participant's typed band with the `final_band` in their A and D session files. Report how many agree. If all agree, remove the limit "Self-reported bands" from the report.
+- Somaditya can do S8 and S9 if you send the form responses (CSV) and the session files through a private channel. Never put them in the repo: they hold real people's answers.
 
 ## 1. Dates
 
