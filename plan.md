@@ -1,8 +1,72 @@
-# Team plan to Milestone 3 (written Nov 11, 2026)
+# Team plan (written Nov 11, 2026; final stretch added Nov 24 in section 0)
 
 This file is for Preyansh and Siya. It tells you what is done, what Somaditya does now, and what each of you must do. Read all of it once. Then use sections 6 and 7 as your checklist.
 
 The file uses simple, short sentences. Section 10 explains the words that we use. If something in this file is not clear, ask Somaditya. Do not guess.
+
+## 0. Final stretch (updated Nov 24) — read this first
+
+Sections 1 to 11 are the plan to Milestone 3. They stay as a record. This section is the work that is left. The dates of the final report and the video are not known yet. When they are known, Somaditya adds them here.
+
+### What changed since Milestone 3
+
+- **The method we present is CWF** (team decision, Nov 24). CWF asks the five money facts first, on a form. Then the AI asks about willingness and behavior in conversation and writes each question from the conversation (writer prompt version 2). One belief engine picks every question and calculates the profile. Money facts that the extractor hears in conversation are dropped.
+- **CF is the alternative with no AI.** CF uses the same "money facts first" rule, with every question on the form. CF has the same error as CWF (the difference is not clear), at $0 cost.
+- **Results** (synthetic test users only). Avg error at 5 / 10 / 15 questions: CWF 0.118 / 0.085 / 0.082, CF 0.123 / 0.088 / 0.086, C 0.135 / 0.106 / 0.088, D 0.136 / 0.114 / 0.106. CWF costs $0.011 per interview. With the reported band rule, its stop rule is under 5% at every budget.
+- **Read these files:** `final_conclusions.md` (the draft conclusions for the report), `ablations.md` (tests 14 to 16 and the CWF stop-rule replay at the end) and `methods.py` (the docstring describes every method; `run_form` has the CWF steps).
+- **The classmate study does not change.** It tests A and D only. Siya finishes 20 participants and the study report on Nov 25. Somaditya then merges `siya/test-users` into `main`.
+
+### Work for Preyansh
+
+**P5. CWF in the live chat, as a demo mode only (first priority, before the video).**
+The video must show the method that we present. The study must not change.
+
+1. In `live_session.py`, add a class `CWFInterview` (method "CWF"). Follow the CWF steps in `run_form` in `methods.py`:
+   - `belief = BE.Belief(channel="spoken")` and `belief.form_dims = M.HYBRID_FORM_DIMS`.
+   - The first `min(5, budget // 2)` questions: only capacity items that were not asked yet.
+   - Capacity items are form questions: show `item["text"]` with its options, and call `belief.observe_option(item, option)`. They are never asked again.
+   - The other questions are conversation: word them with `M.write_question(llm, model, setting, item, conversation_turns)`, where `conversation_turns` are the turns that are not form turns. `config.WRITE_PROMPT_VERSION = 2` is already the default.
+   - Read each answer with `M.extract(...)`. Remove the money facts from `evidence["facts"]` (see the `if hybrid:` lines in `run_form`). Then call `M.apply_evidence` and `M.update_unclear`.
+   - Use the same re-ask rule as D, but never re-ask a form item.
+   - Save every turn with `"form": True` or `False`.
+2. In `web_app.py`, add CWF as a demo mode only, for example with `?demo=CWF` in the address. Keep the study order (A and D) as it is.
+3. Test with `LIVE_MOCK=1` (no API key). Then do one real session.
+
+**Done when:** a 10-question CWF session shows 5 form questions, then 5 conversation questions. The session file has `"method": "CWF"`, and `test_web_app.py` and `test_session_store.py` pass.
+
+**P6. Write the system section of the final report.**
+
+1. Describe the final design (CWF): which part is a form, which part is conversation, and why the money facts are asked on the form. The reason is in `final_conclusions.md`, A3 and A4.
+2. Update the table of generative AI parts:
+   - **Kept:** the extractor, the clarifying-question writer and the question writer v2.
+   - **Tested and dropped:** retrieval (DR), token probabilities (DP) and embedding search.
+3. Describe the controlled comparison. CW, CF and CWF each change one thing (table A4 in `final_conclusions.md`).
+4. Give the cost and the time per question: CWF $0.011 and 1.1 s, CF $0 and 0.1 s, D $0.013 and 1.4 s.
+
+**Done when:** Somaditya and Siya have read it. Every number must agree with `ablations.md`.
+
+**P7. Record the demo for the video.**
+
+1. Record one CWF session (P5) and one classmate-study session (A or D).
+2. Show the final band, the three scores and a contradiction flag.
+3. Say that the result is a risk profile for a study, not investment advice.
+
+**You need:** P5 done. The length and the format of the video come when the dates are known.
+
+**P8. Read `final_conclusions.md`.** Check the claims about the system in parts A and C. Send corrections to Somaditya.
+
+### Work for Somaditya (for reference)
+
+- Add Siya's final numbers to part B of `final_conclusions.md`.
+- Merge `siya/test-users` into `main` and run the tests.
+- Optional: rerun method A with the current engine, so that every row of the main table comes from the same engine version.
+- Update the README: the methods, the final choice and the commands that make each result.
+- Make the final chart (error against cost, all methods) and add up the total project cost.
+
+### Work for Siya (for reference)
+
+- Finish 20 participants and the study report (Nov 25).
+- Send the final numbers for part B of `final_conclusions.md`: agreement between A and D, the fit ratings, "about right", and contradictions that D noticed.
 
 ## 1. Dates
 
