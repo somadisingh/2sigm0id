@@ -60,7 +60,7 @@ If a run stops partway, rerun the same command and it picks up where it left off
 
 **Expected cost:** both stages should come to roughly $5–15. That's an estimate; `score.py` prints the actual spend.
 
-## Main experiment (methods A–D)
+## Main experiment (all methods)
 
 Runs all four methods on the same test users, with the same noise schedule and the same question budget:
 
@@ -72,6 +72,10 @@ Runs all four methods on the same test users, with the same noise schedule and t
 | D, adaptive interviewer | Our system. The belief engine picks each question and may re-ask a fact to clarify it. The person answers in their own words. GLM 5.3 turns each answer into evidence and words the clarifying questions. |
 | DR, DP | Two versions of D with one generative AI part each. DR (retrieval): before reading an answer, GLM sees 3 similar labeled answers from the pilot users. DP (token probabilities): GLM picks the matching option, and its calibrated probability for each option is the evidence. |
 | DN | D without clarifying questions: each question is asked only once. For ablation test 3 in `ablations.md`. |
+| DW | D, but GLM writes each question from the conversation so far instead of using the bank wording (writer prompt version 2: it never restates earlier answers). Tests 12 and 12b. |
+| CW | Hybrid: the money facts on the form as in C, willingness and behavior in conversation as in DW. Money facts heard in conversation are dropped. Test 14. |
+| **CWF** | **The method we present.** CW, but the first `min(5, budget // 2)` questions are money facts on the form. Test 15. |
+| CF | C with CWF's "money facts first" rule, everything on the form, no AI. Test 16. |
 | C0, D0 | The earlier versions, kept for comparison. C0 uses a hand-made rule. D0 is GLM 5.3 with prompt v1 doing everything. Run them with `--methods C0 D0`. |
 
 A, B, C and D all score answers with the belief engine, so they differ only in how they choose questions and read answers. `BELIEF_ENGINE.md` explains the engine, the stop rule and the sources. `python test_belief.py` checks it, including the professor's example (no API calls).
@@ -105,6 +109,27 @@ Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. 
 | wall s/run | Clock time per run, including the simulated user and rate-limit waits. |
 
 `score.py` also saves `<name>_cost_vs_error.png`: avg error against system $ and system seconds per profile, one point per method and budget. It needs `matplotlib`, which `requirements.txt` now installs.
+
+## Final results and how to reproduce them
+
+**Final choice (Nov 24):** CWF is the method we present. CF is the alternative with no AI, at the same error. The draft conclusions are in `final_conclusions.md`. Every test, with predictions written before its run, is in `ablations.md`. The classmate study (21 people, methods A and D) is in `classmate_study_report.md`.
+
+**Settings of the final runs.** `--band-rule mode` (the old band rule, so the new runs pair with D and DW in `rerun_engine.jsonl`), `WRITE_PROMPT_VERSION = 2` in `config.py`, and the engine of Nov 22 (`CONFLICT_RULE = "majority"`, `STOP_CONFIDENCE = 0.80` in `belief.py`). The live app and the default of `run_bakeoff.py` use `BAND_RULE = "reported"`. `band_rule_replay.py` shows that this rule keeps the stop rule under 5% for C, D and CWF.
+
+Runs (in `results/`, which is not in git) and the scripts that score them (no API calls):
+
+| Result | Run command | Score command |
+|---|---|---|
+| Full run (Nov 14), 8 methods | `python run_bakeoff.py experiment --methods A B C D DR DP DN D0` | `python score.py results/experiment_full_excl.jsonl` |
+| Tests 9 and 10: engine fixes, realistic slips | `... --methods C D DN --band-rule mode --out rerun_engine.jsonl`; `... --methods D --fix-slips --out rerun_fixslips.jsonl` | `python rerun_compare.py` |
+| Test 12b: AI-written questions (DW) | `... --methods DW --band-rule mode --write-version 2 --out rerun_written_v2.jsonl` | `python written_compare.py` |
+| Step 1 of the feedback: where talking helps | (uses the runs above) | `python nl_benefits.py > results/nl_benefits.txt` |
+| Tests 14, 15, 16: CW, CWF, CF | `... --methods CW` / `CWF` / `CF --band-rule mode --write-version 2 --out rerun_hybrid.jsonl` / `rerun_hybrid_ff.jsonl` / `rerun_form_ff.jsonl` | `python hybrid_compare.py` / `CWF` / `CF` |
+| Stop rule with the reported band | (uses the runs above) | `python band_rule_replay.py`; `python band_rule_replay.py rerun_hybrid_ff.jsonl CWF` |
+
+`...` is `python run_bakeoff.py experiment --budgets 5 10 15 --repeats 3`. All 95% ranges resample whole test users (`score.bootstrap_ci` with `groups`). U054 is left out of all scoring (it fails 2 of Siya's persona checks).
+
+**Cost.** The experiment runs cost about $189 at list price (simulated users included). The reruns since Nov 22 are $99 of that. The provider bills less than list price: up to Milestone 3 it billed $46.10 for $77 of list price. Bake-off stages, persona checks, judges and pilot calls are not in this figure.
 
 ## Live chat (real people)
 
@@ -185,7 +210,9 @@ Re-scoring the Oct 26 runs with the formula cut P1's capacity error from +0.27 t
 - `personas.json`: 5 hand-written test users that follow the shared-contract schema, with capacity from the formula and every true score at least 0.03 from a band edge. These are placeholders until the MiroFish personas are ready.
 - `capacity.py`: the capacity formula.
 - `question_bank.json` / `question_bank.md`: the 35 shared questions; `check_question_bank.py` checks them.
-- `methods.py`: methods A, B, C, C0 and D for the main experiment (D0 is `run_interview` in `run_bakeoff.py`).
+- `methods.py`: every method of the main experiment (A, B, C, CF, CW, CWF, C0, D, DR, DP, DN, DW). D0 is `run_interview` in `run_bakeoff.py`.
+- `rerun_compare.py`, `written_compare.py`, `nl_benefits.py`, `hybrid_compare.py`, `band_rule_replay.py`: score the reruns from Nov 22 on (see "Final results").
+- `final_conclusions.md`: draft conclusions for the final report. `classmate_study_report.md`: the classmate study (Siya).
 - `belief.py`: the belief engine. `BELIEF_ENGINE.md` explains it; `test_belief.py` checks it.
 - `pilot.py`: builds the labeled answers of the 10 pilot users (`pilot/pool.jsonl`, `pilot/form_answers.jsonl`), fits DP's calibration (`pilot/calibration.json`), compares D, DR and DP on them (`pilot/extract_eval.md`), and fits the belief engine's evidence settings (`pilot/fitted.json`, `pilot/fit.md`). Pilot users are never scored.
 - `retrieval.py`: finds similar labeled pilot answers for DR (BM25 keyword search; no model download).
