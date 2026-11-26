@@ -570,3 +570,18 @@ CWF was run with the old band rule (`BAND_RULE = "mode"`) to pair with D and DW.
 | 15 | 4.3% → 0.9% (115 stops → 107) | 1.53 → 1.25 |
 
 With the reported band, CWF's stop rule is under 5% at every budget. It saves fewer questions than C (1.34 and 3.58 at 10 and 15), because the first 5 questions are fixed as money facts. Caveat (as in test 13): in a new run, the questions after the stop point would differ a little.
+
+### Method A rerun with the engine of Nov 22 (scored Nov 26)
+
+The main table mixed A from the full run (Nov 14) with the reruns. A was run again with the current engine and the old band rule (`results/rerun_form_a.jsonl`, 900 interviews, 0 errors; only the test users' calls cost anything). Paired with the reruns (n = 297 per budget, U054 left out); ranges resample whole test users. Negative = the method has less error than A.
+
+| | 5 questions | 10 questions | 15 questions |
+|---|---|---|---|
+| A avg error: rerun (full run) | 0.125 (0.125) | 0.114 (0.113) | 0.085 (0.090) |
+| C − A | +0.009 | −0.008 | +0.003 |
+| CF − A | −0.002 | **−0.026 (clear)** | +0.001 |
+| CWF − A | −0.007 | **−0.029 (clear)** | −0.003 |
+| D − A | +0.011 | +0.001 | **+0.020 (clear, D worse)** |
+| CWF − A, exact band | +7.1 points | **+18.9 points (clear)** | +1.7 points |
+
+No predictions were written for this run: it only replaces an old row. **What it means:** CWF and CF are clearly better than the fixed form at 10 questions only. At 5 and 15 questions no method is clearly better than A. With the rerun, C − A at 10 questions (−0.008) is no longer clear (full-run C − A was −0.010, clear), so the Milestone 3 claim that "C meets the success criterion at 10 questions" now holds for CF and CWF, not for C.

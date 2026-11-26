@@ -12,16 +12,17 @@ CWF asks the five money facts first, on a form. After that, the AI asks about wi
 
 | Avg error (lower is better) | 5 questions | 10 questions | 15 questions | System cost per interview |
 |---|---|---|---|---|
-| A fixed form (baseline) | 0.125 | 0.113 | 0.090 | $0 |
+| A fixed form (baseline) | 0.125 | 0.114 | 0.085 | $0 |
 | C adaptive form | 0.135 | 0.106 | 0.088 | $0 |
 | D adaptive AI interviewer | 0.136 | 0.114 | 0.106 | $0.013 |
 | DW interviewer, AI-written questions | 0.134 | 0.115 | 0.101 | $0.018 |
 | CF adaptive form, money facts first | 0.123 | 0.088 | 0.086 | $0 |
 | **CWF hybrid, money facts first** | **0.118** | **0.085** | **0.082** | **$0.011** |
 
-*A comes from the full run of Nov 14. The other rows come from the reruns of Nov 22–24, which use the same test users and noise.*
+*All rows come from the reruns of Nov 22–26, with the engine of Nov 22 and the same test users and noise (A was rerun on Nov 25; its full-run values were 0.125, 0.113 and 0.090).*
 
 - CWF has the lowest error at every budget.
+- **Against the baseline A, CWF is clearly better only at 10 questions:** −0.029 avg error and 19 points more exact bands (both clear). At 5 questions (−0.007) and 15 questions (−0.003) the difference is not clear. So the main success criterion (more accurate than a fixed form with the same number of questions) is met at 10 questions only. At 15 questions no method is clearly better than A, and D is clearly worse (+0.020).
 - CWF is clearly better than C at 5 and 10 questions (−0.016 and −0.021). At 15 questions it is better by −0.006, which is not clear.
 - CWF is clearly better than D and DW at every budget (−0.018 to −0.029 against D).
 - All of CWF's gain over C is in capacity (−0.043, −0.050, −0.020). On willingness and behavior, CWF and C are tied.
