@@ -18,7 +18,7 @@ Sections 1 to 11 are the plan to Milestone 3. They stay as a record. This sectio
 
 ### Work for Preyansh
 
-**P5. CWF in the live chat, as a demo mode only (first priority, before the video).**
+**P5. CWF in the live chat, as a demo mode only — DONE Nov 26 (PR #3, reviewed and merged by Somaditya; tests pass).**
 The video must show the method that we present. The study must not change.
 
 1. In `live_session.py`, add a class `CWFInterview` (method "CWF"). Follow the CWF steps in `run_form` in `methods.py`:
@@ -34,7 +34,7 @@ The video must show the method that we present. The study must not change.
 
 **Done when:** a 10-question CWF session shows 5 form questions, then 5 conversation questions. The session file has `"method": "CWF"`, and `test_web_app.py` and `test_session_store.py` pass.
 
-**P6. Write the system section of the final report.**
+**P6. Write the system section of the final report — DONE Nov 26 (PR #4, `final_system_section.md`; numbers checked against `ablations.md`).**
 
 1. Describe the final design (CWF): which part is a form, which part is conversation, and why the money facts are asked on the form. The reason is in `final_conclusions.md`, A3 and A4.
 2. Update the table of generative AI parts:
@@ -63,7 +63,7 @@ The video must show the method that we present. The study must not change.
 - Done (Nov 26): method A rerun with the current engine. A is now 0.125 / 0.114 / 0.085; CWF and CF beat it clearly at 10 questions only (`ablations.md`, last section). The main table in `final_conclusions.md` uses it.
 - Done (Nov 26): the final chart, `figures/final_error_vs_cost.png` (made by `plot_final.py`).
 - Done (Nov 26): Siya's S8 and S9 (see below).
-- After P5: review and merge Preyansh's CWF demo mode, then run the tests.
+- Done (Nov 26): reviewed and merged Preyansh's PR #3 (CWF demo mode) and PR #4 (system section). Tests pass on the merged code.
 
 ### Milestone 3 next steps: status
 
