@@ -11,6 +11,11 @@ it. A person who closes the page after part 1 logs in again and continues with p
   streamlit run web_app.py                      # needs BASETEN_API_KEY and STUDY_ACCESS_CODE in .env
   LIVE_MOCK=1 streamlit run web_app.py          # no API key: random readings, for testing
 
+Demo mode (for the video, not part of the study): open the app with ?demo=CWF in the address.
+It asks only for the access code and runs one facts-first interview (method CWF: the money
+facts on a form, then willingness and behavior in conversation). It is saved as DEMO_CWF_*.json.
+The study (A and D, in the order above) does not change.
+
 Answers are saved to live_sessions/ (gitignored) after every answer. The result is a risk
 profile for a study. It is not investment advice.
 """
@@ -23,7 +28,7 @@ import streamlit as st
 
 import config as C
 import session_store
-from live_session import DIM_NAMES, AForm, DInterview
+from live_session import DIM_NAMES, AForm, CWFInterview, DInterview
 from run_bakeoff import load_env, make_llm
 
 load_env()
@@ -31,9 +36,12 @@ MOCK = os.environ.get("LIVE_MOCK") == "1"
 ACCESS_CODE = os.environ.get("STUDY_ACCESS_CODE", "test" if MOCK else "")
 BUDGET = 10
 PID_RE = re.compile(r"^P\d{2}$")
+DEMO_PID = "DEMO"
 # the names that Siya's form uses for the two parts and the five bands
-PART_NAMES = {"A": "Standard form", "D": "Adaptive interviewer"}
-PART_HELP = {"A": "Pick one answer for each question.", "D": "Answer each question in your own words."}
+PART_NAMES = {"A": "Standard form", "D": "Adaptive interviewer", "CWF": "Facts-first interviewer"}
+PART_HELP = {"A": "Pick one answer for each question.", "D": "Answer each question in your own words.",
+             "CWF": "First pick one answer for each question about your finances. "
+                    "Then answer the other questions in your own words."}
 FORM_BANDS = {1: "Very Conservative", 2: "Conservative", 3: "Moderate", 4: "Aggressive", 5: "Very aggressive"}
 
 st.set_page_config(page_title="Risk-profile study", page_icon="📋", layout="centered")
@@ -86,7 +94,46 @@ def new_part(method, pid, position):
     if method == "D":
         return DInterview(pid, llm(), C.EXPERIMENT_INTERVIEWER, C.EXPERIMENT_INTERVIEWER_REASONING,
                           BUDGET, extra=extra)
+    if method == "CWF":
+        return CWFInterview(pid, llm(), C.EXPERIMENT_INTERVIEWER, C.EXPERIMENT_INTERVIEWER_REASONING,
+                            BUDGET, extra={**extra, "demo": True})
     return AForm(pid, BUDGET, extra=extra)
+
+
+def part_title():
+    method = S.order[S.part]
+    if S.get("demo"):
+        return f"Demo: {PART_NAMES[method]}"
+    return f"Part {S.part + 1} of 2: {PART_NAMES[method]}"
+
+
+def form_question(s, item):
+    """One multiple-choice question; True once it was answered."""
+    st.progress(s.k / s.budget, text=f"Question {s.k + 1} of {s.budget}")
+    with st.form(f"q{s.k}", clear_on_submit=True):
+        st.write(f"**{item['text']}**")
+        labels = [o["label"] for o in item["options"]]
+        pick = st.radio("Your answer", labels, index=None, label_visibility="collapsed")
+        sent = st.form_submit_button("Next")
+    if sent:
+        if pick is None:
+            st.error("Please pick one answer.")
+        else:
+            s.answer(labels.index(pick) + 1)
+            return True
+    return False
+
+
+def chat_question(s, text):
+    """One conversation question; True once it was answered."""
+    st.progress(s.k / s.budget, text=f"Question {s.k + 1} of {s.budget}")
+    st.chat_message("assistant").write(text)
+    answer = st.chat_input("Type your answer")
+    if answer and answer.strip():
+        with st.spinner("Reading your answer..."):
+            s.answer(answer.strip())
+        return True
+    return False
 
 
 def show_result(r):
@@ -104,13 +151,28 @@ def show_result(r):
 
 S = st.session_state
 S.setdefault("stage", "login")
+DEMO = st.query_params.get("demo", "").upper() == "CWF"
 
 st.title("Risk-profile study")
 if MOCK:
     st.warning("Test mode: random readings, no API calls. Access code: test")
 
+# ---------------------------------------------------------------- login (demo)
+if S.stage == "login" and DEMO:
+    st.write("Demo of the facts-first interviewer. It is not part of the study. Enter the access code.")
+    with st.form("login"):
+        code = st.text_input("Access code", type="password")
+        ok = st.form_submit_button("Continue")
+    if ok:
+        if not hmac.compare_digest(code.encode(), ACCESS_CODE.encode()):
+            st.error("The access code is not correct.")
+        else:
+            S.pid, S.order, S.results, S.part, S.demo = DEMO_PID, ["CWF"], {}, 0, True
+            S.stage = "intro"
+            st.rerun()
+
 # ---------------------------------------------------------------- login
-if S.stage == "login":
+elif S.stage == "login":
     st.write("Enter your participant code from the survey and the access code.")
     with st.form("login"):
         pid = st.text_input("Participant code (for example P07)").strip().upper()
@@ -140,14 +202,14 @@ elif S.stage == "intro":
     method = S.order[S.part]
     if S.part == 1 and S.order[0] in S.results:
         st.success(f"Welcome back. You finished part 1 ({PART_NAMES[S.order[0]]}).")
-    st.subheader(f"Part {S.part + 1} of 2: {PART_NAMES[method]}")
+    st.subheader(part_title())
     st.markdown(
         f"- {PART_HELP[method]} There are {BUDGET} questions and no right or wrong answers.\n"
-        "- Use the same finances as in the survey. Ranges are fine.\n"
-        "- **Do not type your name** or other details that identify you.\n"
+        + ("- Ranges are fine.\n" if S.get("demo") else "- Use the same finances as in the survey. Ranges are fine.\n")
+        + "- **Do not type your name** or other details that identify you.\n"
         "- **Do not refresh or close this page** until you see your result."
-        + ("\n- An AI model reads your answers." if method == "D" else ""))
-    if st.button(f"Start part {S.part + 1}"):
+        + ("\n- An AI model reads your answers." if method in ("D", "CWF") else ""))
+    if st.button("Start the demo" if S.get("demo") else f"Start part {S.part + 1}"):
         S.session = new_part(method, S.pid, S.part + 1)
         S.stage = "part"
         st.rerun()
@@ -156,7 +218,7 @@ elif S.stage == "intro":
 elif S.stage == "part":
     s = S.session
     method = S.order[S.part]
-    st.subheader(f"Part {S.part + 1} of 2: {PART_NAMES[method]}")
+    st.subheader(part_title())
 
     if method == "D":
         for t in s.data["turns"]:
@@ -164,29 +226,20 @@ elif S.stage == "part":
             st.chat_message("user").write(t["a"])
         with st.spinner("Preparing the next question..."):
             q = s.next_question()
-        if q is not None:
-            st.progress(s.k / s.budget, text=f"Question {s.k + 1} of {s.budget}")
-            st.chat_message("assistant").write(q)
-            answer = st.chat_input("Type your answer")
-            if answer and answer.strip():
-                with st.spinner("Reading your answer..."):
-                    s.answer(answer.strip())
-                st.rerun()
+        if q is not None and chat_question(s, q):
+            st.rerun()
+    elif method == "CWF":
+        for t in s.data["turns"]:   # form answers shown as picked, conversation as chat
+            st.chat_message("assistant").write(t["q"])
+            st.chat_message("user").write(f"*{t['a']}*" if t["form"] else t["a"])
+        with st.spinner("Preparing the next question..."):
+            q = s.next_question()
+        if q is not None and (form_question(s, q) if s.current_is_form else chat_question(s, q)):
+            st.rerun()
     else:
         q = s.next_question()
-        if q is not None:
-            st.progress(s.k / s.budget, text=f"Question {s.k + 1} of {s.budget}")
-            with st.form(f"q{s.k}", clear_on_submit=True):
-                st.write(f"**{q['text']}**")
-                labels = [o["label"] for o in q["options"]]
-                pick = st.radio("Your answer", labels, index=None, label_visibility="collapsed")
-                sent = st.form_submit_button("Next")
-            if sent:
-                if pick is None:
-                    st.error("Please pick one answer.")
-                else:
-                    s.answer(labels.index(pick) + 1)
-                    st.rerun()
+        if q is not None and form_question(s, q):
+            st.rerun()
 
     if q is None:   # this part is over
         S.results[method] = s.finish()
@@ -197,12 +250,20 @@ elif S.stage == "part":
 # ---------------------------------------------------------------- after a part
 elif S.stage == "result":
     method = S.order[S.part]
-    st.success(f"Part {S.part + 1} of 2 is done. Thank you.")
+    st.success("The demo is done." if S.get("demo") else f"Part {S.part + 1} of 2 is done. Thank you.")
     if not S.get("stored", True):
         st.warning(f"Your answers could not be saved online. Please tell the study team your "
                    f"code ({S.pid}) and the time.")
     st.subheader(f"Your result: {PART_NAMES[method]}")
     show_result(S.results[method])
+    if S.get("demo"):
+        flags = sorted({f.split(":")[0] for t in S.session.data["turns"] for f in t.get("flags_after") or []})
+        if flags:
+            st.write("What the assistant noticed: " + ", ".join(flags) + ".")
+        if st.button("Run the demo again"):
+            S.stage = "intro"
+            st.rerun()
+        st.stop()
     st.subheader("Next step")
     if S.part == 0:
         st.write(f"Go back to the survey tab and answer the questions under **After interview 1**. "

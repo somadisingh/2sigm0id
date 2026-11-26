@@ -84,8 +84,49 @@ def main():
     assert "already finished both parts" in errors(login(app(), ODD)), "finished code accepted"
 
     clean()
+    demo()
     print("ok: odd code A then D with a break between parts, even code D first; wrong access "
-          "code, bad code and finished code are refused")
+          "code, bad code and finished code are refused; ?demo=CWF runs 5 form questions, then "
+          "5 conversation questions")
+
+
+def demo():
+    """?demo=CWF: access code only, then the money facts on the form, then conversation."""
+    before = set(OUT_DIR.glob("DEMO_CWF_*.json"))
+    at = AppTest.from_file("web_app.py", default_timeout=60)
+    at.query_params["demo"] = "CWF"
+    at.run()
+    assert len(at.text_input) == 1, "demo asks only for the access code"
+    at.text_input[0].set_value("wrong")
+    at.button[0].click().run()
+    assert "not correct" in errors(at), "wrong access code accepted in demo mode"
+    at.text_input[0].set_value("test")
+    at.button[0].click().run()
+    assert at.session_state.order == ["CWF"] and at.session_state.stage == "intro"
+    at.button[0].click().run()
+    kinds = []
+    for _ in range(10):
+        if at.session_state.session.current_is_form:
+            kinds.append("form")
+            at.radio[0].set_value(at.radio[0].options[0])
+            at.button[0].click().run()
+        else:
+            kinds.append("talk")
+            at.chat_input[0].set_value("I would sell some and wait, it scares me").run()
+        assert not at.exception, at.exception
+    assert kinds == ["form"] * 5 + ["talk"] * 5, kinds
+    assert at.session_state.stage == "result", at.session_state.stage
+    assert "not investment advice" in " ".join(i.value for i in at.info)
+    new = set(OUT_DIR.glob("DEMO_CWF_*.json")) - before
+    assert len(new) == 1, new
+    d = json.loads(new.pop().read_text())
+    assert d["method"] == "CWF" and d["demo"] and d["finished"] and len(d["turns"]) == 10
+    assert [t["form"] for t in d["turns"]] == [True] * 5 + [False] * 5
+    # money facts come only from the form
+    assert all(not (t["evidence"] or {}).get("facts", {}).keys() & {"horizon_yrs", "emergency_fund_months",
+               "income_stability", "debt_to_income", "dependents"} for t in d["turns"])
+    for f in set(OUT_DIR.glob("DEMO_CWF_*.json")) - before:
+        f.unlink()
 
 
 if __name__ == "__main__":
