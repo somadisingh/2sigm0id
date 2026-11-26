@@ -60,7 +60,9 @@ The video must show the method that we present. The study must not change.
 - Done: part B of `final_conclusions.md` has the classmate study with 21 people. `siya/test-users` is merged into `main` (also through PR #2), and the tests pass. No other branch has work that is not on `main`.
 - Done: the README lists every method, the final choice, the settings, the commands that make each result, and the total cost (about $189 at list price for the experiment runs).
 - Done: the defaults are the final settings (`BAND_RULE = "reported"`, writer prompt version 2, the engine of Nov 22).
-- In progress: method A rerun with the current engine (`results/rerun_form_a.jsonl`), then the main table and the final chart (`plot_final.py`).
+- Done (Nov 26): method A rerun with the current engine. A is now 0.125 / 0.114 / 0.085; CWF and CF beat it clearly at 10 questions only (`ablations.md`, last section). The main table in `final_conclusions.md` uses it.
+- Done (Nov 26): the final chart, `figures/final_error_vs_cost.png` (made by `plot_final.py`).
+- Done (Nov 26): Siya's S8 and S9 (see below).
 - After P5: review and merge Preyansh's CWF demo mode, then run the tests.
 
 ### Milestone 3 next steps: status

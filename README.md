@@ -129,6 +129,8 @@ Runs (in `results/`, which is not in git) and the scripts that score them (no AP
 
 `...` is `python run_bakeoff.py experiment --budgets 5 10 15 --repeats 3`. All 95% ranges resample whole test users (`score.bootstrap_ci` with `groups`). U054 is left out of all scoring (it fails 2 of Siya's persona checks).
 
+**Chart.** `python plot_final.py` makes `results/final_error_vs_cost.png`; a copy for the report is in `figures/`.
+
 **Cost.** The experiment runs cost about $189 at list price (simulated users included). The reruns since Nov 22 are $99 of that. The provider bills less than list price: up to Milestone 3 it billed $46.10 for $77 of list price. Bake-off stages, persona checks, judges and pilot calls are not in this figure.
 
 ## Live chat (real people)
