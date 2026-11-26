@@ -4,7 +4,7 @@
 
 ## Summary
 
-With 21 classmates, the fixed form (method A) and the adaptive interviewer (method D) gave the same final band to 17 people, and the other 4 were 1 band apart. People rated both results as a good fit (about 4 of 5). D's result was "about right" more often (14 of 21, against 12 for A), and its length was right for 20 of 21.
+With 21 classmates, the fixed form (method A) and the adaptive interviewer (method D) gave the same final band to 14 people, and the other 7 were 1 band apart (bands from the app's session logs). People rated both results as a good fit (about 4 of 5). D's result was "about right" more often (14 of 21, against 12 for A), and its length was right for 20 of 21.
 
 The outside measure did not help. The lottery task put almost everyone near the same mild caution, whatever their band, so it cannot tell which method is closer to the truth. With 21 people, this is a description, not a statistical result.
 
@@ -41,7 +41,9 @@ Self-rated knowledge had a median of 3 of 5. One person had never invested.
 
 ## Results
 
-A and D gave the same final band to 17 of 21 people. The other 4 were 1 band apart, 2 in each direction, so neither method is bolder overall. Both methods gave exactly the same spread of bands: band 1: 2 people, band 2: 11, band 3: 7, band 4: 1, band 5: none.
+A and D gave the same final band to 14 of 21 people (from the app's session logs). The other 7 were 1 band apart: D was 1 band lower for 4 people and 1 band higher for 3, so neither method is bolder overall. The spread of bands is almost the same: A gave band 1 to 1 person, band 2 to 12, band 3 to 7 and band 4 to 1; D gave band 1 to 2, band 2 to 11, band 3 to 7 and band 4 to 1. No one got band 5.
+
+**Typed bands against the app's logs (checked Nov 26).** The app saved every session (one A and one D file for each of the 21 people). The band that people typed into the form matches the app's band in 39 of 42 interviews (A: 20 of 21, D: 19 of 21). In the 3 mismatches (P06, P22, P27), the person typed the band of their other interview, so their two typed bands looked the same. With the typed bands, A and D agreed for 17 of 21; with the app's bands, for 14 of 21. All band results in this report use the app's bands. The ratings are the person's own answers and do not change.
 
 | Measure (of 21 people) | Method A (fixed form) | Method D (adaptive interviewer) |
 | --- | --- | --- |
@@ -61,7 +63,7 @@ A and D gave the same final band to 17 of 21 people. The other 4 were 1 band apa
 
 **Noticing uncertainty.** 10 people said they had been unsure or contradicted themselves in D; 6 of them said D noticed, 4 were not sure, and none said no. In A, 11 people said so; 3 said A noticed, 2 said no and 6 were not sure. The fixed form has no follow-up questions, so the 3 "yes" answers for A suggest some people answered about the app in general rather than the form.
 
-**Order.** People who started with A agreed across methods more often (same band for 10 of 11) than people who started with D (7 of 10). The average fit was 4.0 for the first interview and 4.0 for the second, so doing an interview first did not change how well people liked the result.
+**Order.** People who started with A agreed across methods more often (same band for 9 of 11) than people who started with D (5 of 10). The average fit was 4.0 for the first interview and 4.0 for the second, so doing an interview first did not change how well people liked the result.
 
 **Experience.** People who invest regularly (9) rated both methods 4.2. People who had invested only a few times (11) rated A 4.2 and D 3.7, so D's lower average comes from this group.
 
@@ -81,7 +83,7 @@ The drop question gives little spread either: 18 of 21 would "wait it out" after
 
 ## What this means for the project
 
-1. **D agrees with the form on real people.** Same band for 17 of 21 and never more than 1 band apart. This matches the AI test users, where D and A tie on error at 10 questions. D does not produce strange results with real speech.
+1. **D agrees with the form on real people.** Same band for 14 of 21 and never more than 1 band apart. This matches the AI test users, where D and A tie on error at 10 questions. D does not produce strange results with real speech.
 2. **D feels as right as the form, but not better.** Fit is about 4 of 5 for both. D's results surprised people a little less ("about right" 14 against 12), but the average fit is slightly lower (3.9 against 4.1), mostly among people with little investing experience.
 3. **D's interview experience is good.** Its length was right for 20 of 21 people and its questions were easy for 20 of 21. A conversation did not feel longer than a form of the same length.
 4. **D's main advantage shows up.** D noticed uncertainty for 6 of the 10 people who were unsure, and none said it missed. A form cannot follow up, which is the reason for an adaptive interviewer.
@@ -96,7 +98,7 @@ The drop question gives little spread either: 18 of 21 would "wait it out" after
 - **Fit is not accuracy.** Each person rated a band right after seeing it, so the ratings show whether a result feels right, not whether it is correct.
 - **Order is not perfectly balanced.** 11 started with A and 10 with D, because participation depended on which codes were used.
 - **Repeated questions.** The background sections ask some of the same facts as the interviews, which may make the second interview easier and the questions feel repetitive.
-- **Self-reported bands.** Each person typed the band the app showed; we did not match these with the app's logs.
+- **Typed bands.** 3 of 42 typed bands differ from the app's logs (see Results), so we use the app's bands. A person rated the band they had in mind, and for these 3 interviews that may not be the band the app showed.
 
 ## Appendix: questions asked
 

@@ -75,14 +75,14 @@ Source: `classmate_study_report.md` (Siya, Nov 25).
 
 | Measure (of 21 people) | A fixed form | D AI interviewer |
 |---|---|---|
-| Same final band as the other method | 17 (the other 4 differ by 1 band, 2 in each direction) | |
+| Same final band as the other method (app logs) | 14 (the other 7 differ by 1 band: D lower for 4, higher for 3) | |
 | "Does this profile sound like you?" (1 to 5), average | 4.1 | 3.9 |
 | Rated the profile 4 or 5 | 17 | 17 |
 | Result "about right" | 12 | 14 |
 | Length "about right" | 18 | 20 |
 | Of the people who said they were unsure or contradicted themselves: "it noticed" | 3 of 11 | 6 of 10 (none said no) |
 
-- **D agrees with the form on real people.** It gave the same band to 17 of 21, and was never more than 1 band away. Both methods gave the same spread of bands. D does not give strange results with real speech.
+- **D agrees with the form on real people.** It gave the same band to 14 of 21, and was never more than 1 band away. The spread of bands is almost the same, and neither method is bolder. (People typed 17 of 21 as the same band, because 3 of 42 typed bands were the band of their other interview; we use the app's logs.) D does not give strange results with real speech.
 - **D feels as right as the form, not more right.** The average fit is 3.9 against 4.1. D's lower average comes from the 11 people who had invested only a few times (3.7 against 4.2). People who invest regularly rated both 4.2. D's result was "about right" a little more often (14 against 12).
 - **D notices uncertainty.** 6 of the 10 people who were unsure said D noticed; none said it missed. A form cannot follow up. 3 people said A noticed, which suggests that some answered about the app in general.
 - **Capacity makes the results cautious.** 16 of 21 have less than 6 months of savings and 11 need the money within 5 years. Because the final band is the lowest of the three, no one got band 5, and most misses were "more cautious than expected" (6 people for each method).
