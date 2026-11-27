@@ -429,6 +429,29 @@ def call_log(r, **extra):
     return {"usage": r["usage"], "latency": round(r["latency"], 3), "finish": r["finish"], **extra}
 
 
+def candidates(pool, asks, unclear, k, reasks=False, hybrid=False, facts_first=0):
+    """The bank questions the engine may pick from at question k (0-based).
+
+    Every question not asked yet. A method that talks (reasks=True) may also come back to a
+    question: a money fact up to MAX_ASKS_PER_FACT times, since a second statement guards the
+    estimate against vague or false answers; any other question only when its answer was vague
+    or contradicted, because people repeat the same story (Nov 12, 20-user checks). In the
+    hybrids (hybrid=True) the form questions are never asked again, as in C. With facts_first,
+    the first questions must be money facts that were not asked yet (CWF and CF).
+    Used by run_form, the live app (live_session.py) and analysis/band_rule_replay.py, so all
+    of them choose from the same questions.
+    """
+    cands = [i for i in pool if i["id"] not in asks]
+    if reasks:
+        cands += [i for i in pool if not (hybrid and i["dimension"] in HYBRID_FORM_DIMS)
+                  and 0 < asks.get(i["id"], 0) < (
+            BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or unclear.get(i["id"]) == "conflict"
+            else 2 if unclear.get(i["id"]) == "vague" else 0)]
+    if k < facts_first:
+        cands = [i for i in cands if i["dimension"] in HYBRID_FORM_DIMS and i["id"] not in asks] or cands
+    return cands
+
+
 def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_setting, draw_noise,
              full_budget=True):
     """Methods A, B, C, C0 and D. full_budget: keep asking after the stop rule fires (main
@@ -462,18 +485,8 @@ def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_se
         elif method == "C0":
             item = next_adaptive_item(bank, answers, {a["id"] for a in answers})
         else:
-            cands = [i for i in pool if i["id"] not in asks]
-            if (method in D_METHODS and method != "DN") or hybrid:   # a conversation can come back to a fact to check it.
-                # Money facts: up to MAX_ASKS_PER_FACT asks; a second statement guards the
-                # estimate against vague or false answers. The past-loss question: only when
-                # unclear, because people repeat the same story (Nov 12, 20-user checks).
-                # CW: form items are never re-asked, as in C
-                cands += [i for i in pool if not (hybrid and i["dimension"] in HYBRID_FORM_DIMS)
-                          and 0 < asks.get(i["id"], 0) < (
-                    BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or unclear.get(i["id"]) == "conflict"
-                    else 2 if unclear.get(i["id"]) == "vague" else 0)]
-            if k < facts_first:
-                cands = [i for i in cands if i["dimension"] in HYBRID_FORM_DIMS and i["id"] not in asks] or cands
+            reasks = (method in D_METHODS and method != "DN") or hybrid
+            cands = candidates(pool, asks, unclear, k, reasks, hybrid, facts_first)
             item, info = belief.choose(cands, budget - k, seed=k)
             if info["settled"] and would_stop_at is None:
                 would_stop_at = k   # the first time the band was settled

@@ -110,11 +110,7 @@ class DInterview(_Session):
             return self.current[0]
         if self.k >= self.budget:
             return None
-        cands = [i for i in self.pool if i["id"] not in self.asks]
-        # same re-ask rule as run_form for method D
-        cands += [i for i in self.pool if 0 < self.asks.get(i["id"], 0) < (
-            BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or self.unclear.get(i["id"]) == "conflict"
-            else 2 if self.unclear.get(i["id"]) == "vague" else 0)]
+        cands = M.candidates(self.pool, self.asks, self.unclear, self.k, reasks=True)   # as run_form for D
         item, info = self.belief.choose(cands, self.budget - self.k, seed=self.k)
         if info["settled"] and self.data["would_stop_at"] is None:
             self.data["would_stop_at"] = self.k
@@ -194,13 +190,8 @@ class CWFInterview(_Session):
             return self.current[1] if self.current_is_form else self.current[0]
         if self.k >= self.budget:
             return None
-        cands = [i for i in self.pool if i["id"] not in self.asks]
-        # D's re-ask rule, but a form item is never asked again (run_form, hybrid)
-        cands += [i for i in self.pool if not self.is_form(i) and 0 < self.asks.get(i["id"], 0) < (
-            BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or self.unclear.get(i["id"]) == "conflict"
-            else 2 if self.unclear.get(i["id"]) == "vague" else 0)]
-        if self.k < self.facts_first:   # the money facts first
-            cands = [i for i in cands if self.is_form(i) and i["id"] not in self.asks] or cands
+        cands = M.candidates(self.pool, self.asks, self.unclear, self.k, reasks=True, hybrid=True,
+                             facts_first=self.facts_first)   # as run_form for CWF
         item, info = self.belief.choose(cands, self.budget - self.k, seed=self.k)
         if info["settled"] and self.data["would_stop_at"] is None:
             self.data["would_stop_at"] = self.k

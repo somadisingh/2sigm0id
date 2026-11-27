@@ -33,14 +33,7 @@ def stop_turn(r, rule):
         b.form_dims = M.HYBRID_FORM_DIMS
     asks, unclear = {}, {}
     for k, t in enumerate(r["turns"]):
-        cands = [i for i in POOL if i["id"] not in asks]
-        if method == "D" or hybrid:
-            cands += [i for i in POOL if not (hybrid and i["dimension"] in M.HYBRID_FORM_DIMS)
-                      and 0 < asks.get(i["id"], 0) < (
-                BE.MAX_ASKS_PER_FACT if i["dimension"] == "capacity" or unclear.get(i["id"]) == "conflict"
-                else 2 if unclear.get(i["id"]) == "vague" else 0)]
-        if k < facts_first:
-            cands = [i for i in cands if i["dimension"] in M.HYBRID_FORM_DIMS and i["id"] not in asks] or cands
+        cands = M.candidates(POOL, asks, unclear, k, method == "D" or hybrid, hybrid, facts_first)
         _, info = b.choose(cands, budget - k, seed=k)
         if info["settled"]:
             return k
