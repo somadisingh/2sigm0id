@@ -1,6 +1,15 @@
-"""Model bake-off for the adaptive risk-profiling interviewer.
+"""Runs the interviews: the main experiment (every method on the AI test users) and the earlier
+model bake-off that chose the models.
 
-Commands (run from this folder):
+Main experiment (see methods.py for what each method does):
+  python run_bakeoff.py experiment --methods CWF --budgets 10 --repeats 1 --limit 10 --mock
+                                               # a free test run: 10 test users, fake AI answers
+  python run_bakeoff.py experiment --methods A C CF CWF --budgets 5 10 15 --repeats 3
+                                               # a real run; it resumes if stopped
+Each finished interview is one line in results/<name>.jsonl. Score it with score.py, or with the
+scripts in analysis/ (README, "Final results").
+
+Model bake-off (Oct 2026, run from this folder):
   python run_bakeoff.py list-models            # exact model IDs on your Baseten account
   python run_bakeoff.py check                  # does each model + thinking setting work?
   python run_bakeoff.py stage1                 # compare interviewers

@@ -1,4 +1,6 @@
-"""Bake-off settings. Edit this file to add, remove or re-tune models.
+"""All settings in one place: the AI models and their prices, which model plays which role in the
+experiment and the live app, and the switches for the experiment. Edit this file to add,
+remove or re-tune models.
 
 IMPORTANT - model IDs:
   Only "openai/gpt-oss-120b" is confirmed from Baseten's documentation.
