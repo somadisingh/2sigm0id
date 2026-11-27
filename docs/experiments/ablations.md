@@ -587,3 +587,16 @@ The main table mixed A from the full run (Nov 14) with the reruns. A was run aga
 | CWF − A, exact band | +7.1 points | **+18.9 points (clear)** | +1.7 points |
 
 No predictions were written for this run: it only replaces an old row. **What it means:** CWF and CF are clearly better than the fixed form at 10 questions only. At 5 and 15 questions no method is clearly better than A. With the rerun, C − A at 10 questions (−0.008) is no longer clear (full-run C − A was −0.010, clear), so the Milestone 3 claim that "C meets the success criterion at 10 questions" now holds for CF and CWF, not for C.
+
+### Checks for Preyansh's review of the conclusions (Nov 27, no new runs)
+
+Paired as in tests 14 to 16 (n = 297 per budget, U054 left out), ranges by test user:
+
+| | 5 questions | 10 questions | 15 questions |
+|---|---|---|---|
+| CWF − DW v2, avg error | −0.015 (clear) | −0.030 (clear) | −0.019 (clear) |
+| CWF − C, exact band | +6.4 points (not clear) | −3.4 points (not clear) | +1.0 points (not clear) |
+
+Contradictions: in D's interviews (`rerun_engine.jsonl`), 351 of 355 planted contradictions are false money facts (debt payments 277) and 4 are past losses. In 891 CWF interviews, no contradiction was planted and none was flagged: money facts are on the form, and a contradiction can only be planted on a fact the test user already said aloud. So CWF cannot catch a false money fact; that strength belongs to D.
+
+Cost figures: the final docs give system cost only (D $0.0126, DW v2 $0.0182 per interview). Test 12 above also counts the test users' calls (D $0.0139, DW v1 $0.0197).

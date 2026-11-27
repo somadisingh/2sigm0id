@@ -48,7 +48,7 @@ The Milestone 3 feedback noted that D − C mixes two effects: the AI interviewe
 | CF − C | Money facts asked first, everything on the form, no AI | −0.012 at 5, −0.018 at 10 (clear); −0.003 at 15 (not clear) |
 | CWF − CF | Only how willingness and behavior are asked: conversation or form | −0.005, −0.003, −0.004 (not clear at any budget) |
 
-So most of CWF's gain over C comes from asking the money facts first, a rule a form can also use (CF). With the same input and question rule, conversation ties the form overall. It reads attitudes better for clean answerers (−0.020 at 10 questions, −0.021 at 15, clear), and it can notice contradictions about attitudes and past losses, which a form cannot. One result goes the other way: at 10 questions CWF picks the exact band 7.4 points less often than CF (clear).
+So most of CWF's gain over C comes from asking the money facts first, a rule a form can also use (CF). With the same input and question rule, conversation ties the form overall. It reads attitudes better for clean answerers (−0.020 at 10 questions, −0.021 at 15, clear), and it can notice a contradiction about a past loss, which a form cannot. A disagreement between willingness and behavior is a mismatch flag, which every method raises, forms included. One result goes the other way: at 10 questions CWF picks the exact band 7.4 points less often than CF (clear).
 
 ### Cost and time
 

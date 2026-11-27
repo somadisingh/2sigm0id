@@ -15,29 +15,29 @@ CWF asks the five money facts first, on a form. After that, the AI asks about wi
 | A fixed form (baseline) | 0.125 | 0.114 | 0.085 | $0 |
 | C adaptive form | 0.135 | 0.106 | 0.088 | $0 |
 | D adaptive AI interviewer | 0.136 | 0.114 | 0.106 | $0.013 |
-| DW interviewer, AI-written questions | 0.134 | 0.115 | 0.101 | $0.018 |
+| DW interviewer, AI-written questions (writer v2) | 0.134 | 0.115 | 0.101 | $0.018 |
 | CF adaptive form, money facts first | 0.123 | 0.088 | 0.086 | $0 |
 | **CWF hybrid, money facts first** | **0.118** | **0.085** | **0.082** | **$0.011** |
 
-*All rows come from the reruns of Nov 22–26, with the engine of Nov 22 and the same test users and noise (A was rerun on Nov 25; its full-run values were 0.125, 0.113 and 0.090).*
+*System cost counts only the system's own AI calls at list price, not the AI test users' calls (test 12 in `ablations.md` also counts those, so its figures are higher: D $0.0139, DW $0.0197). All rows come from the reruns of Nov 22–26, with the engine of Nov 22 and the same test users and noise (A was rerun on Nov 25; its full-run values were 0.125, 0.113 and 0.090).*
 
 - CWF has the lowest error at every budget.
 - **Against the baseline A, CWF is clearly better only at 10 questions:** −0.029 avg error and 19 points more exact bands (both clear). At 5 questions (−0.007) and 15 questions (−0.003) the difference is not clear. So the main success criterion (more accurate than a fixed form with the same number of questions) is met at 10 questions only. At 15 questions no method is clearly better than A, and D is clearly worse (+0.020).
 - CWF is clearly better than C at 5 and 10 questions (−0.016 and −0.021). At 15 questions it is better by −0.006, which is not clear.
-- CWF is clearly better than D and DW at every budget (−0.018 to −0.029 against D).
+- CWF is clearly better than D and DW at every budget (−0.018 to −0.029 against D; −0.015, −0.030 and −0.019 against DW v2).
 - All of CWF's gain over C is in capacity (−0.043, −0.050, −0.020). On willingness and behavior, CWF and C are tied.
-- CWF and C pick the exact band equally often (not clear at any budget).
+- CWF and C pick the exact band equally often (+6.4, −3.4 and +1.0 points; not clear at any budget).
 
 ### A2. Where natural language helps
 
 1. **People who answer clearly.** For clean test users, conversation reads willingness and behavior better than a form. With the same question rule, CWF − CF on attitudes is −0.020 at 10 questions and −0.021 at 15 (clear). A free answer carries more information than one ticked box.
-2. **Contradictions.** The interviewer flags 86–92% of planted contradictions. It also flags 2–3% of interviews that contain no false fact. A form cannot notice a contradiction.
+2. **Contradictions (method D).** The AI interviewer D flags 86–92% of planted contradictions, and 2–3% of interviews that contain no false fact. A form cannot notice a contradiction. Almost all planted contradictions are false money facts (351 of 355), so this is a strength of D, not of CWF: CWF takes the money facts from the form, and in 891 interviews it raised no contradiction flag. CWF can only flag a contradiction about a past loss. A disagreement between willingness and behavior is a mismatch flag, which every method raises, forms included.
 3. **Follow-up questions.** Asking a fact again when two statements conflict lowers capacity error by 0.030 at 10 questions and 0.040 at 15 (D − DN, clear). On these re-ask turns, the final band went from wrong to right more often than from right to wrong (38 against 28 at 10 questions).
 
 ### A3. Where natural language does not help
 
 1. **Money facts heard in conversation.** Spoken money facts can be false: the test user says a wrong value and sometimes repeats it. Hearing the facts in conversation instead of on a form costs 0.018 capacity error at 10 questions and 0.031 at 15 (CW − DW, clear). For this reason CWF asks the money facts on a form.
-2. **People whose answers have heavy noise.** For these test users, conversation is not better on attitudes, and sometimes it is worse: CW − C is +0.023 at 15 questions (clear). Some of this noise exists only in conversation, for example agreeing with what a question hints.
+2. **People whose answers have heavy noise.** For these test users, conversation is not better on attitudes, and sometimes it is worse: CW − C is +0.023 at 15 questions (clear). Some noise is stronger in conversation: a planned flip changes 49% of spoken answers but only 27% of form answers (persona check 4).
 3. **AI-written questions that restate earlier answers.** The first version of the AI-written questions restated an earlier answer in 12% of questions, which can lead the person. Version 2 forbids this. It restates in 0% and is no less accurate.
 
 ### A4. The controlled comparison (fairness)
@@ -55,9 +55,9 @@ The Milestone 3 feedback said that D − C mixes two effects: the AI interviewer
 ### A5. Is the AI worth its cost?
 
 - CWF costs $0.011 per interview at list price and takes 1.1 s per question. CF costs $0 and takes 0.1 s.
-- For that cost, CWF gives about 0.02 lower attitude error for clean answerers, contradiction checks, and natural questions.
+- For that cost, CWF gives about 0.02 lower attitude error for clean answerers, and natural questions. It does not check the money facts: a false money fact goes onto the form unchecked, as in C. Only a contradiction about a past loss can be flagged.
 - It also has two weaker points. Its overall gain over CF is too small to show. At 10 questions it picks the exact band less often than CF (−7.4 points, clear).
-- **Our answer:** the AI is worth about one cent per interview when people can explain themselves, or when catching contradictions matters. Where cost or speed matters most, CF is the alternative with the same error and no AI.
+- **Our answer:** the AI is worth about one cent per interview when people can explain themselves. When catching false money facts matters most, D does that and CWF does not; D costs about the same ($0.013) but has higher error. Where cost or speed matters most, CF is the alternative with the same error and no AI.
 
 ### A6. Other synthetic-user findings
 
@@ -89,7 +89,7 @@ Source: `classmate_study_report.md` (Siya, Nov 25).
 - **Capacity makes the results cautious.** 16 of 21 have less than 6 months of savings and 11 need the money within 5 years. Because the final band is the lowest of the three, no one got band 5, and most misses were "more cautious than expected" (6 people for each method).
 - **The outside measure did not separate the bands.** In the lottery task, people in band 2 and band 3 picked the same number of safe bets. So the study cannot say which method is closer to the truth.
 
-**What this supports:** with real people, the conversation notices unsure or contradictory answers. It agrees with the form and feels about as right. This matches the synthetic findings in A2: talking helps with ambiguous answers, and the overall result ties the form.
+**What this supports:** with real people, the conversation notices unsure or contradictory answers. It agrees with the form and feels about as right. This matches the synthetic findings for D in A2: D notices contradictions, and the overall result ties the form. It does not carry over to CWF, which takes the money facts from the form and so cannot notice a false one.
 
 **What this does not support:** any claim about the accuracy of D, or any claim about CWF or CF on real people.
 
@@ -101,8 +101,8 @@ Source: `classmate_study_report.md` (Siya, Nov 25).
   - Real people may make fewer false statements, or different ones.
   - AI test users repeat their own false values more than people probably do. When the test users correct a slip on a follow-up question, D's capacity error falls (test 10).
 - **The differences are small.** CWF − C is −0.016 to −0.021 on a 0-to-1 scale. CWF − CF is not clear at any budget.
-- **One model family plays all test users** (DeepSeek V4 Flash). Three other models agreed within one band on the same users, but other models may answer differently.
-- **The real-user group is small and not typical.** It is 21 classmates: 14 are 23 to 26 years old, 8 have no income, and 19 of 21 answered all three literacy questions right. They know the project, and they typed in the band themselves (it was not matched with the app's logs).
+- **One model family plays all test users** (DeepSeek V4 Flash). In persona check 5, two other models played the same users (Nemotron all 100, Muse 10) and agreed within one band for 98 of 100, but other models may answer differently.
+- **The real-user group is small and not typical.** It is 21 classmates: 14 are 23 to 26 years old, 8 have no income, and 19 of 21 answered all three literacy questions right. They know the project, and they typed in the band themselves; 39 of 42 typed bands match the app's logs, and we use the app's bands.
 
 ## D. Answers to the Milestone 3 feedback
 
