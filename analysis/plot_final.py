@@ -14,9 +14,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-import config as C
-from analysis.nl_benefits import RUNS, all_err
-from analysis.rerun_compare import BUDGETS, R, load
+from analysis.common import BUDGETS, R, err, load
+from analysis.nl_benefits import RUNS
+from score import system_cost
 
 ALL = {**RUNS, **load("rerun_hybrid.jsonl"), **load("rerun_hybrid_ff.jsonl"),
        **load("rerun_form_ff.jsonl"), **load("rerun_form_a.jsonl")}
@@ -28,12 +28,6 @@ COLOR = {"CWF": "#2a78d6", "CF": "#eb6834"}   # reference palette slots 1 and 2 
 GRAY, INK, INK2, SURFACE = "#9a9893", "#0b0b0b", "#52514e", "#fcfcfb"
 
 
-def cost(r):
-    return sum((c["usage"]["in"] * C.MODELS[c.get("model") or r["interviewer"]]["price_in"]
-                + c["usage"]["out"] * C.MODELS[c.get("model") or r["interviewer"]]["price_out"]) / 1e6
-               for c in r["interviewer_calls"])
-
-
 def main():
     fig, axes = plt.subplots(1, 3, figsize=(12, 4.4), sharey=True, facecolor=SURFACE)
     for ax, bu in zip(axes, BUDGETS):
@@ -41,7 +35,7 @@ def main():
         pts = []
         for m in METHODS:
             rs = [r for (mm, x, _, _), r in ALL.items() if mm == m and x == bu]
-            pts.append((m, mean(map(cost, rs)) * 100, mean(map(all_err, rs))))
+            pts.append((m, mean(map(system_cost, rs)) * 100, mean(map(err, rs))))
         for m, x, y in pts:
             if m == "A":   # the baseline: an open ring on top, so a method at the same spot stays visible
                 ax.scatter(x, y, s=60, facecolor="none", edgecolor=INK2, linewidth=1.6, zorder=4)
@@ -81,7 +75,7 @@ def main():
     fig.savefig(out, dpi=200, facecolor=SURFACE)
     print(out)
     for bu in BUDGETS:
-        print(bu, {m: round(mean(map(all_err, [r for (mm, x, _, _), r in ALL.items() if mm == m and x == bu])), 3)
+        print(bu, {m: round(mean(map(err, [r for (mm, x, _, _), r in ALL.items() if mm == m and x == bu])), 3)
                    for m in METHODS})
 
 

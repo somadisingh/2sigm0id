@@ -13,8 +13,6 @@ import sys
 from collections import defaultdict
 from statistics import mean
 
-import numpy as np
-
 import belief as BE
 import capacity as K
 import methods as M
@@ -26,6 +24,7 @@ SPOKEN = ("D", "DR", "DN")
 
 
 def noise_level(pid):
+    # not score.noise_level: the old placeholder users (S1 to S5) must stay out of the three groups
     return pid.rsplit("-", 1)[-1] if pid.rsplit("-", 1)[-1] in ("clean", "moderate", "heavy") else "other"
 
 

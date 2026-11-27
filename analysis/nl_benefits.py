@@ -15,10 +15,9 @@ import random
 import zlib
 from statistics import mean
 
-import config as C
 import run_bakeoff as RB
-from analysis.rerun_compare import BUDGETS, load, low_band, pair
-from score import noise_level
+from analysis.common import BUDGETS, dim_err, err, false_fact, load, low_band, pair
+from score import noise_level, system_cost
 
 ATT = ("willingness", "behavioral")
 ENGINE = load("rerun_engine.jsonl")
@@ -26,16 +25,8 @@ DW = load("rerun_written_v2.jsonl")
 RUNS = {**ENGINE, **DW}
 
 
-def dim_err(d):
-    return lambda r: abs(r["final_profile"][d] - r["truth"][d])
-
-
 def att_err(r):
     return mean(abs(r["final_profile"][d] - r["truth"][d]) for d in ATT)
-
-
-def all_err(r):
-    return mean(abs(r["final_profile"][d] - r["truth"][d]) for d in ("capacity",) + ATT)
 
 
 _SCHED = {}
@@ -53,11 +44,6 @@ def schedule(r):
 
 def has(kind):
     return lambda r: kind in schedule(r)
-
-
-def false_fact(r):
-    return any(t.get("contradiction_target") or (t.get("correction") or {}).get("phase") == "wrong"
-               for t in r["turns"])
 
 
 def section(title):
@@ -84,14 +70,14 @@ def main():
         for bu in BUDGETS:
             print(f"{m} b{bu}:")
             for name, keep in groups:
-                print(f"   {name:>20}: {pair(RUNS, RUNS, m, 'C', bu, all_err, keep)} | "
+                print(f"   {name:>20}: {pair(RUNS, RUNS, m, 'C', bu, err, keep)} | "
                       f"{pair(RUNS, RUNS, m, 'C', bu, att_err, keep)}")
 
     section("3. What the re-asks do")
     for bu in BUDGETS:
-        print(f"D - DN b{bu}: all dims {pair(RUNS, RUNS, 'D', 'DN', bu, all_err)}; "
+        print(f"D - DN b{bu}: all dims {pair(RUNS, RUNS, 'D', 'DN', bu, err)}; "
               f"capacity {pair(RUNS, RUNS, 'D', 'DN', bu, dim_err('capacity'))}; "
-              f"runs with a false fact {pair(RUNS, RUNS, 'D', 'DN', bu, all_err, false_fact)}")
+              f"runs with a false fact {pair(RUNS, RUNS, 'D', 'DN', bu, err, false_fact)}")
     for m in ("D", "DW"):
         for bu in BUDGETS:
             rs = [r for (mm, x, _, _), r in RUNS.items() if mm == m and x == bu]
@@ -124,9 +110,7 @@ def main():
     section("5. System cost and time per interview (test users not counted)")
     for m in ("C", "D", "DN", "DW"):
         rs = [r for (mm, x, _, _), r in RUNS.items() if mm == m]
-        usd = mean(sum((c["usage"]["in"] * C.MODELS[c.get("model") or r["interviewer"]]["price_in"]
-                        + c["usage"]["out"] * C.MODELS[c.get("model") or r["interviewer"]]["price_out"]) / 1e6
-                       for c in r["interviewer_calls"]) for r in rs)
+        usd = mean(map(system_cost, rs))
         secs = mean(sum(t["system_latency"] + t["engine_secs"] for t in r["turns"]) / len(r["turns"]) for r in rs)
         calls = mean(len(r["interviewer_calls"]) / len(r["turns"]) for r in rs)
         print(f"{m}: ${usd:.4f} per interview (list price), {secs:.2f} s per question, {calls:.2f} AI calls per question")

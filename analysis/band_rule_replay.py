@@ -14,7 +14,7 @@ from statistics import mean
 
 import belief as BE
 import methods as M
-from analysis.rerun_compare import EXCLUDE, R, low_band
+from analysis.common import EXCLUDE, R, low_band
 
 BANK = M.load_bank()
 POOL = M.engine_pool(BANK)

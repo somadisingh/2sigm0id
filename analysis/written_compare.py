@@ -9,17 +9,16 @@ wording and the written wording of the same sampled questions, each on its own, 
 the question hints at an answer. About $0.10.
 """
 import argparse
-import json
 import random
 import re
 from concurrent.futures import ThreadPoolExecutor
 from statistics import mean
 
-import config as C
 import methods as M
 import run_bakeoff as RB
+from analysis.common import BUDGETS, err, exact, level, load, pair, stop_lines
 from llm import extract_json, strip_think
-from analysis.rerun_compare import BUDGETS, err, exact, load, pair, level, stop_lines
+from score import cost
 
 BANK = {i["id"]: i for i in M.load_bank()["items"]}
 JUDGE_SYSTEM = (
@@ -53,13 +52,12 @@ def judge(llm, key, q, setting, tries=3):
     return None
 
 
-def cost(rs):
-    """List-price dollars per interview, all models."""
+def cost_per_interview(rs):
+    """List-price dollars per interview, all models (the test users' calls included)."""
     tot = 0.0
     for r in rs:
         for c, default in [(c, r["interviewer"]) for c in r["interviewer_calls"]] + [(c, r["user"]) for c in r["user_calls"]]:
-            m = C.MODELS[c.get("model") or default]
-            tot += (c["usage"]["in"] * m["price_in"] + c["usage"]["out"] * m["price_out"]) / 1e6
+            tot += cost(c["usage"], c.get("model") or default)
     return tot / len(rs)
 
 
@@ -87,7 +85,7 @@ def main():
     for name, runs, m in (("D", eng, "D"), ("DW", dw, "DW")):
         rs = [r for (mm, _, _, _), r in runs.items() if mm == m]
         secs = mean(t["system_latency"] for r in rs for t in r["turns"])
-        out.append(f"{name}: ${cost(rs):.4f} per interview (list price), {secs:.2f} s of system time per question, "
+        out.append(f"{name}: ${cost_per_interview(rs):.4f} per interview (list price), {secs:.2f} s of system time per question, "
                    f"{mean(len(r['interviewer_calls']) for r in rs) / mean(len(r['turns']) for r in rs):.2f} system calls per question")
     if args.file != "rerun_written.jsonl":
         v1 = load("rerun_written.jsonl")

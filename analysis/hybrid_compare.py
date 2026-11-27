@@ -12,10 +12,9 @@ conversation instead of on a form. Ranges resample whole test users.
 import sys
 from statistics import mean
 
-import config as C
-from analysis.nl_benefits import RUNS, all_err, att_err, dim_err, schedule
-from analysis.rerun_compare import BUDGETS, exact, load, pair, stop_lines
-from score import noise_level
+from analysis.common import BUDGETS, dim_err, err, exact, load, pair, stop_lines
+from analysis.nl_benefits import RUNS, att_err, schedule
+from score import noise_level, system_cost
 
 H = sys.argv[1] if len(sys.argv) > 1 else "CW"
 CW = load("rerun_hybrid.jsonl")
@@ -40,7 +39,7 @@ def main():
         for bu in BUDGETS:
             print(f"b{bu}:")
             for name, keep in groups:
-                print(f"   {name:>17}: avg error {pair(ALL, ALL, first, other, bu, all_err, keep)}")
+                print(f"   {name:>17}: avg error {pair(ALL, ALL, first, other, bu, err, keep)}")
                 if name == "all":
                     print(f"   {'':>17}  capacity {pair(ALL, ALL, first, other, bu, dim_err('capacity'))}")
                     print(f"   {'':>17}  attitudes {pair(ALL, ALL, first, other, bu, att_err)}")
@@ -52,7 +51,7 @@ def main():
     for m in LEVELS:
         for bu in BUDGETS:
             rs = [r for (mm, x, _, _), r in ALL.items() if mm == m and x == bu]
-            print(f"{m} b{bu}: {mean(map(all_err, rs)):.3f} | {mean(map(dim_err('capacity'), rs)):.3f} | "
+            print(f"{m} b{bu}: {mean(map(err, rs)):.3f} | {mean(map(dim_err('capacity'), rs)):.3f} | "
                   f"{mean(map(att_err, rs)):.3f}  (n={len(rs)})")
 
     print(f"\n## Form questions per {H} interview")
@@ -68,9 +67,7 @@ def main():
     print("\n## System cost and time per interview (test users not counted)")
     for m in LEVELS:
         rs = [r for (mm, x, _, _), r in ALL.items() if mm == m]
-        usd = mean(sum((c["usage"]["in"] * C.MODELS[c.get("model") or r["interviewer"]]["price_in"]
-                        + c["usage"]["out"] * C.MODELS[c.get("model") or r["interviewer"]]["price_out"]) / 1e6
-                       for c in r["interviewer_calls"]) for r in rs)
+        usd = mean(map(system_cost, rs))
         secs = mean(sum(t["system_latency"] + t["engine_secs"] for t in r["turns"]) / len(r["turns"]) for r in rs)
         print(f"{m}: ${usd:.4f} per interview (list price), {secs:.2f} s per question")
 

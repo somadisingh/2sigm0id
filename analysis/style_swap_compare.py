@@ -11,16 +11,8 @@ import sys
 from collections import defaultdict
 from statistics import mean
 
-from prompts import band
+from analysis.common import err, low_band
 from score import DIMS, bootstrap_ci
-
-
-def err(r):
-    return mean(abs(r["final_profile"][d] - r["truth"][d]) for d in DIMS)
-
-
-def final_band(r):
-    return min(band(r["final_profile"][d]) for d in DIMS)
 
 
 def load(path, method="D"):
@@ -57,9 +49,9 @@ def main(swap_path, full_path):
     for bu in sorted(pairs):
         ps = pairs[bu]
         diffs = [err(s) - err(o) for s, o in ps]
-        ex_o = mean(final_band(o) == o["truth"]["final_band"] for _, o in ps)
-        ex_s = mean(final_band(s) == s["truth"]["final_band"] for s, _ in ps)
-        differs = mean(final_band(s) != final_band(o) for s, o in ps)
+        ex_o = mean(low_band(o["final_profile"]) == o["truth"]["final_band"] for _, o in ps)
+        ex_s = mean(low_band(s["final_profile"]) == s["truth"]["final_band"] for s, _ in ps)
+        differs = mean(low_band(s["final_profile"]) != low_band(o["final_profile"]) for s, o in ps)
         out.append(f"| {bu} | {len(ps)} | {mean(err(o) for _, o in ps):.3f} | {mean(err(s) for s, _ in ps):.3f} "
                    f"| {rng(diffs, [o['persona_id'] for _, o in ps])} | {100 * ex_o:.0f}% / {100 * ex_s:.0f}% | {100 * differs:.0f}% |")
     out.append("\nBy dimension (all budgets): swap - original")
@@ -78,7 +70,7 @@ def main(swap_path, full_path):
         ids = {o["persona_id"] for _, o in pairs[bu]}
         same_user = [(full.get((i, bu, 0)), full.get((i, bu, 1))) for i in ids]
         same_user = [(a, b) for a, b in same_user if a and b]
-        out.append(f"   budget {bu}: {100 * mean(final_band(a) != final_band(b) for a, b in same_user):.0f}% "
+        out.append(f"   budget {bu}: {100 * mean(low_band(a['final_profile']) != low_band(b['final_profile']) for a, b in same_user):.0f}% "
                    f"of {len(same_user)} users")
     print("\n".join(out))
 

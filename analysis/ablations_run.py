@@ -9,24 +9,16 @@ needed when N_ROLLOUTS is 400 before the run, and it was (belief.py).
 import csv
 import json
 import sys
-from collections import defaultdict
 from statistics import mean
 
 import belief as BE
 import methods as M
+from analysis.common import dim_err, err, exact, low_band, profile_error
 from prompts import band
 from score import DIMS, bootstrap_ci
 
 BUDGETS = (5, 10, 15)
 BANK = {i["id"]: i for i in M.load_bank()["items"]}
-
-
-def err(p, t):
-    return mean(abs(p[d] - t[d]) for d in DIMS)
-
-
-def final_band(p):
-    return min(band(p[d]) for d in DIMS)
 
 
 def load(path):
@@ -63,9 +55,6 @@ def fmt(n, d, lo, hi, pct=False):
     return f"{s} ({rng}, n={n}, {clear})"
 
 
-E = lambda r: err(r["final_profile"], r["truth"])  # noqa: E731
-EXACT = lambda r: float(final_band(r["final_profile"]) == r["truth"]["final_band"])  # noqa: E731
-dim_err = lambda d: (lambda r: abs(r["final_profile"][d] - r["truth"][d]))  # noqa: E731
 
 
 def summary(path):
@@ -82,8 +71,8 @@ def heavy(r):
 def test_compare(runs, title, a, b, extra=()):
     out = [f"\n## {title}: {a} - {b} (negative = {a} better)"]
     for bu in BUDGETS:
-        out.append(f"budget {bu}: avg error {fmt(*paired(runs, a, b, bu, E))}; "
-                   f"band exact {fmt(*paired(runs, a, b, bu, EXACT), pct=True)}")
+        out.append(f"budget {bu}: avg error {fmt(*paired(runs, a, b, bu, err))}; "
+                   f"band exact {fmt(*paired(runs, a, b, bu, exact), pct=True)}")
         for name, f, keep in extra:
             out.append(f"   {name}: {fmt(*paired(runs, a, b, bu, f, keep))}")
     return out
@@ -112,12 +101,12 @@ def test5(runs):
                 k = r["would_stop_at"]
                 p = r["turns"][k]["profile_before"] if k is not None and k < len(r["turns"]) else r["final_profile"]
                 stop_p.append(p)
-            changed = [final_band(p) != final_band(r["final_profile"]) for p, r in zip(stop_p, rs)
+            changed = [low_band(p) != low_band(r["final_profile"]) for p, r in zip(stop_p, rs)
                        if r["would_stop_at"] is not None]
-            ex_stop = mean(final_band(p) == r["truth"]["final_band"] for p, r in zip(stop_p, rs))
-            ex_end = mean(EXACT(r) for r in rs)
-            e_stop = mean(err(p, r["truth"]) for p, r in zip(stop_p, rs))
-            e_end = mean(E(r) for r in rs)
+            ex_stop = mean(low_band(p) == r["truth"]["final_band"] for p, r in zip(stop_p, rs))
+            ex_end = mean(exact(r) for r in rs)
+            e_stop = mean(profile_error(p, r["truth"]) for p, r in zip(stop_p, rs))
+            e_end = mean(err(r) for r in rs)
             saved = mean(bu - r["would_stop_at"] for r in fired) if fired else 0
             out.append(
                 f"{m} budget {bu}: stop fired in {len(fired)}/{len(rs)} runs"
@@ -157,7 +146,7 @@ def replay_all(runs, methods, values, source):
     as_run = BE.settings()
     BE.use(values, source)
     try:
-        return {(m, bu, pid, rep): err(replay(r), r["truth"])
+        return {(m, bu, pid, rep): profile_error(replay(r), r["truth"])
                 for (m, bu, pid, rep), r in runs.items() if m in methods}
     finally:
         BE.use(as_run, as_run["source"])
@@ -179,9 +168,9 @@ def test7(runs):
         run_order, alt_order = [], []
         for m in methods:
             keys = [k for k in other if k[0] == m and k[1] == bu]
-            f_ = mean(E(runs[k]) for k in keys)
+            f_ = mean(err(runs[k]) for k in keys)
             s_ = mean(other[k] for k in keys)
-            lo, hi = bootstrap_ci([other[k] - E(runs[k]) for k in keys], groups=[k[2] for k in keys])
+            lo, hi = bootstrap_ci([other[k] - err(runs[k]) for k in keys], groups=[k[2] for k in keys])
             label = "spoken fitted" if m in SPOKEN else "starting form"
             out.append(f"   {m}: as run {f_:.3f}, {label} {s_:.3f}, change {s_ - f_:+.3f} ({lo:+.3f} to {hi:+.3f})")
             run_order.append((f_, m))
@@ -202,8 +191,8 @@ def main(path):
                          ("behavior error", dim_err("behavioral"), lambda r: True),
                          ("capacity error", dim_err("capacity"), lambda r: True)])
     out += test_compare(runs, "Test 3: what the re-asks add", "D", "DN",
-                        [("heavy-noise users, avg error", E, heavy),
-                         ("clean and moderate users, avg error", E, lambda r: not heavy(r))])
+                        [("heavy-noise users, avg error", err, heavy),
+                         ("clean and moderate users, avg error", err, lambda r: not heavy(r))])
     for bu in BUDGETS:
         parts = []
         for m in ("D", "DN"):

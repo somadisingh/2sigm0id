@@ -42,6 +42,11 @@ def cost(usage, model_key):
     return (usage["in"] * m["price_in"] + usage["out"] * m["price_out"]) / 1e6
 
 
+def system_cost(r):
+    """List-price dollars of the system's own AI calls in one run (the test user's calls not counted)."""
+    return sum(cost(c["usage"], c.get("model") or r["interviewer"]) for c in r["interviewer_calls"])
+
+
 def mean(xs):
     xs = [x for x in xs if x is not None]
     return st.mean(xs) if xs else None

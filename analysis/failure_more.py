@@ -15,6 +15,7 @@ import numpy as np
 
 import belief as BE
 import methods as M
+from analysis.common import err, false_fact, low_band, profile_error
 from prompts import band
 from score import DIMS, bootstrap_ci
 
@@ -22,21 +23,8 @@ BANK = {i["id"]: i for i in M.load_bank()["items"]}
 SPOKEN = ("D", "DR", "DN")
 
 
-def level(r):
+def level(r):   # the noise level in the test-user ID (clean / moderate / heavy); old IDs give other words
     return r["persona_id"].rsplit("-", 1)[-1]
-
-
-def err(p, t):
-    return mean(abs(p[d] - t[d]) for d in DIMS)
-
-
-def low_band(p):
-    return min(band(p[d]) for d in DIMS)
-
-
-def false_fact(r):
-    return any(t.get("contradiction_target") or (t.get("correction") or {}).get("phase") == "wrong"
-               for t in r["turns"])
 
 
 def ci(xs, users=None):
@@ -53,7 +41,7 @@ def part2(runs, out):
             for lv in ("clean", "moderate", "heavy"):
                 g = [r for r in runs if r["method"] == m and r["budget"] == bu and level(r) == lv]
                 parts.append(f"{lv} " + "/".join(f"{mean(abs(r['final_profile'][d] - r['truth'][d]) for r in g):.3f}"
-                                                for d in DIMS) + f" (avg {mean(err(r['final_profile'], r['truth']) for r in g):.3f})")
+                                                for d in DIMS) + f" (avg {mean(err(r) for r in g):.3f})")
             out.append(f"   budget {bu} {m:3}: " + "; ".join(parts) + "   [capacity/willingness/behavior]")
     out.append("\nNoise turns per run on heavy users (budget 15):")
     for m in ("C", "D"):
@@ -74,7 +62,7 @@ def part2(runs, out):
             for name, sel in (("with false fact", [r for r in g if false_fact(r)]),
                               ("without", [r for r in g if not false_fact(r)])):
                 if sel:
-                    out.append(f"   {m} b{bu} {name}: {len(sel)} runs, avg {mean(err(r['final_profile'], r['truth']) for r in sel):.3f}, "
+                    out.append(f"   {m} b{bu} {name}: {len(sel)} runs, avg {mean(err(r) for r in sel):.3f}, "
                                + ", ".join(f"{d} {mean(abs(r['final_profile'][d] - r['truth'][d]) for r in sel):.3f}" for d in DIMS))
     out.append("\nPaired D - C on heavy users (same user and repeat), per dimension; negative = D better:")
     for bu in (10, 15):
@@ -95,16 +83,16 @@ def part3(runs, out):
     out.append("Error and bias per dimension by budget (bias = mean estimate - truth):")
     for bu in (5, 10, 15):
         g = [r for r in runs if r["method"] == "D0" and r["budget"] == bu]
-        out.append(f"   budget {bu}: avg {mean(err(r['final_profile'], r['truth']) for r in g):.3f}; " + "; ".join(
+        out.append(f"   budget {bu}: avg {mean(err(r) for r in g):.3f}; " + "; ".join(
             f"{d} {mean(abs(r['final_profile'][d] - r['truth'][d]) for r in g):.3f} (bias {mean(r['final_profile'][d] - r['truth'][d] for r in g):+.3f})"
             for d in DIMS))
     out.append("\nInside the same 15-question D0 conversations: the profile the LLM held after question k")
     g = [r for r in runs if r["method"] == "D0" and r["budget"] == 15]
     for k in (3, 5, 8, 10, 12):
         ps = [(r["turns"][k]["profile_before"], r["truth"]) for r in g if len(r["turns"]) > k]
-        out.append(f"   after {k} answers: avg {mean(err(p, t) for p, t in ps):.3f}; " + "; ".join(
+        out.append(f"   after {k} answers: avg {mean(profile_error(p, t) for p, t in ps):.3f}; " + "; ".join(
             f"{d} {mean(abs(p[d] - t[d]) for p, t in ps):.3f} (bias {mean(p[d] - t[d] for p, t in ps):+.3f})" for d in DIMS))
-    out.append(f"   final (15 answers): avg {mean(err(r['final_profile'], r['truth']) for r in g):.3f}")
+    out.append(f"   final (15 answers): avg {mean(err(r) for r in g):.3f}")
     out.append("\nD0 at 15 questions by true band of each dimension (bias = estimate - truth):")
     for d in DIMS:
         rows = defaultdict(list)
@@ -112,9 +100,9 @@ def part3(runs, out):
             rows[band(r["truth"][d])].append(r["final_profile"][d] - r["truth"][d])
         out.append(f"   {d}: " + ", ".join(f"band {b} {mean(v):+.3f} (n={len(v)})" for b, v in sorted(rows.items())))
     out.append("\nD0 at 15 by noise level: " + ", ".join(
-        f"{lv} {mean(err(r['final_profile'], r['truth']) for r in g if level(r) == lv):.3f}" for lv in ("clean", "moderate", "heavy")))
+        f"{lv} {mean(err(r) for r in g if level(r) == lv):.3f}" for lv in ("clean", "moderate", "heavy")))
     out.append("D0 at 5 by noise level:  " + ", ".join(
-        f"{lv} {mean(err(r['final_profile'], r['truth']) for r in runs if r['method'] == 'D0' and r['budget'] == 5 and level(r) == lv):.3f}"
+        f"{lv} {mean(err(r) for r in runs if r['method'] == 'D0' and r['budget'] == 5 and level(r) == lv):.3f}"
         for lv in ("clean", "moderate", "heavy")))
     # how far scores move per answer: does D0 over-react late?
     out.append("\nD0 at 15: mean |change of a score after one answer|, by question number:")
