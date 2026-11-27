@@ -196,13 +196,6 @@ def test_gains_are_valid_and_fast():
     print(f"  first question with nothing known: {best['id']} ({info['phase']}), {secs * 1000:.0f} ms")
 
 
-if __name__ == "__main__":
-    for name, fn in list(globals().items()):
-        if name.startswith("test_"):
-            fn()
-            print("ok", name)
-
-
 def test_conflicting_fact_needs_a_majority():
     """Nov 22: one statement against one leaves the fact unknown; a third statement decides."""
     b = B.Belief(channel="spoken")
@@ -240,3 +233,10 @@ def test_stop_watches_the_reported_band():
     assert top == reported
     pmf = b.final_pmf(b.band_pmfs())
     assert abs(chance - pmf[top - 1]) < 1e-9
+
+
+if __name__ == "__main__":
+    for name, fn in list(globals().items()):
+        if name.startswith("test_"):
+            fn()
+            print("ok", name)
