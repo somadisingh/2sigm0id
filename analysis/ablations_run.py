@@ -1,9 +1,9 @@
-"""Run the ablation tests in ablations.md on the full-run results (no new API calls).
+"""Run the ablation tests in docs/experiments/ablations.md on the full-run results (no new API calls).
 
 python -m analysis.ablations_run results/experiment_full.jsonl > results/ablations.txt
 
 Tests 1 to 6 compare recorded runs. Test 7 replays the recorded answers through the belief
-engine with the starting evidence strengths. Test 8 is not run: ablations.md says it is not
+engine with the starting evidence strengths. Test 8 is not run: docs/experiments/ablations.md says it is not
 needed when N_ROLLOUTS is 400 before the run, and it was (belief.py).
 """
 import csv

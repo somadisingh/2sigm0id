@@ -5,7 +5,7 @@ Code, not an LLM, holds the beliefs, picks each question and decides when to sto
 C (adaptive form) and D (adaptive interviewer) share this engine, and A and B use it to
 score their answers, so every method turns answers into a profile the same way. In method
 D the LLM only does language: it turns each spoken answer into evidence and words the
-clarifying questions. See BELIEF_ENGINE.md for the reasoning and the sources.
+clarifying questions. See docs/design/BELIEF_ENGINE.md for the reasoning and the sources.
 
   willingness, behavioral  a probability distribution over a 0-1 grid (wide = unsure)
   capacity                 a distribution for each money fact; capacity.py's formula runs

@@ -1,4 +1,4 @@
-"""Tests 9 and 10 in ablations.md (Nov 22): score the reruns against the full run. No API calls.
+"""Tests 9 and 10 in docs/experiments/ablations.md (Nov 22): score the reruns against the full run. No API calls.
 
 python -m analysis.rerun_compare > results/rerun_compare.txt
 

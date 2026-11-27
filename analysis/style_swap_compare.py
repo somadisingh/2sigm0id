@@ -1,4 +1,4 @@
-"""Style-swap test (plan.md, task S6): does the way a person talks change method D's result?
+"""Style-swap test (docs/plan.md, task S6): does the way a person talks change method D's result?
 
 python -m analysis.style_swap_compare results/experiment_style_swap.jsonl results/experiment_full.jsonl
 

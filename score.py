@@ -10,6 +10,7 @@ Prints quality and cost tables, and writes <name>_summary.csv and
 <name>_summary.md next to the results file.
 """
 
+import argparse
 import csv
 import json
 import random
@@ -18,8 +19,6 @@ import statistics as st
 import sys
 from collections import defaultdict
 from pathlib import Path
-
-import argparse
 
 import config as C
 from prompts import VERBOSITY_WORD_LIMIT, band

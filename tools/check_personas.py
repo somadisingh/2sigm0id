@@ -1,4 +1,4 @@
-"""Persona checks 1 and 4 (plan.md, section 3): do the AI test users behave as designed?
+"""Persona checks 1 and 4 (docs/plan.md, section 3): do the AI test users behave as designed?
 
   Check 1, facts:  each test user is asked its money facts directly, in a fresh conversation
                    with no noise. Code compares each answer with the true fact.
@@ -20,7 +20,7 @@
   python -m tools.check_personas human-read score   # after everyone has filled in guesses.csv
 
 Results: persona_checks/check1_facts.md and persona_checks/check4_noise.md.
-Persona checks 2, 3, 5 and 6 are Siya's (plan.md, task S3).
+Persona checks 2, 3, 5 and 6 are Siya's (docs/plan.md, task S3).
 """
 
 import argparse
