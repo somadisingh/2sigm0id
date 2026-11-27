@@ -1,12 +1,31 @@
 # Adaptive Risk-profiler
 
-Picks which Baseten models to use for the interviewer and for the simulated users, using evidence instead of guesses.
+A beginner investor answers a few questions, and the system estimates three risk scores from 0 to 1: **capacity** (how much loss they can afford, from five money facts), **willingness** (the risk they say they like) and **behavior** (what they do in a market drop). Each score has a band from 1 (very careful) to 5 (very bold), and the final band is the lowest of the three.
 
-**Stage 1: which interviewer?** Six interviewers (GLM 5.3, DeepSeek V4.1 Flash, Nemotron Ultra, Muse Spark Open, Beam, Kimi K3) each interview the same 5 test users, 10 questions each. The test users are played by OpenAI's gpt-oss-120b, which comes from a different company than all six interviewers, so no interviewer gets an unfair "same model" advantage.
+A **belief engine** (`belief.py`, plain code) keeps the evidence and picks each next question. AI models only read and write language: they turn free answers into evidence and word the questions. We compare forms and AI interviewers on 100 AI test users with known true profiles, and on 21 classmates.
 
-**Stage 2: which simulated user?** The stage 1 winner interviews the 5 test users again, played by each simulated-user candidate with thinking **off** and **low**. After each interview, four quick check questions test whether the fake user stayed true to its persona. Candidates from the same company as the interviewer are skipped automatically.
+**Result:** the method we present is **CWF**. It asks the money facts first on a form, then talks about attitudes. CF is the same design with no AI. See `docs/final/final_conclusions.md`.
 
-Every interviewer faces the same noise schedule (vague, contradictory, flipped answers) for each test user, so the comparison is fair.
+## Repo layout
+
+| Where | What |
+|---|---|
+| `belief.py`, `capacity.py` | The belief engine and the capacity formula (no AI) |
+| `methods.py` | Every method (A, B, C, CF, CW, CWF, D and its versions): how each one asks and reads answers |
+| `prompts.py`, `llm.py`, `config.py`, `retrieval.py` | AI prompts, the API client, all settings (models, prices), retrieval for method DR |
+| `run_bakeoff.py`, `score.py` | Run interviews with the AI test users; score the result files |
+| `web_app.py`, `live_chat.py`, `live_session.py`, `session_store.py` | The live app for real people (classmate study and CWF demo), the terminal chat, and where sessions are saved |
+| `question_bank.json` (`.md`), `personas.json` | The 35 questions, and 5 early placeholder test users |
+| `analysis/` | Scripts that score recorded runs, one per test in the docs (no API calls). Shared helpers: `analysis/common.py` |
+| `tools/` | Checks and data preparation that call the AI models: persona checks, extractor check, pilot users, backstory rewrite, question-bank check |
+| `tests/` | Tests (no API calls) |
+| `mirofish/` | The 100 test users and 10 pilot users, and the scripts that made them (Siya) |
+| `pilot/`, `persona_checks/` | Pilot-user data and fitted settings; persona-check results |
+| `docs/` | `final/` (conclusions, system section, classmate study), `experiments/` (every test with its prediction, failure analyses), `design/` (belief engine, shared contract), `milestone3/`, `plan.md` |
+| `figures/` | Charts for the report |
+| `results/`, `live_sessions/` | Run files and real people's sessions; not in git |
+
+Run every script from this folder. Scripts in `analysis/`, `tools/` and `tests/` run as modules, for example `python -m analysis.hybrid_compare CWF`.
 
 ## Setup (once)
 
@@ -18,7 +37,151 @@ cp .env.example .env        # then paste your Baseten API key into .env
 
 `.env` is listed in `.gitignore`. Never commit it or paste the key into chat.
 
-## Run
+## Quick start (no API key, no cost)
+
+```bash
+python -m tests.test_belief          # the belief engine, including the professor's example
+python -m tests.test_web_app         # the study app and the CWF demo, headless
+python run_bakeoff.py experiment --methods CWF --budgets 10 --repeats 1 --limit 10 --mock
+LIVE_MOCK=1 streamlit run web_app.py # open with ?demo=CWF for the demo; access code: test
+```
+
+## Main experiment (all methods)
+
+Runs any of the methods on the same test users, with the same noise schedule and the same question budget:
+
+| Method | What it does |
+|---|---|
+| A, fixed form | The default short form from `question_bank.json`, in order. The person picks an option number. |
+| B, scripted interview | The same questions in their spoken wording. The person answers in their own words, and the interviewer model maps each answer to an option, or to none if the answer is too vague. |
+| C, adaptive form | The belief engine (`belief.py`) picks each next question from the bank: the one that tells it most about the final band. |
+| D, adaptive interviewer | Our system. The belief engine picks each question and may re-ask a fact to clarify it. The person answers in their own words. GLM 5.3 turns each answer into evidence and words the clarifying questions. |
+| DR, DP | Two versions of D with one generative AI part each. DR (retrieval): before reading an answer, GLM sees 3 similar labeled answers from the pilot users. DP (token probabilities): GLM picks the matching option, and its calibrated probability for each option is the evidence. |
+| DN | D without clarifying questions: each question is asked only once. For ablation test 3 in `docs/experiments/ablations.md`. |
+| DW | D, but GLM writes each question from the conversation so far instead of using the bank wording (writer prompt version 2: it never restates earlier answers). Tests 12 and 12b. |
+| CW | Hybrid: the money facts on the form as in C, willingness and behavior in conversation as in DW. Money facts heard in conversation are dropped. Test 14. |
+| **CWF** | **The method we present.** CW, but the first `min(5, budget // 2)` questions are money facts on the form. Test 15. |
+| CF | C with CWF's "money facts first" rule, everything on the form, no AI. Test 16. |
+| C0, D0 | The earlier versions, kept for comparison. C0 uses a hand-made rule. D0 is GLM 5.3 with prompt v1 doing everything. Run them with `--methods C0 D0`. |
+
+A, B, C and D all score answers with the belief engine, so they differ only in how they choose questions and read answers. `docs/design/BELIEF_ENGINE.md` explains the engine, the stop rule and the sources. `python -m tests.test_belief` checks it, including the professor's example (no API calls).
+
+```bash
+python run_bakeoff.py experiment                        # all methods, budgets 5/10/15, 3 repeats
+python run_bakeoff.py experiment --methods A D --budgets 10 --repeats 1 --limit 10   # a quick smoke test
+python score.py results/experiment.jsonl --by-persona
+```
+
+The experiment uses Siya's 100 test users (`mirofish/personas_100_with_backstories.json`). Add `--limit 10` for a quick run on 10 of them, 2 per final band, or `--personas personas.json` for the 5 old ones. The runner refuses a file that contains pilot users. The backstories reach the test users when `USE_BACKSTORIES` in `config.py` is on (on since Nov 13; the risk sentences were rewritten by `tools/rewrite_backstories.py`, see `docs/plan.md`, task S1).
+
+Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. Contradictions and corrections are injected only in the spoken methods (B, the D variants and D0), since a form has no follow-ups. A correction (Siya's design, Nov 13) is a planned mistake: the test user gives a wrong value the first time a fact comes up, and corrects it on the next turn. Each user's `noise` block has a `correction_rate`: 0 for clean users, 0.05 for moderate, 0.10 for heavy. Corrections use their own seeded schedule, so the rest of the noise schedule does not change. The scorer's "correction accepted" column shows how often the final estimate came back to where it was before the mistake.
+
+**Full budgets.** Every method uses its whole question budget, so the comparison stays fair. C and D log where the belief engine's stop rule fired as `would_stop_at`, and the profile at that point is in that turn's `profile_before`. If D0 tries to stop early, the runner records the question number as `would_stop_at`, sends one "keep asking" message (`KEEP_ASKING` in `prompts.py`) and continues. The extra call counts toward D's cost and latency. If D refuses a second time, it stops and the run is marked `early_stop`. The "would stop" column shows how often C, D or D0 wanted to stop, at which question on average, and how many runs stopped anyway. The bake-off stages keep the old behavior: the interviewer may stop early there.
+
+**Estimated cost:** about $2 and 30 minutes with the 5 placeholder test users. With 100 test users it's about $60–75 and 5 hours; B's answer mapping adds roughly $15 to the earlier projection. These are estimates; `score.py` prints the actual spend.
+
+**score.py options:** the experiment report always includes a paired table: each method against A on the same test users, with a 95% range. `--by-group` adds avg error by true band, mismatch and noise level. `--by-persona` adds an error table per test user, and `--truth formula` re-scores older runs with capacity from `capacity.py`. Recovery shows how often the final estimate came back after a contradiction pulled it off course.
+
+**Cost per completed profile.** The experiment's COST AND SPEED table compares the methods on more than question count. "System" means the calls that build the profile: D's interviewer and B's answer mapper. A and C choose and score questions in code, so they make no system LLM calls. Simulated-user calls are listed separately, because a real user replaces them.
+
+| Column | Meaning |
+|---|---|
+| LLM calls | System LLM calls per profile, including JSON retries. D's are the extractor and the clarifying questions. The belief engine's own time is logged per turn as `engine_secs`. |
+| tokens in / out / thinking | System tokens per profile. Thinking tokens are billed as output. |
+| system $ | System cost per completed profile. |
+| wait/turn s, p95 wait s | System LLM time after each answer: average and 95th percentile. This is how long a real user would wait. It leaves out rate-limit waits. |
+| system s | Total system LLM time per profile. D's includes the call before its first question. |
+| sim-user calls / $ | The simulated user's calls and cost per profile. |
+| wall s/run | Clock time per run, including the simulated user and rate-limit waits. |
+
+`score.py` also saves `<name>_cost_vs_error.png`: avg error against system $ and system seconds per profile, one point per method and budget. It needs `matplotlib`, which `requirements.txt` now installs.
+
+## Final results and how to reproduce them
+
+**Final choice (Nov 24):** CWF is the method we present. CF is the alternative with no AI, at the same error. The draft conclusions are in `docs/final/final_conclusions.md`, the system section in `docs/final/final_system_section.md`. Every test, with predictions written before its run, is in `docs/experiments/ablations.md`. The classmate study (21 people, methods A and D) is in `docs/final/classmate_study_report.md`.
+
+**Settings of the final runs.** `--band-rule mode` (the old band rule, so the new runs pair with D and DW in `rerun_engine.jsonl`), `WRITE_PROMPT_VERSION = 2` in `config.py`, and the engine of Nov 22 (`CONFLICT_RULE = "majority"`, `STOP_CONFIDENCE = 0.80` in `belief.py`). The live app and the default of `run_bakeoff.py` use `BAND_RULE = "reported"`. `analysis/band_rule_replay.py` shows that this rule keeps the stop rule under 5% for C, D and CWF.
+
+Runs (in `results/`, which is not in git) and the scripts that score them (no API calls):
+
+| Result | Run command | Score command |
+|---|---|---|
+| Full run (Nov 14), 8 methods | `python run_bakeoff.py experiment --methods A B C D DR DP DN D0` | `python score.py results/experiment_full_excl.jsonl` |
+| Tests 9 and 10: engine fixes, realistic slips | `... --methods C D DN --band-rule mode --out rerun_engine.jsonl`; `... --methods D --fix-slips --out rerun_fixslips.jsonl` | `python -m analysis.rerun_compare` |
+| Test 12b: AI-written questions (DW) | `... --methods DW --band-rule mode --write-version 2 --out rerun_written_v2.jsonl` | `python -m analysis.written_compare --file rerun_written_v2.jsonl` |
+| Step 1 of the feedback: where talking helps | (uses the runs above) | `python -m analysis.nl_benefits` |
+| Tests 14, 15, 16: CW, CWF, CF | `... --methods CW` / `CWF` / `CF --band-rule mode --write-version 2 --out rerun_hybrid.jsonl` / `rerun_hybrid_ff.jsonl` / `rerun_form_ff.jsonl` | `python -m analysis.hybrid_compare` / `CWF` / `CF` |
+| Stop rule with the reported band | (uses the runs above) | `python -m analysis.band_rule_replay`; `... rerun_hybrid_ff.jsonl CWF` |
+
+`...` is `python run_bakeoff.py experiment --budgets 5 10 15 --repeats 3`. All 95% ranges resample whole test users (`score.bootstrap_ci` with `groups`). U054 is left out of all scoring (it fails 2 of Siya's persona checks).
+
+**Chart.** `python -m analysis.plot_final` makes `results/final_error_vs_cost.png`; a copy for the report is in `figures/`.
+
+**Cost.** The provider billed **$96.31 for the whole project** (every call: bake-off stages, pilot, persona checks, judges, all experiment runs and the live app; $300 of credit). At list price the experiment runs alone come to $190.55 (simulated users included; $100.50 of it for the reruns since Nov 22), so the real cost is at most about half of list price. It billed $46.10 up to Milestone 3.
+
+## Live chat (real people)
+
+`live_chat.py` lets a real person answer method D's questions in the terminal, for testing and the demo. The classmate study uses the web app below; both share `live_session.py`. It runs the same steps as method D in `run_form`; the person's typed answer replaces the AI test user, and no noise is injected.
+
+```bash
+python live_chat.py --participant P01                # method D, 10 questions
+python live_chat.py --participant P01 --method A     # the fixed form, scored by the same engine
+python live_chat.py --participant demo --stop-early  # end at the stop point (demo only)
+python live_chat.py --participant test --mock        # no API key, random readings
+```
+
+At the end it shows the three scores, the final band and the band probabilities. It gives no investment advice. Each session is saved to `live_sessions/<participant>_<method>_<time>.json` after every answer, including the band before and after each answer and whether the answer was a re-ask (ablation test 3). `live_sessions/` is in `.gitignore`: the repo is public, so use participant IDs, never names, and share the files privately.
+
+## Web app (classmate study)
+
+`web_app.py` runs the two parts of the classmate study (task S5). Siya's Google Form runs the study and links here for "Interview 1" and "Interview 2". Each classmate logs in with their participant code and the access code and does the standard form (A) and the adaptive interviewer (D). **Odd codes (P01, P03, ...) do the form first; even codes do the interviewer first**, as the form says. After each part the app shows that part's result, and the person goes back to the form to rate it. A person who closes the page after part 1 logs in again and continues with part 2. A code that finished both parts can't log in again. **Demo:** add `?demo=CWF` to the address for one CWF interview (the method we present), outside the study; it asks only for the access code and is saved as `DEMO_CWF_*.json`. Answers are saved to `live_sessions/` (gitignored) on the machine that runs the app.
+
+Setup (once, on the machine that hosts the study):
+
+```bash
+pip install -r requirements.txt
+```
+
+In `.env`, next to `BASETEN_API_KEY`, set `STUDY_ACCESS_CODE`: a code that the form gives with the link.
+
+```bash
+streamlit run web_app.py
+```
+
+**Hosting on Streamlit Community Cloud** (always on, so classmates can join any time):
+
+1. Create an empty **private** GitHub repo for the answers, for example `<you>/risk-study-data`. The app refuses a public one.
+2. Create a fine-grained GitHub token (Settings → Developer settings → Fine-grained tokens) with access to that repo only and the permission "Contents: Read and write".
+3. On share.streamlit.io, sign in with GitHub and create an app: this repo, the branch with the app, main file `web_app.py`. Under "Advanced settings", choose Python 3.12 and paste these secrets:
+   ```toml
+   BASETEN_API_KEY = "..."
+   STUDY_ACCESS_CODE = "..."
+   SESSION_REPO = "<you>/risk-study-data"
+   SESSION_REPO_TOKEN = "..."
+   SESSION_STORE_REQUIRED = "1"
+   ```
+4. Put the app link and the access code in the study form.
+
+Every answer is saved to `sessions/` in the private repo (`session_store.py`), so a restart loses nothing. With `SESSION_STORE_REQUIRED=1` the app does not start without a working private repo. If the app has been unused for a while, Streamlit puts it to sleep; the first visitor clicks the button to wake it. Open the link once a day during the study.
+
+- **Refresh:** a refresh during a part restarts that part. Finished parts are kept.
+- **Test without a key:** `LIVE_MOCK=1 streamlit run web_app.py` (access code `test`), `python -m tests.test_web_app` for a headless run through both parts and the demo, and `python -m tests.test_session_store` for the private-repo saving.
+
+## Question bank
+
+`question_bank.json` holds the 35 shared questions for methods A, B and C: 11 on capacity, 12 on willingness, 12 on behavior. `question_bank.md` is a readable copy. Run `python -m tools.check_question_bank --write-md` after editing the JSON; it checks the format and regenerates the readable copy. The default short forms are placeholders until a pilot picks the most informative questions.
+
+## Capacity formula
+
+`capacity.py` turns a person's money facts into a capacity score: time horizon 30%, emergency savings 25%, income stability 20%, debt payments 15%, dependents 10%. It then applies three red-flag caps: needing the money within 3 years (at most 0.20), under 1 month of savings (at most 0.35), and debt payments of 40% or more of income (at most 0.35). It sets every test user's true capacity, and `run_bakeoff.py` refuses to run if a persona's capacity doesn't match it. Run `python capacity.py` to see each test user's breakdown. The weights are our judgment and are recorded in the shared contract.
+
+Re-scoring the Oct 26 runs with the formula cut P1's capacity error from +0.27 to +0.05, so that "mistake" was mostly our hand-set label.
+
+## Model bake-off (Oct 2026, history)
+
+Before the experiment, two stages chose the models. **Stage 1** compared six interviewers (GLM 5.3, DeepSeek V4.1 Flash, Nemotron Ultra, Muse Spark Open, Beam, Kimi K3) on the same 5 test users, played by OpenAI's gpt-oss-120b, a different company than all six. **Stage 2** compared simulated users with thinking off and low, with four check questions after each interview. Every interviewer faced the same noise schedule.
+
+Steps, if you want to repeat it:
 
 1. **Fix the model IDs.** Only `openai/gpt-oss-120b` is confirmed. The rest of the IDs in `config.py` are guesses.
    ```bash
@@ -60,136 +223,7 @@ If a run stops partway, rerun the same command and it picks up where it left off
 
 **Expected cost:** both stages should come to roughly $5–15. That's an estimate; `score.py` prints the actual spend.
 
-## Main experiment (all methods)
-
-Runs all four methods on the same test users, with the same noise schedule and the same question budget:
-
-| Method | What it does |
-|---|---|
-| A, fixed form | The default short form from `question_bank.json`, in order. The person picks an option number. |
-| B, scripted interview | The same questions in their spoken wording. The person answers in their own words, and the interviewer model maps each answer to an option, or to none if the answer is too vague. |
-| C, adaptive form | The belief engine (`belief.py`) picks each next question from the bank: the one that tells it most about the final band. |
-| D, adaptive interviewer | Our system. The belief engine picks each question and may re-ask a fact to clarify it. The person answers in their own words. GLM 5.3 turns each answer into evidence and words the clarifying questions. |
-| DR, DP | Two versions of D with one generative AI part each. DR (retrieval): before reading an answer, GLM sees 3 similar labeled answers from the pilot users. DP (token probabilities): GLM picks the matching option, and its calibrated probability for each option is the evidence. |
-| DN | D without clarifying questions: each question is asked only once. For ablation test 3 in `ablations.md`. |
-| DW | D, but GLM writes each question from the conversation so far instead of using the bank wording (writer prompt version 2: it never restates earlier answers). Tests 12 and 12b. |
-| CW | Hybrid: the money facts on the form as in C, willingness and behavior in conversation as in DW. Money facts heard in conversation are dropped. Test 14. |
-| **CWF** | **The method we present.** CW, but the first `min(5, budget // 2)` questions are money facts on the form. Test 15. |
-| CF | C with CWF's "money facts first" rule, everything on the form, no AI. Test 16. |
-| C0, D0 | The earlier versions, kept for comparison. C0 uses a hand-made rule. D0 is GLM 5.3 with prompt v1 doing everything. Run them with `--methods C0 D0`. |
-
-A, B, C and D all score answers with the belief engine, so they differ only in how they choose questions and read answers. `BELIEF_ENGINE.md` explains the engine, the stop rule and the sources. `python test_belief.py` checks it, including the professor's example (no API calls).
-
-```bash
-python run_bakeoff.py experiment                        # all methods, budgets 5/10/15, 3 repeats
-python run_bakeoff.py experiment --methods A D --budgets 10 --repeats 1 --limit 10   # a quick smoke test
-python score.py results/experiment.jsonl --by-persona
-```
-
-The experiment uses Siya's 100 test users (`mirofish/personas_100_with_backstories.json`). Add `--limit 10` for a quick run on 10 of them, 2 per final band, or `--personas personas.json` for the 5 old ones. The runner refuses a file that contains pilot users. The backstories reach the test users when `USE_BACKSTORIES` in `config.py` is on (on since Nov 13; the risk sentences were rewritten by `rewrite_backstories.py`, see plan.md, task S1).
-
-Models and thinking settings come from the `EXPERIMENT_*` lines in `config.py`. Contradictions and corrections are injected only in the spoken methods (B, the D variants and D0), since a form has no follow-ups. A correction (Siya's design, Nov 13) is a planned mistake: the test user gives a wrong value the first time a fact comes up, and corrects it on the next turn. Each user's `noise` block has a `correction_rate`: 0 for clean users, 0.05 for moderate, 0.10 for heavy. Corrections use their own seeded schedule, so the rest of the noise schedule does not change. The scorer's "correction accepted" column shows how often the final estimate came back to where it was before the mistake.
-
-**Full budgets.** Every method uses its whole question budget, so the comparison stays fair. C and D log where the belief engine's stop rule fired as `would_stop_at`, and the profile at that point is in that turn's `profile_before`. If D0 tries to stop early, the runner records the question number as `would_stop_at`, sends one "keep asking" message (`KEEP_ASKING` in `prompts.py`) and continues. The extra call counts toward D's cost and latency. If D refuses a second time, it stops and the run is marked `early_stop`. The "would stop" column shows how often C, D or D0 wanted to stop, at which question on average, and how many runs stopped anyway. The bake-off stages keep the old behavior: the interviewer may stop early there.
-
-**Estimated cost:** about $2 and 30 minutes with the 5 placeholder test users. With 100 test users it's about $60–75 and 5 hours; B's answer mapping adds roughly $15 to the earlier projection. These are estimates; `score.py` prints the actual spend.
-
-**score.py options:** the experiment report always includes a paired table: each method against A on the same test users, with a 95% range. `--by-group` adds avg error by true band, mismatch and noise level. `--by-persona` adds an error table per test user, and `--truth formula` re-scores older runs with capacity from `capacity.py`. Recovery shows how often the final estimate came back after a contradiction pulled it off course.
-
-**Cost per completed profile.** The experiment's COST AND SPEED table compares the methods on more than question count. "System" means the calls that build the profile: D's interviewer and B's answer mapper. A and C choose and score questions in code, so they make no system LLM calls. Simulated-user calls are listed separately, because a real user replaces them.
-
-| Column | Meaning |
-|---|---|
-| LLM calls | System LLM calls per profile, including JSON retries. D's are the extractor and the clarifying questions. The belief engine's own time is logged per turn as `engine_secs`. |
-| tokens in / out / thinking | System tokens per profile. Thinking tokens are billed as output. |
-| system $ | System cost per completed profile. |
-| wait/turn s, p95 wait s | System LLM time after each answer: average and 95th percentile. This is how long a real user would wait. It leaves out rate-limit waits. |
-| system s | Total system LLM time per profile. D's includes the call before its first question. |
-| sim-user calls / $ | The simulated user's calls and cost per profile. |
-| wall s/run | Clock time per run, including the simulated user and rate-limit waits. |
-
-`score.py` also saves `<name>_cost_vs_error.png`: avg error against system $ and system seconds per profile, one point per method and budget. It needs `matplotlib`, which `requirements.txt` now installs.
-
-## Final results and how to reproduce them
-
-**Final choice (Nov 24):** CWF is the method we present. CF is the alternative with no AI, at the same error. The draft conclusions are in `final_conclusions.md`. Every test, with predictions written before its run, is in `ablations.md`. The classmate study (21 people, methods A and D) is in `classmate_study_report.md`.
-
-**Settings of the final runs.** `--band-rule mode` (the old band rule, so the new runs pair with D and DW in `rerun_engine.jsonl`), `WRITE_PROMPT_VERSION = 2` in `config.py`, and the engine of Nov 22 (`CONFLICT_RULE = "majority"`, `STOP_CONFIDENCE = 0.80` in `belief.py`). The live app and the default of `run_bakeoff.py` use `BAND_RULE = "reported"`. `band_rule_replay.py` shows that this rule keeps the stop rule under 5% for C, D and CWF.
-
-Runs (in `results/`, which is not in git) and the scripts that score them (no API calls):
-
-| Result | Run command | Score command |
-|---|---|---|
-| Full run (Nov 14), 8 methods | `python run_bakeoff.py experiment --methods A B C D DR DP DN D0` | `python score.py results/experiment_full_excl.jsonl` |
-| Tests 9 and 10: engine fixes, realistic slips | `... --methods C D DN --band-rule mode --out rerun_engine.jsonl`; `... --methods D --fix-slips --out rerun_fixslips.jsonl` | `python rerun_compare.py` |
-| Test 12b: AI-written questions (DW) | `... --methods DW --band-rule mode --write-version 2 --out rerun_written_v2.jsonl` | `python written_compare.py` |
-| Step 1 of the feedback: where talking helps | (uses the runs above) | `python nl_benefits.py > results/nl_benefits.txt` |
-| Tests 14, 15, 16: CW, CWF, CF | `... --methods CW` / `CWF` / `CF --band-rule mode --write-version 2 --out rerun_hybrid.jsonl` / `rerun_hybrid_ff.jsonl` / `rerun_form_ff.jsonl` | `python hybrid_compare.py` / `CWF` / `CF` |
-| Stop rule with the reported band | (uses the runs above) | `python band_rule_replay.py`; `python band_rule_replay.py rerun_hybrid_ff.jsonl CWF` |
-
-`...` is `python run_bakeoff.py experiment --budgets 5 10 15 --repeats 3`. All 95% ranges resample whole test users (`score.bootstrap_ci` with `groups`). U054 is left out of all scoring (it fails 2 of Siya's persona checks).
-
-**Chart.** `python plot_final.py` makes `results/final_error_vs_cost.png`; a copy for the report is in `figures/`.
-
-**Cost.** The provider billed **$96.31 for the whole project** (every call: bake-off stages, pilot, persona checks, judges, all experiment runs and the live app; $300 of credit). At list price the experiment runs alone come to $190.55 (simulated users included; $100.50 of it for the reruns since Nov 22), so the real cost is at most about half of list price. It billed $46.10 up to Milestone 3.
-
-## Live chat (real people)
-
-`live_chat.py` lets a real person answer method D's questions in the terminal, for testing and the demo. The classmate study uses the web app below; both share `live_session.py`. It runs the same steps as method D in `run_form`; the person's typed answer replaces the AI test user, and no noise is injected.
-
-```bash
-python live_chat.py --participant P01                # method D, 10 questions
-python live_chat.py --participant P01 --method A     # the fixed form, scored by the same engine
-python live_chat.py --participant demo --stop-early  # end at the stop point (demo only)
-python live_chat.py --participant test --mock        # no API key, random readings
-```
-
-At the end it shows the three scores, the final band and the band probabilities. It gives no investment advice. Each session is saved to `live_sessions/<participant>_<method>_<time>.json` after every answer, including the band before and after each answer and whether the answer was a re-ask (ablation test 3). `live_sessions/` is in `.gitignore`: the repo is public, so use participant IDs, never names, and share the files privately.
-
-## Web app (classmate study)
-
-`web_app.py` runs the two parts of the classmate study (task S5). Siya's Google Form runs the study and links here for "Interview 1" and "Interview 2". Each classmate logs in with their participant code and the access code and does the standard form (A) and the adaptive interviewer (D). **Odd codes (P01, P03, ...) do the form first; even codes do the interviewer first**, as the form says. After each part the app shows that part's result, and the person goes back to the form to rate it. A person who closes the page after part 1 logs in again and continues with part 2. A code that finished both parts can't log in again. Answers are saved to `live_sessions/` (gitignored) on the machine that runs the app.
-
-Setup (once, on the machine that hosts the study):
-
-```bash
-pip install -r requirements.txt
-```
-
-In `.env`, next to `BASETEN_API_KEY`, set `STUDY_ACCESS_CODE`: a code that the form gives with the link.
-
-```bash
-streamlit run web_app.py
-```
-
-**Hosting on Streamlit Community Cloud** (always on, so classmates can join any time):
-
-1. Create an empty **private** GitHub repo for the answers, for example `<you>/risk-study-data`. The app refuses a public one.
-2. Create a fine-grained GitHub token (Settings → Developer settings → Fine-grained tokens) with access to that repo only and the permission "Contents: Read and write".
-3. On share.streamlit.io, sign in with GitHub and create an app: this repo, the branch with the app, main file `web_app.py`. Under "Advanced settings", choose Python 3.12 and paste these secrets:
-   ```toml
-   BASETEN_API_KEY = "..."
-   STUDY_ACCESS_CODE = "..."
-   SESSION_REPO = "<you>/risk-study-data"
-   SESSION_REPO_TOKEN = "..."
-   SESSION_STORE_REQUIRED = "1"
-   ```
-4. Put the app link and the access code in the study form.
-
-Every answer is saved to `sessions/` in the private repo (`session_store.py`), so a restart loses nothing. With `SESSION_STORE_REQUIRED=1` the app does not start without a working private repo. If the app has been unused for a while, Streamlit puts it to sleep; the first visitor clicks the button to wake it. Open the link once a day during the study.
-
-- **Refresh:** a refresh during a part restarts that part. Finished parts are kept.
-- **Test without a key:** `LIVE_MOCK=1 streamlit run web_app.py` (access code `test`), `python test_web_app.py` for a headless run through both parts, and `python test_session_store.py` for the private-repo saving.
-
-## Question bank
-
-`question_bank.json` holds the 35 shared questions for methods A, B and C: 11 on capacity, 12 on willingness, 12 on behavior. `question_bank.md` is a readable copy. Run `python check_question_bank.py --write-md` after editing the JSON; it checks the format and regenerates the readable copy. The default short forms are placeholders until a pilot picks the most informative questions.
-
-## Capacity formula
-
-`capacity.py` turns a person's money facts into a capacity score: time horizon 30%, emergency savings 25%, income stability 20%, debt payments 15%, dependents 10%. It then applies three red-flag caps: needing the money within 3 years (at most 0.20), under 1 month of savings (at most 0.35), and debt payments of 40% or more of income (at most 0.35). It sets every test user's true capacity, and `run_bakeoff.py` refuses to run if a persona's capacity doesn't match it. Run `python capacity.py` to see each test user's breakdown. The weights are our judgment and are recorded in the shared contract.
-
-Re-scoring the Oct 26 runs with the formula cut P1's capacity error from +0.27 to +0.05, so that "mistake" was mostly our hand-set label.
+Limits of the bake-off: 5 test users and one run each make it a screening test (use `--repeats 2` for more confidence). Kimi K3 only offers maximum thinking, so it was a quality ceiling, not a realistic pick.
 
 ## What the columns mean
 
@@ -205,27 +239,3 @@ Re-scoring the Oct 26 runs with the formula cut P1's capacity error from +0.27 t
 | persona checks (stage 2) | Share of the 4 check questions the fake user answered in line with its persona. |
 | length ok (stage 2) | Share of answers within the persona's word limit; long, polished answers are the "too articulate" bias. |
 | full run $ / time | Projected for the main experiment (1,800 interviews; 36,000 fake-user answers). |
-
-## Files
-
-- `config.py`: models, prices, rate limits, stage settings. Edit here to add or remove models.
-- `personas.json`: 5 hand-written test users that follow the shared-contract schema, with capacity from the formula and every true score at least 0.03 from a band edge. These are placeholders until the MiroFish personas are ready.
-- `capacity.py`: the capacity formula.
-- `question_bank.json` / `question_bank.md`: the 35 shared questions; `check_question_bank.py` checks them.
-- `methods.py`: every method of the main experiment (A, B, C, CF, CW, CWF, C0, D, DR, DP, DN, DW). D0 is `run_interview` in `run_bakeoff.py`.
-- `rerun_compare.py`, `written_compare.py`, `nl_benefits.py`, `hybrid_compare.py`, `band_rule_replay.py`: score the reruns from Nov 22 on (see "Final results").
-- `final_conclusions.md`: draft conclusions for the final report. `classmate_study_report.md`: the classmate study (Siya).
-- `belief.py`: the belief engine. `BELIEF_ENGINE.md` explains it; `test_belief.py` checks it.
-- `pilot.py`: builds the labeled answers of the 10 pilot users (`pilot/pool.jsonl`, `pilot/form_answers.jsonl`), fits DP's calibration (`pilot/calibration.json`), compares D, DR and DP on them (`pilot/extract_eval.md`), and fits the belief engine's evidence settings (`pilot/fitted.json`, `pilot/fit.md`). Pilot users are never scored.
-- `retrieval.py`: finds similar labeled pilot answers for DR (BM25 keyword search; no model download).
-- `check_personas.py`: persona checks 1 (each test user states its facts correctly) and 4 (the planned noise really shows in the answers). Results: `persona_checks/`. Checks 2, 3, 5 and 6 are Siya's.
-- `check_extractor.py`: faithfulness test. A judge model from another company checks that each reading the extractor took from an answer is supported by the answer, with a quote that code verifies.
-- `prompts.py`: interviewer prompts (v1 in use; v2 and v3 kept for the record), persona prompt, noise notes, check questions. Contradiction notes name a wrong value for a fact the user already stated, so every injected contradiction can be caught.
-- `run_bakeoff.py`: runs the stages. `llm.py` handles API calls, rate limits and retries.
-- `score.py`: turns results into tables, a CSV and a Markdown summary.
-
-## Limits to keep in mind
-
-- With 5 test users and one run each, this is a screening test, not a final answer. Use `--repeats 2` for more confidence.
-- Kimi K3 only offers maximum thinking, so it's included as a quality ceiling, not a realistic pick.
-- The interviewer prompt is version 1. If every model does badly, the prompt may be the problem, and that's worth reporting too.
