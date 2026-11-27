@@ -1,5 +1,7 @@
 # Team plan (written Nov 11, 2026; final stretch added Nov 24 in section 0)
 
+> **Nov 26 note:** the scripts moved. Scorers are in `analysis/`, checks and data tools in `tools/`, tests in `tests/`; run them from the repo root as modules, for example `python -m analysis.hybrid_compare CWF` instead of `python hybrid_compare.py CWF`. Numbers in this file are unchanged.
+
 This file is for Preyansh and Siya. It tells you what is done, what Somaditya does now, and what each of you must do. Read all of it once. Then use sections 6 and 7 as your checklist.
 
 The file uses simple, short sentences. Section 10 explains the words that we use. If something in this file is not clear, ask Somaditya. Do not guess.

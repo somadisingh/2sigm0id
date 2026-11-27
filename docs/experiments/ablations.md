@@ -1,5 +1,7 @@
 # Ablation plan for the full run
 
+> **Nov 26 note:** the scripts moved. Scorers are in `analysis/`, checks and data tools in `tools/`, tests in `tests/`; run them from the repo root as modules, for example `python -m analysis.hybrid_compare CWF` instead of `python hybrid_compare.py CWF`. Numbers in this file are unchanged.
+
 Written by Preyansh before the full run (Nov 13, 2026). We fix the tests, the measures and the predictions here before we see the results. We do not add, remove or change a test after the run starts. If we must change something, we write the change and the reason in the "Changes" section at the end, with the date.
 
 An ablation removes or changes one part of the system to measure what that part adds.

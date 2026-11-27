@@ -1,5 +1,7 @@
 # Failure analysis 2 to 4 (Nov 16, 2026)
 
+> **Nov 26 note:** the scripts moved. Scorers are in `analysis/`, checks and data tools in `tools/`, tests in `tests/`; run them from the repo root as modules, for example `python -m analysis.hybrid_compare CWF` instead of `python hybrid_compare.py CWF`. Numbers in this file are unchanged.
+
 Written by Somaditya for Milestone 3. Part 1 (D's capacity error) is `failure_D_capacity.md`. Data: the full run without U054, the one user that fails 2 or more of Siya's persona checks (`results/experiment_full_excl.jsonl`, 7,128 interviews). Script: `python failure_more.py results/experiment_full_excl.jsonl` (no API calls). "Error" is the mean distance between the estimated and the true score (0 to 1, lower is better).
 
 ## 2. Why D and DR are worst on heavy-noise users

@@ -1,5 +1,7 @@
 # Style-swap test: does the way a person talks change method D's result? (Nov 16, 2026)
 
+> **Nov 26 note:** the scripts moved. Scorers are in `analysis/`, checks and data tools in `tools/`, tests in `tests/`; run them from the repo root as modules, for example `python -m analysis.hybrid_compare CWF` instead of `python hybrid_compare.py CWF`. Numbers in this file are unchanged.
+
 Task S6 in `plan.md`. Siya made 20 copies of test users, 4 for each true final band (`mirofish/personas_style_swap.json`, made by `mirofish/make_style_swap.py`). Each copy changes all three style fields (length, vocabulary, hedging) and nothing else: same true profile, facts, backstory, noise and seed. Somaditya ran them with method D at 5, 10 and 15 questions, 3 repeats each (180 interviews, same setup as the full run, no errors, $2.58). Each run is paired with its original's method D run in the full run at the same budget and repeat.
 
 Script: `python style_swap_compare.py results/experiment_style_swap.jsonl results/experiment_full.jsonl`. Differences are swap minus original; negative means the swap is better.

@@ -1,5 +1,7 @@
 # Failure analysis 1: method D's capacity error (Nov 14, 2026)
 
+> **Nov 26 note:** the scripts moved. Scorers are in `analysis/`, checks and data tools in `tools/`, tests in `tests/`; run them from the repo root as modules, for example `python -m analysis.hybrid_compare CWF` instead of `python hybrid_compare.py CWF`. Numbers in this file are unchanged.
+
 Written by Somaditya for Milestone 3. Data: the full run (`results/experiment_full.jsonl`, 7,200 interviews). Script: `python failure_capacity.py results/experiment_full.jsonl` (no API calls). All numbers are capacity error: the mean distance between the estimated and the true capacity score (0 to 1, lower is better).
 
 ## 1. The problem

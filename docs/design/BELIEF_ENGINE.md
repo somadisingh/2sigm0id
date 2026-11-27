@@ -1,5 +1,7 @@
 # Belief engine
 
+> **Nov 26 note:** the scripts moved. Scorers are in `analysis/`, checks and data tools in `tools/`, tests in `tests/`; run them from the repo root as modules, for example `python -m analysis.hybrid_compare CWF` instead of `python hybrid_compare.py CWF`. Numbers in this file are unchanged.
+
 The belief engine (`belief.py`) answers the professor's first Milestone 2 question: how the system chooses the next question, how it measures uncertainty, and how it decides that another question is unlikely to change the final band.
 
 Code holds the beliefs, chooses each question and decides when to stop. The LLM does only language work: it turns spoken answers into evidence and writes clarifying questions. Methods C and D share the engine, and methods A and B use it to score their answers. So all methods turn answers into a profile with one rule.
