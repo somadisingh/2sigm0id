@@ -235,6 +235,29 @@ def test_stop_watches_the_reported_band():
     assert abs(chance - pmf[top - 1]) < 1e-9
 
 
+def test_candidates():
+    """methods.candidates: facts first, re-asks only when a method talks, never for form items."""
+    import methods as M
+    pool = M.engine_pool(M.load_bank())
+    fact = next(i for i in pool if i["dimension"] == "capacity")
+    attitude = next(i for i in pool if i["dimension"] != "capacity")
+    asks = {fact["id"]: 1, attitude["id"]: 1}
+    unclear = {attitude["id"]: "vague"}
+    ids = lambda c: [i["id"] for i in c]   # noqa: E731
+    # a form (C) never asks a question twice
+    assert fact["id"] not in ids(M.candidates(pool, asks, unclear, 2))
+    # a conversation (D) may come back to a money fact, and to a vague answer once
+    d = ids(M.candidates(pool, asks, unclear, 2, reasks=True))
+    assert fact["id"] in d and attitude["id"] in d
+    # the hybrid asks money facts on the form: never again; a vague attitude answer: yes
+    h = ids(M.candidates(pool, asks, unclear, 2, reasks=True, hybrid=True))
+    assert fact["id"] not in h and attitude["id"] in h
+    # facts first: only money facts not asked yet, until question facts_first
+    first = M.candidates(pool, asks, unclear, 2, reasks=True, hybrid=True, facts_first=5)
+    assert first and all(i["dimension"] == "capacity" and i["id"] != fact["id"] for i in first)
+    assert attitude["id"] in ids(M.candidates(pool, asks, unclear, 5, reasks=True, hybrid=True, facts_first=5))
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
