@@ -1,6 +1,6 @@
 """Test session_store.py's private-repo saving against a fake GitHub API (no network, no token).
 
-  python test_session_store.py
+  python -m tests.test_session_store
 """
 
 import base64

@@ -1,6 +1,6 @@
 """Tests 9 and 10 in ablations.md (Nov 22): score the reruns against the full run. No API calls.
 
-python rerun_compare.py > results/rerun_compare.txt
+python -m analysis.rerun_compare > results/rerun_compare.txt
 
 Test 9: the engine changes (results/rerun_engine.jsonl against results/experiment_full.jsonl).
 Test 10: noise version 3 (D in results/rerun_fixslips.jsonl against D in rerun_engine).
@@ -13,8 +13,8 @@ from statistics import mean
 from prompts import band
 from score import DIMS, bootstrap_ci
 
-R = Path(__file__).resolve().parent / "results"
-EXCLUDE = set(json.loads((Path(__file__).resolve().parent / "mirofish" / "persona_checks_exclude.json").read_text()))
+R = Path(__file__).resolve().parents[1] / "results"
+EXCLUDE = set(json.loads((Path(__file__).resolve().parents[1] / "mirofish" / "persona_checks_exclude.json").read_text()))
 BUDGETS = (5, 10, 15)
 
 

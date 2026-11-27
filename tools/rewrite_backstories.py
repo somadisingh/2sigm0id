@@ -7,9 +7,9 @@ clue the extractor can learn. This script asks GLM 5.3 to rewrite only the parts
 market drops, with a different concrete "angle" for each user, and keeps everything else.
 True scores do not change. The old story stays in profile.backstory_v1.
 
-  python rewrite_backstories.py write      # rewrite (about 100 calls) -> results/backstory_rewrites.jsonl
-  python rewrite_backstories.py check      # checks + blind read -> persona_checks/backstory_rewrite.md
-  python rewrite_backstories.py apply      # write the checked stories into the persona file
+  python -m tools.rewrite_backstories write      # rewrite (about 100 calls) -> results/backstory_rewrites.jsonl
+  python -m tools.rewrite_backstories check      # checks + blind read -> persona_checks/backstory_rewrite.md
+  python -m tools.rewrite_backstories apply      # write the checked stories into the persona file
 """
 
 import argparse
@@ -25,7 +25,7 @@ import run_bakeoff as R
 from llm import extract_json, strip_think
 from prompts import band
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parents[1]
 PERSONAS = HERE / "mirofish/personas_100_with_backstories.json"
 OUT = HERE / "results/backstory_rewrites.jsonl"
 REPORT = HERE / "persona_checks/backstory_rewrite.md"
@@ -204,7 +204,7 @@ def write(args):
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text("".join(json.dumps(done[p["id"]]) + "\n" for p in ps if p["id"] in done))
     bad = [r for r in done.values() if r["problems"]]
-    print(f"{len(done)} written, {len(bad)} with problems. Next: python rewrite_backstories.py check")
+    print(f"{len(done)} written, {len(bad)} with problems. Next: python -m tools.rewrite_backstories check")
 
 
 JUDGE = """Read this short description of a person. Rate them on two 1-5 scales.

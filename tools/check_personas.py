@@ -14,10 +14,10 @@
                    - "acquiescence" (agreeing with a hint) cannot be checked: our questions
                      never hint at an answer
 
-  python check_personas.py facts                                   # about $0.06
-  python check_personas.py noise results/experiment_100users_b10.jsonl   # about $0.10
-  python check_personas.py human-read make    # check 6 (Siya's): 20 conversations to read, no cost
-  python check_personas.py human-read score   # after everyone has filled in guesses.csv
+  python -m tools.check_personas facts                                   # about $0.06
+  python -m tools.check_personas noise results/experiment_100users_b10.jsonl   # about $0.10
+  python -m tools.check_personas human-read make    # check 6 (Siya's): 20 conversations to read, no cost
+  python -m tools.check_personas human-read score   # after everyone has filled in guesses.csv
 
 Results: persona_checks/check1_facts.md and persona_checks/check4_noise.md.
 Persona checks 2, 3, 5 and 6 are Siya's (plan.md, task S3).
@@ -36,11 +36,11 @@ import config as C
 import prompts as P
 import run_bakeoff as R
 from capacity import INCOME_SCORE
-from check_extractor import norm
+from tools.check_extractor import norm
 from llm import extract_json, strip_think
 from score import probe_ok
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parents[1]
 OUT = HERE / "persona_checks"
 NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
 ITEMS = {i["id"]: i for i in json.loads((HERE / "question_bank.json").read_text())["items"]}
@@ -314,7 +314,7 @@ behavior 2 gives final band 2.
 3. If you are not sure, write your best guess and add a note.
 4. Do not open `key_DO_NOT_OPEN.json`. Do not talk about your guesses with the others before
    all three of you finish.
-5. When all three columns are full, run `python check_personas.py human-read score`.
+5. When all three columns are full, run `python -m tools.check_personas human-read score`.
 
 Some answers are vague or contradict earlier answers on purpose. That is planned noise.
 """

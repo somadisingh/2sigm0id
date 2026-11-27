@@ -161,7 +161,7 @@ SHORT_FORMS_PATH = HERE / "pilot" / "short_forms.json"
 
 def short_form(bank, budget, use_fitted=True):
     """The fixed form for methods A and B: the questions chosen on the pilot users
-    (pilot/short_forms.json, from `python pilot.py fit`), else the top-priority items per
+    (pilot/short_forms.json, from `python -m tools.pilot fit`), else the top-priority items per
     dimension (short_form_allocation in the bank)."""
     if use_fitted and SHORT_FORMS_PATH.exists():
         ids = json.loads(SHORT_FORMS_PATH.read_text())[str(budget)]
@@ -260,7 +260,7 @@ def pilot_pool():
 
 
 def temperature():
-    """DP's calibration temperature, fitted on the pilot users (pilot.py calibrate)."""
+    """DP's calibration temperature, fitted on the pilot users (python -m tools.pilot calibrate)."""
     global _TEMPERATURE
     if _TEMPERATURE is None:
         _TEMPERATURE = (json.loads(CALIBRATION_PATH.read_text())["temperature"]

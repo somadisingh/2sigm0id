@@ -1,6 +1,6 @@
 """Where does talking help? (instructor feedback on Milestone 3, Nov 24). No API calls.
 
-python nl_benefits.py > results/nl_benefits.txt
+python -m analysis.nl_benefits > results/nl_benefits.txt
 
 Compares the conversation methods (D, DN, DW v2) with the adaptive form (C) on the runs we
 already have, paired on test user, budget and repeat (U054 left out):
@@ -17,7 +17,7 @@ from statistics import mean
 
 import config as C
 import run_bakeoff as RB
-from rerun_compare import BUDGETS, load, low_band, pair
+from analysis.rerun_compare import BUDGETS, load, low_band, pair
 from score import noise_level
 
 ATT = ("willingness", "behavioral")

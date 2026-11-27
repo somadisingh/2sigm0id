@@ -2,7 +2,7 @@
 
 Shared question bank for the three form-based methods: A (standard questionnaire), B (scripted interview, using the 'spoken' wording) and C (adaptive form). Method D, the adaptive interviewer, writes its own questions. All wording is original, written in the style of published risk questionnaires; no item is copied from one.
 
-Generated from `question_bank.json` by `check_question_bank.py --write-md`; edit the JSON, not this file.
+Generated from `question_bank.json` by `python -m tools.check_question_bank --write-md`; edit the JSON, not this file.
 
 **Scoring:** each answer scores 0 (lowest risk) to 1 (highest); a dimension is the average of its answered items; the final band is the lowest of the three. Short-form columns mark which items the default 5-, 10- and 15-question forms use.
 

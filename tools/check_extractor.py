@@ -10,8 +10,8 @@ Readings about the question's own topic ("asked") are reported apart from readin
 extractor took from other parts of the answer ("volunteered"), where made-up facts are
 most likely.
 
-  python check_extractor.py results/pilot_extract_eval.jsonl        # pilot.py extract-eval output
-  python check_extractor.py results/experiment.jsonl --sample 300   # D and DR turns of a run
+  python -m tools.check_extractor results/pilot_extract_eval.jsonl        # pilot.py extract-eval output
+  python -m tools.check_extractor results/experiment.jsonl --sample 300   # D and DR turns of a run
 """
 
 import argparse

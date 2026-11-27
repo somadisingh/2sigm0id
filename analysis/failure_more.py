@@ -1,6 +1,6 @@
 """Failure analysis, parts 2 to 4 (no API calls). Part 1 (D's capacity) is failure_capacity.py.
 
-python failure_more.py results/experiment_full_excl.jsonl > results/failure_more.txt
+python -m analysis.failure_more results/experiment_full_excl.jsonl > results/failure_more.txt
 
 2. Why D and DR are worst on heavy-noise users.
 3. Why D0 (the LLM keeps the scores itself) gets worse as the conversation gets longer.

@@ -1,6 +1,6 @@
 """Ablation test 12 (Nov 22): AI-written questions (DW) against bank wording (D).
 
-python written_compare.py [--judge-sample 300] > results/written_compare.txt
+python -m analysis.written_compare [--judge-sample 300] > results/written_compare.txt
 
 Accuracy: DW in results/rerun_written.jsonl against D in results/rerun_engine.jsonl, paired
 on test user, budget and repeat (same engine, same noise schedule). U054 is left out.
@@ -19,7 +19,7 @@ import config as C
 import methods as M
 import run_bakeoff as RB
 from llm import extract_json, strip_think
-from rerun_compare import BUDGETS, err, exact, load, pair, level, stop_lines
+from analysis.rerun_compare import BUDGETS, err, exact, load, pair, level, stop_lines
 
 BANK = {i["id"]: i for i in M.load_bank()["items"]}
 JUDGE_SYSTEM = (

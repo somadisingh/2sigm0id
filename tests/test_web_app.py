@@ -1,6 +1,6 @@
 """Headless test of the study web app in mock mode (no API key, no browser).
 
-  python test_web_app.py
+  python -m tests.test_web_app
 
 Walks an odd code (standard form first) through part 1, closes the page, logs in again,
 continues with part 2 and checks the saved files. Checks that an even code starts with the
@@ -22,7 +22,7 @@ ODD, EVEN = "P97", "P98"
 
 
 def app():
-    return AppTest.from_file("web_app.py", default_timeout=60).run()
+    return AppTest.from_file("../web_app.py", default_timeout=60).run()
 
 
 def login(at, pid, code="test"):
@@ -93,7 +93,7 @@ def main():
 def demo():
     """?demo=CWF: access code only, then the money facts on the form, then conversation."""
     before = set(OUT_DIR.glob("DEMO_CWF_*.json"))
-    at = AppTest.from_file("web_app.py", default_timeout=60)
+    at = AppTest.from_file("../web_app.py", default_timeout=60)
     at.query_params["demo"] = "CWF"
     at.run()
     assert len(at.text_input) == 1, "demo asks only for the access code"

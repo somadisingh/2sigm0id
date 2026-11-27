@@ -1,6 +1,6 @@
 """Failure analysis: why is method D's capacity error higher than C's? (No API calls.)
 
-python failure_capacity.py results/experiment_full.jsonl > results/failure_capacity.txt
+python -m analysis.failure_capacity results/experiment_full.jsonl > results/failure_capacity.txt
 
 1. Capacity error and bias by method, budget and noise level.
 2. Each money fact: the engine's final estimate against the truth, as weighted sub-score

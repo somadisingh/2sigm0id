@@ -50,7 +50,7 @@ FACTS = tuple(FACT_GRIDS)
 # LAPSE: the chance that an answer is off (careless, flipped, a contradiction). It keeps one
 # answer from ruling anything out, so two answers that disagree leave both values possible.
 # Form answers (an option number) and spoken answers (read by D's extractor) have their own
-# values. These are starting guesses; `python pilot.py fit` fits them on the pilot users and
+# values. These are starting guesses; `python -m tools.pilot fit` fits them on the pilot users and
 # saves them in pilot/fitted.json, which this module loads when it exists.
 SIGMA = {"stated": 0.20, "hypothetical": 0.25, "past": 0.15}          # form answers
 LAPSE = 0.10

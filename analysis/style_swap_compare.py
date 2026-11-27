@@ -1,6 +1,6 @@
 """Style-swap test (plan.md, task S6): does the way a person talks change method D's result?
 
-python style_swap_compare.py results/experiment_style_swap.jsonl results/experiment_full.jsonl
+python -m analysis.style_swap_compare results/experiment_style_swap.jsonl results/experiment_full.jsonl
 
 Each style-swap user is a copy of one of the 100 test users with only the `style` block changed
 (mirofish/make_style_swap.py). Its noise is seeded the same way, so each run is paired with the

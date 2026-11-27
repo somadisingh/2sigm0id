@@ -2,7 +2,7 @@
 answer's own label? BM25 against embedding search against random examples, on the 290
 labeled pilot answers. Never uses examples from the same pilot user. No API calls.
 
-python retrieval_eval.py > results/retrieval_eval.txt
+python -m analysis.retrieval_eval > results/retrieval_eval.txt
 """
 import random
 from collections import defaultdict

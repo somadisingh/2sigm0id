@@ -1,8 +1,8 @@
 """Tests 14 and 15 (Nov 24): the hybrids CW and CWF (money facts first). No API calls.
 
-python hybrid_compare.py > results/hybrid_compare.txt              # test 14: CW
-python hybrid_compare.py CWF > results/hybrid_compare_ff.txt       # test 15: CWF, also against CW
-python hybrid_compare.py CF > results/hybrid_compare_cf.txt        # test 16: CF, and CWF - CF
+python -m analysis.hybrid_compare > results/hybrid_compare.txt              # test 14: CW
+python -m analysis.hybrid_compare CWF > results/hybrid_compare_ff.txt       # test 15: CWF, also against CW
+python -m analysis.hybrid_compare CF > results/hybrid_compare_cf.txt        # test 16: CF, and CWF - CF
 
 CW in results/rerun_hybrid.jsonl, paired on test user, budget and repeat (U054 left out) with
 C, D (rerun_engine.jsonl) and DW v2 (rerun_written_v2.jsonl), all with the old band rule.
@@ -13,8 +13,8 @@ import sys
 from statistics import mean
 
 import config as C
-from nl_benefits import RUNS, all_err, att_err, dim_err, schedule
-from rerun_compare import BUDGETS, exact, load, pair, stop_lines
+from analysis.nl_benefits import RUNS, all_err, att_err, dim_err, schedule
+from analysis.rerun_compare import BUDGETS, exact, load, pair, stop_lines
 from score import noise_level
 
 H = sys.argv[1] if len(sys.argv) > 1 else "CW"

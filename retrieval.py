@@ -1,7 +1,7 @@
 """Retrieval for method DR: find labeled pilot answers that look like a new answer, and show
 them to the extractor as worked examples (retrieval-augmented extraction).
 
-The pool (pilot/pool.jsonl, built by `python pilot.py build`) holds spoken answers from the
+The pool (pilot/pool.jsonl, built by `python -m tools.pilot build`) holds spoken answers from the
 10 pilot users, labeled from their TRUE profiles, never by an LLM. Pilot users are never
 scored, so examples never leak a test user's answers.
 
@@ -63,7 +63,7 @@ class Pool:
     @classmethod
     def load(cls, path=POOL_PATH, search=None):
         if not Path(path).exists():
-            raise SystemExit(f"{Path(path).name} not found. Run `python pilot.py build` first.")
+            raise SystemExit(f"{Path(path).name} not found. Run `python -m tools.pilot build` first.")
         return cls([json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()], search)
 
     def score(self, query, i):

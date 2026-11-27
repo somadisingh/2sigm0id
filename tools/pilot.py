@@ -6,13 +6,13 @@ come from the pilot user's TRUE profile, never from an LLM:
   fact questions          the true fact value, and the option that contains it
   willingness / behavior  the true dimension score, and the option nearest to it
 
-  python pilot.py build         ask the questions (simulated-user calls only, about $0.05)
-  python pilot.py forms         the same questions as a form, with form noise (about $0.04)
-  python pilot.py calibrate     DP: GLM's option probabilities for each answer; fits the
+  python -m tools.pilot build         ask the questions (simulated-user calls only, about $0.05)
+  python -m tools.pilot forms         the same questions as a form, with form noise (about $0.04)
+  python -m tools.pilot calibrate     DP: GLM's option probabilities for each answer; fits the
                                 temperature on the fact answers, where the right option is
                                 known exactly (about $0.15)
-  python pilot.py extract-eval  D vs DR vs DP on the same labeled answers (about $0.60)
-  python pilot.py fit           fits the engine's evidence settings (pilot/fitted.json) and
+  python -m tools.pilot extract-eval  D vs DR vs DP on the same labeled answers (about $0.60)
+  python -m tools.pilot fit           fits the engine's evidence settings (pilot/fitted.json) and
                                 chooses the fixed-form questions (pilot/short_forms.json);
                                 checks both by leaving one pilot user out (no API calls)
 
@@ -37,7 +37,7 @@ import run_bakeoff as R
 from capacity import INCOME_SCORE
 from llm import strip_think
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parents[1]
 OUT = HERE / "pilot"
 PILOTS = HERE / "mirofish" / "personas_pilot.json"
 ITEMS = {i["id"]: i for i in M.load_bank()["items"]}
@@ -482,7 +482,7 @@ def fit(args):
     rows = [json.loads(x) for x in (OUT / "form_answers.jsonl").read_text().splitlines()]
     raw_path = HERE / "results" / "pilot_extract_eval.jsonl"
     if not raw_path.exists():
-        raise SystemExit("Run `python pilot.py extract-eval` first (it saves the extractor's readings).")
+        raise SystemExit("Run `python -m tools.pilot extract-eval` first (it saves the extractor's readings).")
     start = BE.STARTING
     default_forms = {b: [i["id"] for i in M.short_form(M.load_bank(), int(b), use_fitted=False)]
                      for b in ("5", "10", "15")}

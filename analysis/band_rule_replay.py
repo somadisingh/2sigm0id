@@ -3,9 +3,9 @@ answers of results/rerun_engine.jsonl (C and D) and finds the first turn where t
 fires, with BAND_RULE "mode" (as run; a check that the replay matches the record) and
 "reported" (the new rule). No API calls.
 
-python band_rule_replay.py > results/band_rule_replay.txt
-python band_rule_replay.py rerun_hybrid_ff.jsonl CWF > results/band_rule_replay_cwf.txt   # Nov 24
-python band_rule_replay.py rerun_form_ff.jsonl CF > results/band_rule_replay_cf.txt
+python -m analysis.band_rule_replay > results/band_rule_replay.txt
+python -m analysis.band_rule_replay rerun_hybrid_ff.jsonl CWF > results/band_rule_replay_cwf.txt   # Nov 24
+python -m analysis.band_rule_replay rerun_form_ff.jsonl CF > results/band_rule_replay_cf.txt
 """
 import json
 import sys
@@ -14,7 +14,7 @@ from statistics import mean
 
 import belief as BE
 import methods as M
-from rerun_compare import EXCLUDE, R, low_band
+from analysis.rerun_compare import EXCLUDE, R, low_band
 
 BANK = M.load_bank()
 POOL = M.engine_pool(BANK)

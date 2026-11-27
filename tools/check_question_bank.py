@@ -1,7 +1,7 @@
 """Check the question bank and test it with a rule-based answerer.
 
-  python check_question_bank.py              # format checks + rule-based test on personas.json
-  python check_question_bank.py --write-md   # also rewrite question_bank.md from the JSON
+  python -m tools.check_question_bank              # format checks + rule-based test on personas.json
+  python -m tools.check_question_bank --write-md   # also rewrite question_bank.md from the JSON
 
 The rule-based answerer uses no AI: it answers fact questions straight from each
 persona's facts and every other question with the option closest to the persona's
@@ -13,7 +13,7 @@ import statistics as st
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parents[1]
 DIMS = ("capacity", "willingness", "behavioral")
 BUDGETS = ("5", "10", "15")
 
@@ -139,7 +139,7 @@ def write_md(bank):
              "behavioral": "Behavior (what they would actually do in a loss)"}
     in_form = {b: {i["id"] for i in short_form(bank, b)} for b in BUDGETS}
     lines = [f"# Question bank {bank['version']}", "", bank["about"], "",
-             "Generated from `question_bank.json` by `check_question_bank.py --write-md`; "
+             "Generated from `question_bank.json` by `python -m tools.check_question_bank --write-md`; "
              "edit the JSON, not this file.", "",
              "**Scoring:** each answer scores 0 (lowest risk) to 1 (highest); a dimension is the "
              "average of its answered items; the final band is the lowest of the three. "

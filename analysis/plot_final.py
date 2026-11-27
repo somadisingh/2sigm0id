@@ -1,7 +1,7 @@
 """Final chart (Nov 25): avg error against system cost per interview, one panel per budget.
 No API calls.
 
-python plot_final.py   # -> results/final_error_vs_cost.png
+python -m analysis.plot_final   # -> results/final_error_vs_cost.png
 
 All methods come from the reruns with the Nov 22 engine and the old band rule, paired on the
 same test users (U054 left out): A (rerun_form_a.jsonl), C, D, DN (rerun_engine.jsonl), DW v2
@@ -15,8 +15,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 import config as C
-from nl_benefits import RUNS, all_err
-from rerun_compare import BUDGETS, R, load
+from analysis.nl_benefits import RUNS, all_err
+from analysis.rerun_compare import BUDGETS, R, load
 
 ALL = {**RUNS, **load("rerun_hybrid.jsonl"), **load("rerun_hybrid_ff.jsonl"),
        **load("rerun_form_ff.jsonl"), **load("rerun_form_a.jsonl")}

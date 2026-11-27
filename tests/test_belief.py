@@ -1,4 +1,4 @@
-"""Checks for the belief engine. Run: python test_belief.py (no API calls, a few seconds)."""
+"""Checks for the belief engine. Run: python -m tests.test_belief (no API calls, a few seconds)."""
 
 import json
 import time
@@ -10,7 +10,7 @@ import belief as B
 from capacity import INCOME_SCORE, capacity_from_facts
 from methods import load_bank
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parents[1]
 BANK = load_bank()
 ITEMS = {i["id"]: i for i in BANK["items"]}
 POOL = [i for i in BANK["items"] if B.item_target(i) is not None]
