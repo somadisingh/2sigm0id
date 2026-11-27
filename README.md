@@ -131,7 +131,7 @@ Runs (in `results/`, which is not in git) and the scripts that score them (no AP
 
 **Chart.** `python plot_final.py` makes `results/final_error_vs_cost.png`; a copy for the report is in `figures/`.
 
-**Cost.** The provider billed **$96.31 for the whole project** (every call: bake-off stages, pilot, persona checks, judges, all experiment runs and the live app; $300 of credit). At list price the experiment runs alone come to $190.55 (simulated users included; $100.50 of it for the reruns since Nov 22), so the real cost is at most about half of list price. Billing over time: $46.10 at Milestone 3 (Nov 19), $81.73 on Nov 24, $96.31 at the end (Nov 26).
+**Cost.** The provider billed **$96.31 for the whole project** (every call: bake-off stages, pilot, persona checks, judges, all experiment runs and the live app; $300 of credit). At list price the experiment runs alone come to $190.55 (simulated users included; $100.50 of it for the reruns since Nov 22), so the real cost is at most about half of list price. It billed $46.10 up to Milestone 3.
 
 ## Live chat (real people)
 
