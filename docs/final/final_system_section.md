@@ -15,10 +15,10 @@ One interview of 10 questions runs like this:
 1. **Money facts, on a form.** The first min(5, budget // 2) questions are money-fact questions (time until the money is needed, emergency savings, income stability, debt payments, dependents). The person picks one option for each. The engine picks which fact to ask and in what order. A form question is never asked again.
 2. **Willingness and behavior, in conversation.** The engine picks each remaining question from the bank. The AI writes it naturally from the conversation so far (the form questions are not shown to it), and the person answers in their own words.
 3. **Reading each answer.** The AI extractor turns the answer into evidence: a score, whether it describes a past action, an imagined situation or a stated feeling, and whether it is clear or vague. Money facts that it hears in conversation are dropped, because they come only from the form.
-4. **Re-asks.** If an answer is vague or contradicts an earlier one, the engine can ask about it again, and the AI words a neutral clarifying question.
+4. **Re-asks.** If a conversation answer is vague or contradicts an earlier one (for example about a past loss), the engine can ask about it again, and the AI words a neutral clarifying question. Form questions are never asked again.
 5. **Result.** The three scores, the final band and how sure the engine is, with any contradiction or mismatch it noticed. It is a risk profile for a study, not investment advice.
 
-**Why the money facts are on the form.** Money facts said in conversation can be false, and a person (or a test user) may repeat a wrong value. With everything else the same, hearing the facts in conversation instead of on a form costs 0.018 more capacity error at 10 questions and 0.031 at 15 (CW − DW, clear). Asking the facts first also matters: the adaptive form C asks only 1.65, 3.24 and 4.12 fact questions at 5, 10 and 15, and all of CWF's gain over C is in capacity.
+**Why the money facts are on the form.** Money facts said in conversation can be false, and a person (or a test user) may repeat a wrong value. With everything else the same, hearing the facts in conversation instead of on a form costs 0.018 more capacity error at 10 questions and 0.031 at 15 (CW − DW, clear). Asking the facts first also matters: the adaptive form C asks only 1.65, 3.24 and 4.12 fact questions at 5, 10 and 15, and all of CWF's gain over C is in capacity. The cost of this choice: CWF cannot catch a false money fact. Like any form, it takes the ticked answer as given. The AI interviewer D flags 86% to 92% of the planted contradictions, which are almost all false money facts; CWF can only flag contradictions about willingness, behavior and past losses.
 
 ### The belief engine (`belief.py`, plain code)
 
@@ -48,7 +48,7 @@ The Milestone 3 feedback noted that D − C mixes two effects: the AI interviewe
 | CF − C | Money facts asked first, everything on the form, no AI | −0.012 at 5, −0.018 at 10 (clear); −0.003 at 15 (not clear) |
 | CWF − CF | Only how willingness and behavior are asked: conversation or form | −0.005, −0.003, −0.004 (not clear at any budget) |
 
-So most of CWF's gain over C comes from asking the money facts first, a rule a form can also use (CF). With the same input and question rule, conversation ties the form overall. It reads attitudes better for clean answerers (−0.020 at 10 questions, −0.021 at 15, clear), and it can notice contradictions, which a form cannot. One result goes the other way: at 10 questions CWF picks the exact band 7.4 points less often than CF (clear).
+So most of CWF's gain over C comes from asking the money facts first, a rule a form can also use (CF). With the same input and question rule, conversation ties the form overall. It reads attitudes better for clean answerers (−0.020 at 10 questions, −0.021 at 15, clear), and it can notice contradictions about attitudes and past losses, which a form cannot. One result goes the other way: at 10 questions CWF picks the exact band 7.4 points less often than CF (clear).
 
 ### Cost and time
 
