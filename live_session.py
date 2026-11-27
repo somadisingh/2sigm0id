@@ -15,11 +15,9 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-import numpy as np
-
 import belief as BE
-import session_store
 import methods as M
+import session_store
 from prompts import band
 
 HERE = Path(__file__).resolve().parent
