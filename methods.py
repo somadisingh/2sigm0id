@@ -454,8 +454,21 @@ def candidates(pool, asks, unclear, k, reasks=False, hybrid=False, facts_first=0
 
 def run_form(llm, method, budget, persona, repeat, user, u_setting, mapper, m_setting, draw_noise,
              full_budget=True):
-    """Methods A, B, C, C0 and D. full_budget: keep asking after the stop rule fires (main
-    experiment); the turn where it fired is logged as would_stop_at."""
+    """One interview of `budget` questions with one AI test user, for every method except D0.
+
+    Each turn:
+      1. choose the question: the fixed form (A, B), the hand-made rule (C0), or the belief
+         engine from candidates() (all others), which also says if the band is settled
+      2. draw this turn's planned noise (the same seeded schedule for every method) and ask:
+         spoken wording for methods that talk, the form with numbered options otherwise
+      3. read the answer: an option number (forms), the answer mapper (B), the option
+         probabilities (DP) or the extractor's evidence (D versions and the hybrids' talk turns)
+      4. update the belief and log the turn, with the profile before the answer
+
+    full_budget: keep asking after the stop rule fires (main experiment), so every method asks
+    the same number of questions; the turn where it fired is logged as would_stop_at.
+    Returns one record: the turns, the final profile, the truth and every AI call with its cost.
+    """
     bank = load_bank()
     pool = engine_pool(bank)
     # same seed as run_interview -> every method faces the same noise schedule

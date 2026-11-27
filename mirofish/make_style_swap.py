@@ -1,4 +1,4 @@
-"""Style-swap test users (plan.md, task S6).
+"""Style-swap test users (docs/plan.md, task S6).
 
 Picks 20 of the 100 test users, 4 per true final band, and makes a copy of each with only the
 `style` block changed: short <-> long, plain <-> technical (casual -> technical), low <-> high

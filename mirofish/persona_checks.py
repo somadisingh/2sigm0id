@@ -1,4 +1,4 @@
-"""Persona checks 2, 3 and 5 (plan.md, task S3). Siya's checks.
+"""Persona checks 2, 3 and 5 (docs/plan.md, task S3). Siya's checks.
 
 Every test user answers 8 new multiple-choice questions (4 willingness, 4 behavior), in a fresh
 conversation with no noise. None of the 8 is in question_bank.json. Each option has a fixed
