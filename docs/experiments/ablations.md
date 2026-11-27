@@ -600,3 +600,19 @@ Paired as in tests 14 to 16 (n = 297 per budget, U054 left out), ranges by test 
 Contradictions: in D's interviews (`rerun_engine.jsonl`), 351 of 355 planted contradictions are false money facts (debt payments 277) and 4 are past losses. In 891 CWF interviews, no contradiction was planted and none was flagged: money facts are on the form, and a contradiction can only be planted on a fact the test user already said aloud. So CWF cannot catch a false money fact; that strength belongs to D.
 
 Cost figures: the final docs give system cost only (D $0.0126, DW v2 $0.0182 per interview). Test 12 above also counts the test users' calls (D $0.0139, DW v1 $0.0197).
+
+### Can a switch between CWF and CF do better? (ceiling, Nov 27, no new runs)
+
+Idea: talk about attitudes (CWF) only with people who answer clearly, and use the form (CF) with the others. Before writing such a rule, we computed the best any switch could do, from the recorded CWF and CF runs (paired, n = 297 per budget, ranges by test user). The ceilings use the test user's true noise level, which a real switch would have to guess, so a real switch would do worse.
+
+| Switch (ceiling) | 5 questions | 10 questions | 15 questions |
+|---|---|---|---|
+| CWF − CF on clean test users, avg error | −0.016 (clear) | −0.013 (clear) | −0.015 (clear) |
+| CWF − CF on heavy-noise test users | +0.011 | +0.001 | +0.006 (all not clear) |
+| Talk for clean users only, against CWF | −0.001 | −0.001 | −0.001 (all not clear) |
+| Talk unless heavy noise, against CWF | −0.004 | −0.000 | −0.002 (all not clear) |
+| Take the better of the two interviews each time, against CWF | −0.021 | −0.016 | −0.015 |
+
+The last row is not reachable: it picks, after the fact, whichever of two separate interviews happened to land closer, so it measures run-to-run chance, not a method.
+
+**Decision: no switching method (no test 17).** Even with the true noise level known, a switch gains at most 0.004 over CWF, and the gain is not clear at any budget. CWF already talks only about attitudes, and its loss on noisy answerers is small and not clear, so there is little left to gain. The other strengths do not stack: D's catching of false money facts exists only when the facts are heard in conversation, which CWF avoids by asking them on the form.

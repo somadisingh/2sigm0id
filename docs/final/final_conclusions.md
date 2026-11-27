@@ -57,6 +57,7 @@ The Milestone 3 feedback said that D − C mixes two effects: the AI interviewer
 - CWF costs $0.011 per interview at list price and takes 1.1 s per question. CF costs $0 and takes 0.1 s.
 - For that cost, CWF gives about 0.02 lower attitude error for clean answerers, and natural questions. It does not check the money facts: a false money fact goes onto the form unchecked, as in C. Only a contradiction about a past loss can be flagged.
 - It also has two weaker points. Its overall gain over CF is too small to show. At 10 questions it picks the exact band less often than CF (−7.4 points, clear).
+- **A switch does not help.** Talking only with people who answer clearly, and using the form for the others, gains at most 0.004 over CWF even when the true noise level is known (not clear at any budget; `ablations.md`, last section). So we did not build it.
 - **Our answer:** the AI is worth about one cent per interview when people can explain themselves. When catching false money facts matters most, D does that and CWF does not; D costs about the same ($0.013) but has higher error. Where cost or speed matters most, CF is the alternative with the same error and no AI.
 
 ### A6. Other synthetic-user findings
